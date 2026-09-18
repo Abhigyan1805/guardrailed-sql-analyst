@@ -24,7 +24,10 @@ export interface AgentAnswer {
   blockStage?: string;
   blockReason?: string;
   latencyMs: number;
-  engine: 'llm' | 'offline-template';
+  engine: 'llm' | 'offline-template' | 'gemini';
+  model?: string | null;
+  tokensIn?: number;
+  tokensOut?: number;
 }
 
 const VAGUE_WORDS = ['sales', 'report', 'overview', 'data', 'performance', 'recent', 'top', 'breakdown', 'good', 'best'];
@@ -39,12 +42,30 @@ const State = Annotation.Root({
   validationOk: Annotation<boolean>({ reducer: (_, b) => b, default: () => false }),
   blockReason: Annotation<string | null>({ reducer: (_, b) => b, default: () => null }),
   decision: Annotation<Decision | null>({ reducer: (_, b) => b, default: () => null }),
+  llmModel: Annotation<string | null>({ reducer: (_, b) => b, default: () => null }),
+  tokensIn: Annotation<number>({ reducer: (a, b) => a + b, default: () => 0 }),
+  tokensOut: Annotation<number>({ reducer: (a, b) => a + b, default: () => 0 }),
 });
 
 export interface CtxCarrier { ctx: TenantCtx; requestId: string; }
 
-/** Offline deterministic generator — used when no LLM key is set.
- *  Covers golden/demo patterns; returns null when it cannot map safely. */
+/** Cheap intent screen that runs before any model call: refusals and
+    genuinely vague questions never spend an LLM round-trip. */
+export function preScreen(question: string): { block: string } | { clarify: string[] } | null {
+  const q = question.toLowerCase().trim();
+  if (/(delete|update |insert |drop |truncate|alter |grant |ignore previous|show .*email|full pii|pg_shadow|other regions|other tenants|dump |set \w+ to|stock_qty|all customer)/.test(q)) {
+    if (/email|pii/.test(q)) return { block: 'PII / restricted-column request refused' };
+    if (/cost|margin/.test(q) && /show|what/.test(q)) return { block: 'gross-margin needs restricted products.cost — refused (analyst role)' };
+    return { block: 'write/privileged operation refused' };
+  }
+  if (/(cost|margin)/.test(q)) return { block: 'gross-margin needs restricted products.cost — refused (analyst role)' };
+  if (/^(show )?(sales|report|overview|data|dashboard)[\s.?]*$/.test(q) || q.length < 12) {
+    return { clarify: ['Which metric: revenue, order count, or average order value?', 'Which time window should I use?', 'How should I group the results?'] };
+  }
+  return null;
+}
+/** Offline deterministic generator. Covers golden/demo patterns;
+    returns null-shaped outcomes when nothing maps safely. */
 export function offlineTemplate(question: string): {
   sql: string; chart: ChartSpec; caveats: string[]; confidence: number; assumptions: string[];
 } | { clarify: string[] } | { block: string } {
@@ -71,6 +92,43 @@ export function offlineTemplate(question: string): {
       chart: { type: 'table', x: 'name', y: 'list_price', title: 'Most expensive products' },
       caveats: ['Active products only', `Limited to ${lim} rows`],
       confidence: 0.9, assumptions: [],
+    };
+  }
+  if (/month-over-month|\bmom\b|growth\s*(percent|%)|growth.*20\d\d/.test(q)) {
+    const y = q.match(/20\d\d/);
+    const Y = y ? y[0] : '2025';
+    const Y1 = String(Number(Y) + 1);
+    return {
+      sql: `WITH spine AS (SELECT generate_series('${Y}-01-01'::timestamptz,'${Y}-12-01'::timestamptz, interval '1 month') AS mon), rev AS (SELECT date_trunc('month', ordered_at) AS mon, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') AND ordered_at >= '${Y}-01-01' AND ordered_at < '${Y1}-01-01' GROUP BY 1) SELECT to_char(s.mon,'YYYY-MM') AS month, COALESCE(r.revenue,0) AS revenue, CASE WHEN LAG(COALESCE(r.revenue,0)) OVER (ORDER BY s.mon) = 0 THEN NULL ELSE (COALESCE(r.revenue,0) - LAG(COALESCE(r.revenue,0)) OVER (ORDER BY s.mon)) / NULLIF(LAG(COALESCE(r.revenue,0)) OVER (ORDER BY s.mon),0) END AS mom_growth FROM spine s LEFT JOIN rev r ON r.mon = s.mon ORDER BY s.mon ASC`,
+      chart: { type: 'line', x: 'month', y: 'mom_growth', title: `Month-over-month growth ${Y}` },
+      caveats: [`Fixed Jan–Dec ${Y} spine; zero months included`, 'NULL growth when prior month is 0'],
+      confidence: 0.78, assumptions: [],
+    };
+  }
+  if (/running total|cumulative/.test(q)) {
+    return {
+      sql: `WITH m AS (SELECT date_trunc('month', ordered_at) AS mon, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY 1) SELECT to_char(mon,'YYYY-MM') AS month, revenue, SUM(revenue) OVER (ORDER BY mon ASC) AS running_total FROM m ORDER BY mon ASC`,
+      chart: { type: 'line', x: 'month', y: 'running_total', title: 'Running total revenue' },
+      caveats: ['Paid + shipped only, net of discount'],
+      confidence: 0.82, assumptions: [],
+    };
+  }
+  if (/top product per category|per category.*rank|top.*per category|excluding categories under/.test(q)) {
+    const fm = q.match(/\$([\d,]+)/) ?? q.match(/(\d[\d,]*)/);
+    const floor = fm ? fm[1].replace(/,/g, '') : '500';
+    return {
+      sql: `WITH cat_rev AS (SELECT category_name, SUM(line_revenue) AS total FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY category_name HAVING SUM(line_revenue) >= ${floor}), prod_rev AS (SELECT l.category_name, l.product_id, l.product_name, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l WHERE l.status IN ('paid','shipped') GROUP BY l.category_name, l.product_id, l.product_name) SELECT p.category_name, p.product_name, p.revenue, RANK() OVER (PARTITION BY p.category_name ORDER BY p.revenue DESC) AS rnk FROM prod_rev p JOIN cat_rev c USING (category_name) ORDER BY p.category_name ASC, rnk ASC`,
+      chart: { type: 'table', x: 'category_name', y: 'revenue', title: 'Top product per category' },
+      caveats: ['Paid + shipped only', `Categories under $${floor} excluded`, 'rnk 1 = top per category'],
+      confidence: 0.75, assumptions: [],
+    };
+  }
+  if (/share.*categor|categor.*share|percent.*revenue/.test(q) && /categor/.test(q)) {
+    return {
+      sql: `WITH t AS (SELECT SUM(line_revenue) AS total FROM analytics_order_lines WHERE status IN ('paid','shipped')), c AS (SELECT category_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY category_name) SELECT c.category_name, c.revenue, c.revenue / t.total AS share FROM c, t ORDER BY share DESC, c.category_name ASC`,
+      chart: { type: 'bar', x: 'category_name', y: 'share', title: 'Revenue share by category' },
+      caveats: ['Paid + shipped only', 'share = category revenue / total'],
+      confidence: 0.82, assumptions: [],
     };
   }
   if (/revenue.*month|month.*revenue|monthly revenue|trend|growth|mom/.test(q)) {
@@ -114,6 +172,14 @@ export function offlineTemplate(question: string): {
       chart: { type: 'table', x: 'cancelled_orders', y: 'cancelled_orders', title: 'Cancelled orders' },
       caveats: ['Count only'],
       confidence: 0.8, assumptions: [],
+    };
+  }
+  if (/median/.test(q)) {
+    return {
+      sql: `WITH o AS (SELECT order_id, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY order_id) SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY revenue)::float AS median_order_value FROM o`,
+      chart: { type: 'table', x: 'median_order_value', y: 'median_order_value', title: 'Median order value' },
+      caveats: ['Paid + shipped, per-order pre-agg to avoid fanout'],
+      confidence: 0.78, assumptions: [],
     };
   }
   if (/avg.*order value|average order|aov/.test(q) && !/refund/.test(q)) {
@@ -232,6 +298,63 @@ export function offlineTemplate(question: string): {
       confidence: 0.85, assumptions: [],
     };
   }
+  if (/above.*average.*revenue|lifetime revenue.*average/.test(q) && /customer/.test(q)) {
+    return {
+      sql: `WITH cust AS (SELECT o.customer_id, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l JOIN analytics_orders o USING (order_id) WHERE l.status IN ('paid','shipped') GROUP BY o.customer_id), avg_c AS (SELECT AVG(revenue) AS avg_rev FROM cust) SELECT c.display_name, cust.revenue FROM cust JOIN analytics_customers_masked c USING (customer_id), avg_c WHERE cust.revenue > avg_c.avg_rev ORDER BY cust.revenue DESC, c.customer_id ASC LIMIT 20`,
+      chart: { type: 'bar', x: 'display_name', y: 'revenue', title: 'Above-average customers' },
+      caveats: ['Paid + shipped only', 'PII masked', 'Limited to 20 rows'],
+      confidence: 0.78, assumptions: [],
+    };
+  }
+  if (/more than \d+.*distinct categor|distinct categor.*categor|contain.*lines.*categor/.test(q)) {
+    return {
+      sql: `SELECT order_id, COUNT(DISTINCT category_name) AS categories, SUM(line_revenue) AS revenue FROM analytics_order_lines GROUP BY order_id HAVING COUNT(DISTINCT category_name) > 2 ORDER BY categories DESC, order_id ASC LIMIT 20`,
+      chart: { type: 'table', x: 'order_id', y: 'categories', title: 'Multi-category orders' },
+      caveats: ['All statuses included', 'Limited to 20 rows'],
+      confidence: 0.85, assumptions: [],
+    };
+  }
+  if (/more than \d+ orders/.test(q)) {
+    const n = q.match(/more than (\d+) orders/);
+    const orders = n ? n[1] : '3';
+    const m = q.match(/above \$?([\d,]+)/);
+    const minRev = m ? m[1].replace(/,/g, '') : '1000';
+    return {
+      sql: `WITH cust AS (SELECT o.customer_id, COUNT(DISTINCT l.order_id) AS orders, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l JOIN analytics_orders o USING (order_id) WHERE l.status IN ('paid','shipped') GROUP BY o.customer_id) SELECT c.display_name, cust.orders, cust.revenue FROM cust JOIN analytics_customers_masked c USING (customer_id) WHERE cust.orders > ${orders} AND cust.revenue > ${minRev} ORDER BY cust.revenue DESC, c.customer_id ASC LIMIT 20`,
+      chart: { type: 'table', x: 'display_name', y: 'revenue', title: 'Loyal high-value customers' },
+      caveats: ['Paid + shipped only', 'PII masked'],
+      confidence: 0.8, assumptions: [],
+    };
+  }
+  if (/repeat.*share|share.*customer|more than one.*order/.test(q)) {
+    return {
+      sql: `WITH c AS (SELECT o.customer_id, COUNT(DISTINCT l.order_id) AS orders FROM analytics_order_lines l JOIN analytics_orders o USING (order_id) WHERE l.status IN ('paid','shipped') GROUP BY o.customer_id) SELECT SUM(CASE WHEN orders > 1 THEN 1 ELSE 0 END)::float / COUNT(*) AS repeat_share, COUNT(*) AS customers FROM c`,
+      chart: { type: 'table', x: 'repeat_share', y: 'customers', title: 'Repeat-customer share' },
+      caveats: ['Paid + shipped orders only'],
+      confidence: 0.78, assumptions: [],
+    };
+  }
+  if (/priced above|above.*average.*price/.test(q) && /product|price/.test(q) && !/customer|revenue/.test(q)) {
+    return {
+      sql: `WITH avg_c AS (SELECT category_name, AVG(list_price) AS avg_price FROM analytics_products_public GROUP BY category_name) SELECT p.sku, p.name, p.category_name, p.list_price FROM analytics_products_public p JOIN avg_c USING (category_name) WHERE p.list_price > avg_c.avg_price ORDER BY p.list_price DESC, p.product_id ASC LIMIT 20`,
+      chart: { type: 'table', x: 'name', y: 'list_price', title: 'Above-average priced products' },
+      caveats: ['Limited to 20 rows'],
+      confidence: 0.8, assumptions: [],
+    };
+  }
+  if (/first order|dormant|ordered nothing after/.test(q)) {
+    const fy = q.match(/first order in (20\d\d)/);
+    const firstFrom = fy ? `${fy[1]}-01-01` : '2024-01-01';
+    const firstTo = fy ? `${Number(fy[1]) + 1}-01-01` : '2025-01-01';
+    const cutoff = q.match(/after (20\d\d-\d\d-\d\d)/);
+    const cut = cutoff ? cutoff[1] : '2025-07-01';
+    return {
+      sql: `WITH first_o AS (SELECT o.customer_id, MIN(o.ordered_at) AS first_at FROM analytics_orders o GROUP BY o.customer_id), recent AS (SELECT DISTINCT customer_id FROM analytics_orders WHERE ordered_at > '${cut}') SELECT c.display_name, first_o.first_at FROM first_o JOIN analytics_customers_masked c USING (customer_id) LEFT JOIN recent USING (customer_id) WHERE first_o.first_at >= '${firstFrom}' AND first_o.first_at < '${firstTo}' AND recent.customer_id IS NULL ORDER BY first_o.first_at ASC, c.customer_id ASC LIMIT 20`,
+      chart: { type: 'table', x: 'display_name', y: 'first_at', title: 'Dormant cohort' },
+      caveats: [`First order in ${firstFrom.slice(0, 4)}`, `No orders after ${cut}`, 'PII masked'],
+      confidence: 0.75, assumptions: [],
+    };
+  }
   if (/top.*customer/.test(q)) {
     return {
       sql: `WITH r AS (SELECT o.customer_id, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l JOIN analytics_orders o USING (order_id) WHERE l.status IN ('paid','shipped') GROUP BY o.customer_id) SELECT c.display_name, r.revenue FROM r JOIN analytics_customers_masked c USING (customer_id) ORDER BY r.revenue DESC, c.customer_id ASC LIMIT 5`,
@@ -269,9 +392,114 @@ export function offlineTemplate(question: string): {
   return { clarify: ['Which metric: revenue, order count, or average order value?', 'Which time window should I use?', 'How should I group the results?'] };
 }
 
-async function callLlm(question: string): Promise<{ sql: string; chart: ChartSpec; caveats: string[]; confidence: number; assumptions: string[] } | null> {
+export class QuotaExhausted extends Error {
+  constructor(model: string) { super(`Gemini free-tier quota exhausted on ${model}`); this.name = 'QuotaExhausted'; }
+}
+
+export interface LlmResult {
+  sql: string; chart: ChartSpec; caveats: string[]; confidence: number; assumptions: string[];
+  model: string; tokensIn: number; tokensOut: number;
+}
+
+// Free-tier guard: serialize LLM calls with a minimum gap so we stay far
+// under RPM (default 8000ms ≈ 7.5 RPM vs 10–15 RPM limits).
+let lastLlmAt = 0;
+let llmCallCount = 0;
+export function llmStats() { return { calls: llmCallCount, lastAt: lastLlmAt }; }
+
+async function throttleLlm() {
+  const gap = Number(process.env.LLM_MIN_INTERVAL_MS ?? 8000);
+  const wait = gap - (Date.now() - lastLlmAt);
+  if (wait > 0) await new Promise(r => setTimeout(r, wait));
+  lastLlmAt = Date.now();
+}
+
+function extractJson(text: string): any {
+  const clean = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+  return JSON.parse(clean);
+}
+
+async function callGemini(prompt: string, model: string, apiKey: string): Promise<LlmResult | null> {
+  await throttleLlm();
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 45000);
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        signal: ctrl.signal,
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: 'You are a Postgres analyst. Return JSON only.' }] },
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            response_mime_type: 'application/json', maxOutputTokens: 2048, temperature: 0,
+            // No reasoning needed for single-SQL generation; thinking tokens
+            // otherwise eat the output budget and truncate hard queries.
+            thinkingConfig: { thinkingBudget: 0 },
+          },
+        }),
+      }
+    );
+    llmCallCount++;
+    if (res.status === 429) throw new QuotaExhausted(model);
+    if (!res.ok) throw new Error(`gemini ${model} HTTP ${res.status}`);
+    const data = await res.json();
+    const parts = data.candidates?.[0]?.content?.parts ?? [];
+    const text = parts.find((p: any) => typeof p?.text === 'string')?.text;
+    if (!text) {
+      if (data.candidates?.[0]?.finishReason === 'MAX_TOKENS') throw new Error('gemini truncated (MAX_TOKENS)');
+      throw new Error(`gemini ${model} empty response`);
+    }
+    const parsed = extractJson(text);
+    if (parsed.sql == null) return null; // model abstained → defer to offline safety path
+    if (!parsed.sql) throw new Error(`gemini ${model} missing sql`);
+    const usage = data.usageMetadata ?? {};
+    return {
+      sql: parsed.sql,
+      chart: parsed.chart ?? { type: 'table', x: '', y: '', title: '' },
+      caveats: parsed.caveats ?? [],
+      confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
+      assumptions: parsed.assumptions ?? [],
+      model, tokensIn: usage.promptTokenCount ?? 0, tokensOut: usage.candidatesTokenCount ?? 0,
+    };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+const GEMINI_PROMPT = (question: string) => `Generate a Postgres query for this question.
+
+ALLOWED VIEWS ONLY (never base tables):
+${SCHEMA_SLICE}
+
+Question: ${question}
+
+Return JSON: {"sql": string (single read-only SELECT, LIMIT<=1000, deterministic ORDER BY with tie-breaker) or null if you must abstain, "chart": {"type":"bar"|"line"|"table","x":column,"y":column,"title":string}, "caveats": string[], "confidence": 0..1, "assumptions": string[]}.
+Rules: revenue = SUM(line_revenue) with status IN ('paid','shipped'); time-series must include zero months via generate_series + LEFT JOIN; never DDL/DML; never columns email/full_name/cost; never pg_* or information_schema. Always include id/key columns (e.g. product_id, sku, customer_id, order_id) plus requested columns. If the question is vague (missing metric, window, or grouping) or asks for forbidden data/operations, return "sql": null with confidence below 0.55 and explain in assumptions.`;
+
+async function callLlm(question: string): Promise<LlmResult | null> {
+  const provider = process.env.LLM_PROVIDER ?? 'offline';
+  const gkey = process.env.GOOGLE_API_KEY;
+  if (provider === 'gemini' && gkey) {
+    const models = [process.env.LLM_MODEL ?? 'gemini-2.5-flash', process.env.LLM_FALLBACK_MODEL ?? 'gemini-2.5-flash-lite'];
+    let lastErr: any = null;
+    for (const m of models) {
+      try {
+        return await callGemini(GEMINI_PROMPT(question), m, gkey);
+      } catch (e: any) {
+        lastErr = e;
+        if (e instanceof QuotaExhausted) continue; // try fallback model, then give up
+        // Non-quota error (parse/empty): try fallback once, else give up for this Q
+        continue;
+      }
+    }
+    if (lastErr instanceof QuotaExhausted) throw lastErr; // runner stops hammering
+    return null; // fall back to offline templates for this question
+  }
   const apiKey = process.env.OPENAI_API_KEY || process.env.LLM_API_KEY;
-  if (!apiKey) return null;
+  if (provider !== 'openai' || !apiKey) return null;
   const base = process.env.LLM_BASE_URL ?? 'https://api.openai.com/v1';
   const model = process.env.LLM_MODEL ?? 'gpt-4o-mini';
   const prompt = `You are a Postgres analyst. Use ONLY these views/columns.\n${SCHEMA_SLICE}\n\nQuestion: ${question}\n\nReturn JSON: {"sql": string (single SELECT, LIMIT<=1000), "chart": {"type":"bar"|"line"|"table","x":col,"y":col,"title":string}, "caveats": string[], "confidence": 0..1, "assumptions": string[]}. Rules: revenue=SUM(line_revenue) with status IN ('paid','shipped'); deterministic ORDER BY with tie-breaker; no DDL/DML; no base tables; no PII columns. If ambiguous, set confidence < 0.55.`;
@@ -292,7 +520,7 @@ async function callLlm(question: string): Promise<{ sql: string; chart: ChartSpe
     const data = await res.json();
     const parsed = JSON.parse(data.choices?.[0]?.message?.content ?? 'null');
     if (!parsed?.sql) return null;
-    return { sql: parsed.sql, chart: parsed.chart ?? { type: 'table', x: '', y: '', title: '' }, caveats: parsed.caveats ?? [], confidence: parsed.confidence ?? 0.5, assumptions: parsed.assumptions ?? [] };
+    return { sql: parsed.sql, chart: parsed.chart ?? { type: 'table', x: '', y: '', title: '' }, caveats: parsed.caveats ?? [], confidence: parsed.confidence ?? 0.5, assumptions: parsed.assumptions ?? [], model, tokensIn: data.usage?.prompt_tokens ?? 0, tokensOut: data.usage?.completion_tokens ?? 0 };
   } catch {
     return null;
   } finally {
@@ -307,9 +535,12 @@ function buildGraph(carrier: CtxCarrier) {
       return {};
     })
     .addNode('generate', async (s) => {
+      const screen = preScreen(s.question);
+      if (screen && 'block' in screen) return { sql: null, blockReason: screen.block, selfConfidence: 0, decision: 'BLOCK' as Decision };
+      if (screen && 'clarify' in screen) return { sql: null, selfConfidence: 0.3, assumptions: screen.clarify, decision: 'CLARIFY' as Decision };
       const llm = await callLlm(s.question);
       if (llm) {
-        return { sql: llm.sql, chartSpec: llm.chart, caveats: llm.caveats, assumptions: llm.assumptions, selfConfidence: llm.confidence };
+        return { sql: llm.sql, chartSpec: llm.chart, caveats: llm.caveats, assumptions: llm.assumptions, selfConfidence: llm.confidence, llmModel: llm.model, tokensIn: llm.tokensIn, tokensOut: llm.tokensOut };
       }
       const t = offlineTemplate(s.question);
       if ('block' in t) return { sql: null, blockReason: t.block, selfConfidence: 0, decision: 'BLOCK' as Decision };
@@ -356,22 +587,25 @@ export async function askQuestion(question: string, ctx: TenantCtx, requestId = 
     { configurable: { thread_id: `${threadId}-${Date.now()}` } }
   ) as any;
 
-  const engine = process.env.OPENAI_API_KEY || process.env.LLM_API_KEY ? 'llm' : 'offline-template';
+  const engine = out.llmModel
+    ? (process.env.LLM_PROVIDER === 'gemini' ? 'gemini' : process.env.LLM_PROVIDER as any ?? 'llm')
+    : 'offline-template';
+  const llmMeta = { model: out.llmModel ?? null, tokensIn: out.tokensIn ?? 0, tokensOut: out.tokensOut ?? 0 };
 
   if (out.decision === 'BLOCK' && !out.sql) {
     const { writeAudit } = await import('./exec');
     await writeAudit(ctx, requestId, question, '', null, 'BLOCK', 'intent', out.blockReason ?? 'refused', 0, Date.now() - t0, 0, null);
-    return { decision: 'BLOCK', sql: null, caveats: [], confidence: 0, blockStage: 'intent', blockReason: out.blockReason, latencyMs: Date.now() - t0, engine };
+    return { decision: 'BLOCK', sql: null, caveats: [], confidence: 0, blockStage: 'intent', blockReason: out.blockReason, latencyMs: Date.now() - t0, engine, ...llmMeta };
   }
   if ((out.decision === 'CLARIFY' && !out.sql) || !out.sql) {
     const { writeAudit } = await import('./exec');
     await writeAudit(ctx, requestId, question, '', null, 'CLARIFY', null, null, out.selfConfidence ?? 0.3, Date.now() - t0, 0, null);
-    return { decision: 'CLARIFY', sql: null, caveats: [], clarifyingQuestions: out.assumptions ?? [], confidence: out.selfConfidence ?? 0.3, latencyMs: Date.now() - t0, engine };
+    return { decision: 'CLARIFY', sql: null, caveats: [], clarifyingQuestions: out.assumptions ?? [], confidence: out.selfConfidence ?? 0.3, latencyMs: Date.now() - t0, engine, ...llmMeta };
   }
 
   const exec = await executeGuarded(out.sql, ctx, requestId);
   if (exec.decision !== 'ALLOW') {
-    return { decision: 'BLOCK', sql: out.sql, caveats: [], confidence: out.selfConfidence ?? 0, blockStage: exec.blockStage, blockReason: exec.blockReason, latencyMs: Date.now() - t0, engine };
+    return { decision: 'BLOCK', sql: out.sql, caveats: [], confidence: out.selfConfidence ?? 0, blockStage: exec.blockStage, blockReason: exec.blockReason, latencyMs: Date.now() - t0, engine, ...llmMeta };
   }
   return {
     decision: 'ALLOW', sql: out.sql, executedSql: exec.executedSql,
@@ -379,6 +613,6 @@ export async function askQuestion(question: string, ctx: TenantCtx, requestId = 
     chartSpec: out.chartSpec ?? { type: 'table', x: '', y: '', title: '' },
     caveats: [...(out.caveats ?? []), `Limited to ${(exec.rows ?? []).length} rows shown`],
     confidence: out.selfConfidence ?? 0.5,
-    latencyMs: Date.now() - t0 + exec.latencyMs, engine,
+    latencyMs: Date.now() - t0, engine, ...llmMeta,
   };
 }

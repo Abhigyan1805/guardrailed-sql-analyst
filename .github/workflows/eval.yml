@@ -15,10 +15,8 @@ jobs:
       - run: npm ci
       - run: npm run db:seed
       - run: npx vitest run
-      # Strict gates only when an LLM key is configured; otherwise regression mode
-      - run: npx tsx eval/runner.ts ${{ secrets.LLM_API_KEY != '' && '--strict' || '' }}
-        env:
-          OPENAI_API_KEY: ${{ secrets.LLM_API_KEY }}
+      - run: npx tsx scripts/validate-golds.ts
+      - run: npx tsx eval/runner.ts --strict
       - uses: actions/upload-artifact@v4
         with:
           name: eval-report
