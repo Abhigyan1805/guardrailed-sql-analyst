@@ -35,10 +35,17 @@ export default function Page() {
     setLoading(true);
     setAns(null);
     try {
-      const res = await fetch('/api/query', {
+      // Dev issuance: swap for a real login that returns a context token.
+      const tok = await fetch('/api/auth/token', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ question, tenant_id: tenant }),
+        body: JSON.stringify({ tenant }),
+      });
+      const { token } = await tok.json();
+      const res = await fetch('/api/query', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-ctx-token': token ?? '' },
+        body: JSON.stringify({ question }),
       });
       setAns(await res.json());
     } finally {

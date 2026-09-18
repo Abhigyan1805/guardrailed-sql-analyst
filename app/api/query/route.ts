@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { askQuestion } from '@/lib/agent';
 import { checkRate } from '@/lib/rate';
+import { resolveCtx, AuthError } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
+  let ctx;
+  try {
+    ctx = resolveCtx(req.headers);
+  } catch (e: any) {
+    const status = e instanceof AuthError ? e.status : 401;
+    return NextResponse.json({ decision: 'BLOCK', blockReason: `auth: ${e.message}`, caveats: [], confidence: 0 }, { status });
+  }
   const body = await req.json();
   const question = String(body.question ?? '').slice(0, 2000);
-  const tenant_id = String(body.tenant_id ?? 'tenant_a');
-  // Mock auth: tenant/user/region from headers with safe defaults
-  const ctx = {
-    tenant_id,
-    user_id: String(req.headers.get('x-mock-user') ?? '1'),
-    user_role: String(req.headers.get('x-mock-role') ?? 'sales_rep'),
-    user_region: String(req.headers.get('x-mock-region') ?? 'NA'),
-  };
   if (!question.trim()) {
     return NextResponse.json({ decision: 'BLOCK', blockReason: 'empty question', caveats: [], confidence: 0 }, { status: 400 });
   }

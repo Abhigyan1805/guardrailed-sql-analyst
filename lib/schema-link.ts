@@ -3,7 +3,7 @@
 export const SCHEMA_SLICE = `
 TABLES (use ONLY these views; never base tables):
 - analytics_orders(order_id, customer_id, status, ordered_at, region, sales_rep_id, tenant_id)
-- analytics_customers_masked(customer_id, display_name, email_masked[*** unless admin/finance], region, segment, created_at)
+- analytics_customers_masked(customer_id, display_name, region, segment, created_at) — no PII columns exist here
 - analytics_products_public(product_id, sku, name, category_id, category_name, list_price, is_active, stock_qty)
 - analytics_order_lines(order_id, product_id, sku, product_name, category_name, qty, unit_price, discount, line_revenue, status, ordered_at, region, tenant_id)
 - analytics_payments(payment_id, order_id, method, amount, paid_at, region, tenant_id, status)
