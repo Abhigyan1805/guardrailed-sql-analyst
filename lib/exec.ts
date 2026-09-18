@@ -1,11 +1,13 @@
 import { getDb, withTenant, type TenantCtx } from './db';
 import { validateSql } from './sql-guard';
 
-export const EXPLAIN_COST_CAP = 500_000;
-export const EXPLAIN_ROWS_CAP = 100_000;
-// Absolute costs ≥1e9 indicate planner penalties (e.g. PGlite/disabled
+export const PLAN_COST_CAP = 500_000;
+export const PLAN_ROWS_CAP = 100_000;
+// Absolute plan costs ≥1e9 indicate planner penalties (e.g. PGlite/disabled
 // seqscan adds exactly 1e10), not real expense — fall back to row-count.
-export const EXPLAIN_ABSURD_COST = 1_000_000_000;
+// Note: this gates plan risk, not actual execution cost. The statement_timeout
+// in lib/db.ts is the backstop for queries that run long despite a cheap plan.
+export const PLAN_ABSURD_COST = 1_000_000_000;
 
 export type Decision = 'ALLOW' | 'BLOCK' | 'CLARIFY';
 
@@ -47,11 +49,11 @@ export async function executeGuarded(proposedSql: string, ctx: TenantCtx, reques
     await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'explain', String(e?.message ?? e).slice(0, 300), null, Date.now() - t0, 0, null);
     return { decision: 'BLOCK', blockStage: 'explain', blockReason: 'EXPLAIN failed or timed out', latencyMs: Date.now() - t0 };
   }
-  if (planRows > EXPLAIN_ROWS_CAP) {
+  if (planRows > PLAN_ROWS_CAP) {
     await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'cost', `EXPLAIN plan rows ${planRows} > cap`, null, Date.now() - t0, 0, cost);
     return { decision: 'BLOCK', blockStage: 'cost', blockReason: `query touches too many rows (${planRows})`, explainCost: cost, latencyMs: Date.now() - t0 };
   }
-  if (cost > EXPLAIN_COST_CAP && cost < EXPLAIN_ABSURD_COST) {
+  if (cost > PLAN_COST_CAP && cost < PLAN_ABSURD_COST) {
     await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'cost', `EXPLAIN cost ${Math.round(cost)} > cap`, null, Date.now() - t0, 0, cost);
     return { decision: 'BLOCK', blockStage: 'cost', blockReason: `query too expensive (${Math.round(cost)})`, explainCost: cost, latencyMs: Date.now() - t0 };
   }

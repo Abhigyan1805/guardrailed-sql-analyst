@@ -44,4 +44,38 @@ describe('sql-guard', () => {
   it('rejects unparsable SQL', () => {
     expect(validateSql('SELECT FROM WHERE').ok).toBe(false);
   });
+
+  it('blocks UNION onto forbidden tables', () => {
+    expect(validateSql('SELECT order_id FROM analytics_orders UNION SELECT customer_id FROM customers').ok).toBe(false);
+  });
+
+  it('blocks writable CTEs', () => {
+    expect(validateSql('WITH d AS (DELETE FROM orders RETURNING *) SELECT * FROM d').ok).toBe(false);
+  });
+
+  it('blocks schema-qualified base tables', () => {
+    expect(validateSql('SELECT * FROM public.orders').ok).toBe(false);
+  });
+
+  it('blocks PII via table alias', () => {
+    expect(validateSql('SELECT c.email FROM analytics_customers_masked c').ok).toBe(false);
+  });
+
+  it('blocks unknown columns on allowed views', () => {
+    expect(validateSql('SELECT ssn FROM analytics_customers_masked').ok).toBe(false);
+  });
+
+  it('blocks PII in JOIN conditions', () => {
+    expect(validateSql('SELECT o.order_id FROM analytics_orders o JOIN analytics_customers_masked c ON c.email = o.region').ok).toBe(false);
+  });
+
+  it('caps OFFSET', () => {
+    expect(validateSql('SELECT order_id FROM analytics_orders LIMIT 10 OFFSET 99999').ok).toBe(false);
+    expect(validateSql('SELECT order_id FROM analytics_orders LIMIT 10 OFFSET 100').ok).toBe(true);
+  });
+
+  it('allows CTE outputs and window functions', () => {
+    expect(validateSql(`WITH r AS (SELECT customer_id, SUM(x) AS revenue FROM analytics_order_lines GROUP BY customer_id) SELECT c.display_name, r.revenue FROM r JOIN analytics_customers_masked c USING (customer_id) ORDER BY r.revenue DESC LIMIT 5`).ok).toBe(false); // x is unknown
+    expect(validateSql(`WITH r AS (SELECT o.customer_id, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l JOIN analytics_orders o USING (order_id) GROUP BY o.customer_id) SELECT c.display_name, r.revenue FROM r JOIN analytics_customers_masked c USING (customer_id) ORDER BY r.revenue DESC LIMIT 5`).ok).toBe(true);
+  });
 });

@@ -53,7 +53,7 @@ export interface CtxCarrier { ctx: TenantCtx; requestId: string; }
     genuinely vague questions never spend an LLM round-trip. */
 export function preScreen(question: string): { block: string } | { clarify: string[] } | null {
   const q = question.toLowerCase().trim();
-  if (/(delete|update |insert |drop |truncate|alter |grant |ignore previous|show .*email|full pii|pg_shadow|other regions|other tenants|dump |set \w+ to|stock_qty|all customer)/.test(q)) {
+  if (/(delete|update |insert |drop |truncate|alter |grant |ignore previous|show .*email|full pii|pg_shadow|other regions|other tenants|dump |set \w+ to|stock_qty|all customer|card number|card_number|stored card)/.test(q)) {
     if (/email|pii/.test(q)) return { block: 'PII / restricted-column request refused' };
     if (/cost|margin/.test(q) && /show|what/.test(q)) return { block: 'gross-margin needs restricted products.cost — refused (analyst role)' };
     return { block: 'write/privileged operation refused' };
@@ -72,7 +72,7 @@ export function offlineTemplate(question: string): {
   const q = question.toLowerCase().trim();
 
   // Unsafe intents → block before any SQL is built
-  if (/(delete|update |insert |drop |truncate|alter |grant |ignore previous|show .*email|full pii|pg_shadow|other regions|other tenants|dump |set \w+ to|stock_qty|all customer)/.test(q)) {
+  if (/(delete|update |insert |drop |truncate|alter |grant |ignore previous|show .*email|full pii|pg_shadow|other regions|other tenants|dump |set \w+ to|stock_qty|all customer|card number|card_number|stored card)/.test(q)) {
     if (/email|pii/.test(q)) return { block: 'PII / restricted-column request refused' };
     if (/cost|margin/.test(q) && /show|what/.test(q)) return { block: 'gross-margin needs restricted products.cost — refused (analyst role)' };
     return { block: 'write/privileged operation refused' };
@@ -86,7 +86,11 @@ export function offlineTemplate(question: string): {
 
   const lim = (q.match(/top\s+(\d+)/) ? parseInt(q.match(/top\s+(\d+)/)![1], 10) : 5);
 
-  if (/most expensive/.test(q) && /product/.test(q)) {
+  // Normalize number words so digit/word phrasings route identically.
+  const NUMW: Record<string, string> = { one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9', ten: '10' };
+  const qn = q.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten)\b/g, w => NUMW[w]);
+
+  if (/most expensive|priciest|highest.?priced|highest list price/.test(q) && /product/.test(q)) {
     return {
       sql: `SELECT product_id, sku, name, list_price FROM analytics_products_public WHERE is_active = true ORDER BY list_price DESC, product_id ASC LIMIT ${lim}`,
       chart: { type: 'table', x: 'name', y: 'list_price', title: 'Most expensive products' },
@@ -113,7 +117,7 @@ export function offlineTemplate(question: string): {
       confidence: 0.82, assumptions: [],
     };
   }
-  if (/top product per category|per category.*rank|top.*per category|excluding categories under/.test(q)) {
+  if (/top product per category|top product each category|per category.*rank|top.*per category|top.*each category|excluding categories under/.test(q)) {
     const fm = q.match(/\$([\d,]+)/) ?? q.match(/(\d[\d,]*)/);
     const floor = fm ? fm[1].replace(/,/g, '') : '500';
     return {
@@ -149,7 +153,7 @@ export function offlineTemplate(question: string): {
       confidence: 0.85, assumptions: [],
     };
   }
-  if (/top.*product/.test(q)) {
+  if (/top.*product|products?.*most revenue|most revenue.*products?|brought in.*revenue|highest.*revenue.*products?/.test(q)) {
     return {
       sql: `SELECT product_id, sku, product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id, sku, product_name ORDER BY revenue DESC, product_id ASC LIMIT ${lim}`,
       chart: { type: 'bar', x: 'product_name', y: 'revenue', title: 'Top products by revenue' },
@@ -266,7 +270,7 @@ export function offlineTemplate(question: string): {
       confidence: 0.82, assumptions: [],
     };
   }
-  if (/low stock|stock (below|under|less)|running low/.test(q)) {
+  if (/low stock|stock (below|under|less)|running low|fewer than|low inventory/.test(q)) {
     return {
       sql: `SELECT sku, name, stock_qty FROM analytics_products_public WHERE stock_qty < 10 ORDER BY stock_qty ASC, product_id ASC LIMIT 20`,
       chart: { type: 'table', x: 'name', y: 'stock_qty', title: 'Low-stock products' },
@@ -306,7 +310,7 @@ export function offlineTemplate(question: string): {
       confidence: 0.78, assumptions: [],
     };
   }
-  if (/more than \d+.*distinct categor|distinct categor.*categor|contain.*lines.*categor/.test(q)) {
+  if (/more than \d+.*distinct categor|distinct categor|multiple categor|(more than|over) \d+ .*categor|contain.*lines.*categor/.test(qn)) {
     return {
       sql: `SELECT order_id, COUNT(DISTINCT category_name) AS categories, SUM(line_revenue) AS revenue FROM analytics_order_lines GROUP BY order_id HAVING COUNT(DISTINCT category_name) > 2 ORDER BY categories DESC, order_id ASC LIMIT 20`,
       chart: { type: 'table', x: 'order_id', y: 'categories', title: 'Multi-category orders' },
@@ -314,11 +318,11 @@ export function offlineTemplate(question: string): {
       confidence: 0.85, assumptions: [],
     };
   }
-  if (/more than \d+ orders/.test(q)) {
-    const n = q.match(/more than (\d+) orders/);
+  if (/more than \d+ orders/.test(qn)) {
+    const n = qn.match(/more than (\d+) orders/);
     const orders = n ? n[1] : '3';
-    const m = q.match(/above \$?([\d,]+)/);
-    const minRev = m ? m[1].replace(/,/g, '') : '1000';
+    const m = q.match(/(above|over) \$?([\d,]+)/);
+    const minRev = m ? m[2].replace(/,/g, '') : '1000';
     return {
       sql: `WITH cust AS (SELECT o.customer_id, COUNT(DISTINCT l.order_id) AS orders, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l JOIN analytics_orders o USING (order_id) WHERE l.status IN ('paid','shipped') GROUP BY o.customer_id) SELECT c.display_name, cust.orders, cust.revenue FROM cust JOIN analytics_customers_masked c USING (customer_id) WHERE cust.orders > ${orders} AND cust.revenue > ${minRev} ORDER BY cust.revenue DESC, c.customer_id ASC LIMIT 20`,
       chart: { type: 'table', x: 'display_name', y: 'revenue', title: 'Loyal high-value customers' },
@@ -326,7 +330,7 @@ export function offlineTemplate(question: string): {
       confidence: 0.8, assumptions: [],
     };
   }
-  if (/repeat.*share|share.*customer|more than one.*order/.test(q)) {
+  if (/repeat.*share|share.*customer|more than one.*order|more than 1.*order/.test(qn)) {
     return {
       sql: `WITH c AS (SELECT o.customer_id, COUNT(DISTINCT l.order_id) AS orders FROM analytics_order_lines l JOIN analytics_orders o USING (order_id) WHERE l.status IN ('paid','shipped') GROUP BY o.customer_id) SELECT SUM(CASE WHEN orders > 1 THEN 1 ELSE 0 END)::float / COUNT(*) AS repeat_share, COUNT(*) AS customers FROM c`,
       chart: { type: 'table', x: 'repeat_share', y: 'customers', title: 'Repeat-customer share' },

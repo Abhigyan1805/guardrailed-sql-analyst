@@ -46,7 +46,8 @@ export async function withTenant<T>(ctx: TenantCtx, fn: (db: PGlite) => Promise<
       `SET LOCAL app.user_id = ${escLit(ctx.user_id)}; ` +
       `SET LOCAL app.user_role = ${escLit(ctx.user_role)}; ` +
       `SET LOCAL app.user_region = ${escLit(ctx.user_region)}; ` +
-      `SET LOCAL statement_timeout = '2000';`
+      `SET LOCAL statement_timeout = '2000'; ` +
+      `SET LOCAL idle_in_transaction_session_timeout = '5000';`
     );
     const out = await fn(db);
     await db.exec('COMMIT;');

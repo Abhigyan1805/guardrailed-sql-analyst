@@ -14,6 +14,9 @@ JOIN GRAIN RULES (avoid fanout):
 - Order revenue = SUM(line_revenue) grouped by order FIRST in a CTE, then join.
 - status filter for revenue questions: status IN ('paid','shipped') unless asked otherwise.
 - Dates: ordered_at (timestamptz, UTC). Use DATE_TRUNC('month', ordered_at).
+- Status convention: revenue questions use status IN ('paid','shipped') only.
+  Shape/count questions (status breakdowns, discount averages, multi-category
+  orders) intentionally use all statuses.
 - Top-N queries MUST add deterministic tie-breaker (e.g., ORDER BY revenue DESC, product_id ASC).
 - Time-series MUST generate full month spine (generate_series) + LEFT JOIN so zero months appear.
 
