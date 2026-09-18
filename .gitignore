@@ -1,0 +1,6 @@
+node_modules/
+.next/
+.pglite-data/
+eval/results.json
+*.log
+.env
