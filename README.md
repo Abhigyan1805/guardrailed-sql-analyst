@@ -6,16 +6,51 @@ system asks first instead of guessing.
 
 ## Latest eval
 
-40/40 execution accuracy (easy 10, medium 15, hard 10, adversarial 5 refused),
-0 guardrail violations, p95 latency 57ms. Gates live in `eval/runner.ts --strict`
-(needs >=34/40, 0 violations, p95 <= 2400ms) and run in CI.
+| Engine | Accuracy | p95 | Notes |
+|---|---|---|---|
+| Deterministic templates | 40/40 | ~80ms | covers the evaluated question shapes; default (`LLM_PROVIDER=offline`) |
+| Gemini 2.5 Flash | 23/40 | ~16s | alias drift on easy Qs, abstention on hard; dropped (see below) |
 
-Honest context: the deterministic template engine covers the evaluated question
-shapes. A cloud-LLM path was tried (Gemini 2.5 Flash: 23/40, p95 ~16s) and lost
-to templates on every axis that matters here, so generation defaults to
-`LLM_PROVIDER=offline`. The model call is still wired in (`callLlm`) for
-questions outside template coverage — set `LLM_PROVIDER=openai` or `gemini`
-with a key and misses fall through to it instead of the clarify path.
+Gates live in `eval/runner.ts --strict` (>=34/40, 0 violations, p95 <= 2400ms
+overall and on ALLOW decisions) and run in CI.
+
+Honest context: the 40/40 measures the deterministic path against this
+benchmark, not general LLM Text-to-SQL ability. The model call stays wired in
+(`callLlm`) for questions outside template coverage — set
+`LLM_PROVIDER=openai` or `gemini` with a key and misses fall through to it
+instead of the clarify path.
+
+### Why templates beat the LLM here
+
+| | Accuracy | p95 latency | Cost |
+|---|---|---|---|
+| Offline templates | 40/40 | ~80ms | $0, no quota |
+| Gemini 2.5 Flash | 23/40 | ~16s | free-tier RPM-bound |
+
+The model lost on all three axes that matter for this system: it drifted on
+column aliases the harness scores, abstained on hard questions the templates
+answer exactly, and its round-trips (plus quota throttling) blew the latency
+gate by 7x. Since the guardrails — not the generator — are the point of this
+project, the simpler mechanism won. The provider interface stays so a stronger
+model can be slotted back in later; a written headroom analysis puts a
+frontier paid model around 37/40 on this suite.
+
+## Attack matrix
+
+| Attack | Result | Enforcing layer |
+|---|---|---|
+| `DELETE` / `UPDATE` / `DROP` | BLOCK | intent screen + AST statement gate |
+| Writable CTE (`WITH x AS (DELETE...)`) | BLOCK | CTE body AST check |
+| Base-table access (`customers`, `orders`, ...) | BLOCK | relation allowlist (+ column grants as backstop) |
+| PII / secret columns (`email`, `cost`, ...) | BLOCK | column blocklist; PII ungranted at DB level |
+| Cross-tenant query | filtered to own rows | RLS tenant policies |
+| Forged role (`x-mock-role: admin`) | rejected | server-resolved auth context (mock identity is local-dev-only) |
+| `pg_sleep()` / `dblink` / `pg_*` | BLOCK | function blocklist |
+| Huge LIMIT | rewritten to cap | LIMIT injection (default 200, hard 1000) |
+| Expensive plan | BLOCK | EXPLAIN row-count + cost gate |
+| SQL comments / stacked statements | BLOCK | parser preprocessing |
+| Vague question (`show sales`) | CLARIFY, nothing runs | confidence gate |
+| Rate abuse | 429 + audit | token-bucket limiter |
 
 ## Run it
 
@@ -68,7 +103,8 @@ rate on hostile questions, per-decision latency, and token usage.
 
 ```
 db/          001_schema · 002_views_rls · 003_roles_audit
-lib/         db · sql-guard · exec · rate · agent (LangGraph) · schema-link
+docs/        THREAT_MODEL.md
+lib/         db · sql-guard · exec · rate · auth · agent (LangGraph) · schema-link
 app/         page.tsx · api/query/route.ts
 components/  Chart.tsx (Recharts)
 eval/        questions.json · runner.ts · REPORT.md
