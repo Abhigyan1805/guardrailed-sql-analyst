@@ -16,7 +16,7 @@ overall and on ALLOW decisions) and run in CI.
 
 Honest context: the 40/40 measures the deterministic path against this
 benchmark, not general LLM Text-to-SQL ability. The model call stays wired in
-(`callLlm`) for questions outside template coverage — set
+(`callLlm`) for questions outside template coverage. Set
 `LLM_PROVIDER=openai` or `gemini` with a key and misses fall through to it
 instead of the clarify path.
 
@@ -30,7 +30,7 @@ instead of the clarify path.
 The model lost on all three axes that matter for this system: it drifted on
 column aliases the harness scores, abstained on hard questions the templates
 answer exactly, and its round-trips (plus quota throttling) blew the latency
-gate by 7x. Since the guardrails — not the generator — are the point of this
+gate by 7x. Since the guardrails (not the generator) are the point of this
 project, the simpler mechanism won. The provider interface stays so a stronger
 model can be slotted back in later; a written headroom analysis puts a
 frontier paid model around 37/40 on this suite.
@@ -92,11 +92,11 @@ rate on hostile questions, per-decision latency, and token usage.
 
 ## Five-minute demo
 
-1. `Top 5 products by revenue` — bar chart, caveats, collapsible SQL, audit row.
-2. `Delete all cancelled orders from 2023` and `show all customer emails` — red
-   BLOCK banners, nothing executed, both in the audit log.
-3. `show sales` — no SQL runs; answer the follow-up chips and it succeeds.
-4. Same question as `tenant_a` vs `tenant_b` — different numbers, same query shape.
+1. `Top 5 products by revenue`: bar chart, caveats, collapsible SQL, audit row.
+2. `Delete all cancelled orders from 2023` and `show all customer emails`:
+   red BLOCK banners, nothing executed, both in the audit log.
+3. `show sales`: no SQL runs; answer the follow-up chips and it succeeds.
+4. Same question as `tenant_a` vs `tenant_b`: different numbers, same query shape.
 5. Open `eval/REPORT.md` for the full scorecard.
 
 ## Files
