@@ -59,6 +59,8 @@ export async function runGold(db: QueryHandle, sql: string, tenant: string): Pro
 }
 
 export async function openPrivileged(): Promise<PGlite> {
+  // PGlite creates DATA_DIR itself, but not its parent; CI runners have no ~/.cache.
+  mkdirSync(DATA_DIR, { recursive: true });
   return new PGlite(DATA_DIR);
 }
 

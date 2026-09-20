@@ -1,5 +1,5 @@
 import { PGlite } from '@electric-sql/pglite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
@@ -29,6 +29,8 @@ const LAST = ['Sharma','Patel','Garcia','Kim','Nguyen','Mueller','Rossi','Tanaka
 
 async function main() {
   console.log('PGlite dir:', DATA_DIR);
+  // PGlite creates DATA_DIR itself, but not its parent; CI runners have no ~/.cache.
+  mkdirSync(DATA_DIR, { recursive: true });
   const db = new PGlite(DATA_DIR);
   await db.exec(readFileSync(join(ROOT, 'db/001_schema.sql'), 'utf8'));
   await db.exec('TRUNCATE reviews, payments, order_items, orders, products, customers, categories RESTART IDENTITY CASCADE;');
