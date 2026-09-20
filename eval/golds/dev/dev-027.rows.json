@@ -1,0 +1,602 @@
+[
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 82 Ultra",
+    "revenue": "7716.54000",
+    "rnk": 1
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 12 Lite",
+    "revenue": "6709.08000",
+    "rnk": 2
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 52 Pro",
+    "revenue": "5153.88000",
+    "rnk": 3
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 62 Pro",
+    "revenue": "5131.41400",
+    "rnk": 4
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 72 Max",
+    "revenue": "3751.65000",
+    "rnk": 5
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 2 Ultra",
+    "revenue": "3492.69700",
+    "rnk": 6
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 42 Max",
+    "revenue": "3262.57200",
+    "rnk": 7
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 32 Lite",
+    "revenue": "2911.68000",
+    "rnk": 8
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 92 Lite",
+    "revenue": "1181.20000",
+    "rnk": 9
+  },
+  {
+    "category_name": "Apparel",
+    "product_name": "Product 22 Max",
+    "revenue": "532.51000",
+    "rnk": 10
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 79 Lite",
+    "revenue": "14633.47200",
+    "rnk": 1
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 9 Max",
+    "revenue": "11024.29200",
+    "rnk": 2
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 69 Pro",
+    "revenue": "8528.83200",
+    "rnk": 3
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 29 Lite",
+    "revenue": "5883.15000",
+    "rnk": 4
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 19 Ultra",
+    "revenue": "4294.60200",
+    "rnk": 5
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 59 Pro",
+    "revenue": "3769.60500",
+    "rnk": 6
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 99 Pro",
+    "revenue": "1965.05400",
+    "rnk": 7
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 39 Lite",
+    "revenue": "1592.56800",
+    "rnk": 8
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 49 Ultra",
+    "revenue": "831.39000",
+    "rnk": 9
+  },
+  {
+    "category_name": "Automotive",
+    "product_name": "Product 89 Lite",
+    "revenue": "551.31000",
+    "rnk": 10
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 58 Pro",
+    "revenue": "11698.60000",
+    "rnk": 1
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 68 Pro",
+    "revenue": "10520.03700",
+    "rnk": 2
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 18 Lite",
+    "revenue": "6229.25100",
+    "rnk": 3
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Cafe Grinder Pro",
+    "revenue": "6071.82400",
+    "rnk": 4
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 48 Lite",
+    "revenue": "5613.14000",
+    "rnk": 5
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 78 Ultra",
+    "revenue": "4542.95200",
+    "rnk": 6
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 28 Max",
+    "revenue": "4190.40000",
+    "rnk": 7
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 98 Max",
+    "revenue": "2882.64200",
+    "rnk": 8
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 88 Lite",
+    "revenue": "2488.43400",
+    "rnk": 9
+  },
+  {
+    "category_name": "Beauty",
+    "product_name": "Product 38 Max",
+    "revenue": "874.31000",
+    "rnk": 10
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 4 Pro",
+    "revenue": "13196.09600",
+    "rnk": 1
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 14 Ultra",
+    "revenue": "10965.52000",
+    "rnk": 2
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 94 Lite",
+    "revenue": "10188.05700",
+    "rnk": 3
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 64 Max",
+    "revenue": "7768.72000",
+    "rnk": 4
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 74 Max",
+    "revenue": "5120.01000",
+    "rnk": 5
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 54 Lite",
+    "revenue": "3523.58400",
+    "rnk": 6
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 84 Ultra",
+    "revenue": "1896.21700",
+    "rnk": 7
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 44 Pro",
+    "revenue": "1795.36500",
+    "rnk": 8
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 34 Max",
+    "revenue": "1749.04400",
+    "rnk": 9
+  },
+  {
+    "category_name": "Books",
+    "product_name": "Product 24 Ultra",
+    "revenue": "654.16000",
+    "rnk": 10
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 91 Max",
+    "revenue": "13467.30000",
+    "rnk": 1
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 21 Ultra",
+    "revenue": "8347.52800",
+    "rnk": 2
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 71 Lite",
+    "revenue": "6906.84400",
+    "rnk": 3
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 81 Max",
+    "revenue": "6289.40400",
+    "rnk": 4
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 1 Max",
+    "revenue": "6142.60800",
+    "rnk": 5
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 31 Pro",
+    "revenue": "3960.45000",
+    "rnk": 6
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 11 Ultra",
+    "revenue": "3760.48800",
+    "rnk": 7
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 51 Ultra",
+    "revenue": "3028.91600",
+    "rnk": 8
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 41 Ultra",
+    "revenue": "3008.52000",
+    "rnk": 9
+  },
+  {
+    "category_name": "Electronics",
+    "product_name": "Product 61 Pro",
+    "revenue": "1858.19400",
+    "rnk": 10
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 36 Ultra",
+    "revenue": "12507.94400",
+    "rnk": 1
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 46 Max",
+    "revenue": "11800.08000",
+    "rnk": 2
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 6 Lite",
+    "revenue": "9769.62000",
+    "rnk": 3
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 26 Ultra",
+    "revenue": "7496.00000",
+    "rnk": 4
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 96 Pro",
+    "revenue": "6665.49000",
+    "rnk": 5
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 16 Pro",
+    "revenue": "6523.34600",
+    "rnk": 6
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 86 Max",
+    "revenue": "2818.55200",
+    "rnk": 7
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 66 Max",
+    "revenue": "2470.23600",
+    "rnk": 8
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 56 Ultra",
+    "revenue": "1656.90900",
+    "rnk": 9
+  },
+  {
+    "category_name": "Grocery",
+    "product_name": "Product 76 Max",
+    "revenue": "343.36200",
+    "rnk": 10
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 50 Lite",
+    "revenue": "10095.96000",
+    "rnk": 1
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 80 Max",
+    "revenue": "8685.91900",
+    "rnk": 2
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 90 Max",
+    "revenue": "6610.04800",
+    "rnk": 3
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 70 Ultra",
+    "revenue": "4398.40000",
+    "rnk": 4
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 100 Pro",
+    "revenue": "4178.42000",
+    "rnk": 5
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 10 Lite",
+    "revenue": "3869.11800",
+    "rnk": 6
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 20 Max",
+    "revenue": "2874.96000",
+    "rnk": 7
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 60 Pro",
+    "revenue": "1443.08000",
+    "rnk": 8
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 40 Lite",
+    "revenue": "1023.75000",
+    "rnk": 9
+  },
+  {
+    "category_name": "Health",
+    "product_name": "Product 30 Pro",
+    "revenue": "662.85600",
+    "rnk": 10
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 53 Max",
+    "revenue": "13677.28200",
+    "rnk": 1
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 73 Pro",
+    "revenue": "8576.99500",
+    "rnk": 2
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 3 Ultra",
+    "revenue": "7727.68000",
+    "rnk": 3
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 43 Pro",
+    "revenue": "6987.76000",
+    "rnk": 4
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 93 Pro",
+    "revenue": "5191.09500",
+    "rnk": 5
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 33 Ultra",
+    "revenue": "4427.82000",
+    "rnk": 6
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 83 Ultra",
+    "revenue": "3807.02400",
+    "rnk": 7
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 23 Max",
+    "revenue": "3077.58400",
+    "rnk": 8
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 63 Lite",
+    "revenue": "1809.81000",
+    "rnk": 9
+  },
+  {
+    "category_name": "Home",
+    "product_name": "Product 13 Lite",
+    "revenue": "440.47000",
+    "rnk": 10
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 57 Ultra",
+    "revenue": "12718.97200",
+    "rnk": 1
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 17 Max",
+    "revenue": "8208.12400",
+    "rnk": 2
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 7 Lite",
+    "revenue": "6205.27000",
+    "rnk": 3
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 27 Lite",
+    "revenue": "6043.29600",
+    "rnk": 4
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 87 Lite",
+    "revenue": "5839.47000",
+    "rnk": 5
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 67 Pro",
+    "revenue": "5562.90000",
+    "rnk": 6
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 77 Max",
+    "revenue": "3578.33700",
+    "rnk": 7
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 97 Lite",
+    "revenue": "3438.15900",
+    "rnk": 8
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 47 Pro",
+    "revenue": "2682.57000",
+    "rnk": 9
+  },
+  {
+    "category_name": "Sports",
+    "product_name": "Product 37 Pro",
+    "revenue": "2072.88000",
+    "rnk": 10
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 35 Ultra",
+    "revenue": "9421.69800",
+    "rnk": 1
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 15 Pro",
+    "revenue": "8878.66400",
+    "rnk": 2
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 55 Lite",
+    "revenue": "6172.99900",
+    "rnk": 3
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 85 Max",
+    "revenue": "2573.46000",
+    "rnk": 4
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 5 Ultra",
+    "revenue": "1997.30700",
+    "rnk": 5
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 45 Ultra",
+    "revenue": "1702.80000",
+    "rnk": 6
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 75 Lite",
+    "revenue": "1081.94200",
+    "rnk": 7
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 65 Lite",
+    "revenue": "946.60600",
+    "rnk": 8
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 25 Lite",
+    "revenue": "887.33000",
+    "rnk": 9
+  },
+  {
+    "category_name": "Toys",
+    "product_name": "Product 95 Ultra",
+    "revenue": "607.05000",
+    "rnk": 10
+  }
+]

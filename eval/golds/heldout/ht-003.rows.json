@@ -1,0 +1,12 @@
+{
+  "tenant_a": [
+    {
+      "orders": 96
+    }
+  ],
+  "tenant_b": [
+    {
+      "orders": 43
+    }
+  ]
+}

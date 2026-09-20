@@ -1,0 +1,52 @@
+[
+  {
+    "display_name": "CUSTOMER-226",
+    "segment": "consumer",
+    "created_at": "2023-12-28T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-267",
+    "segment": "corp",
+    "created_at": "2023-12-27T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-88",
+    "segment": "corp",
+    "created_at": "2023-12-25T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-252",
+    "segment": "vip",
+    "created_at": "2023-12-24T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-44",
+    "segment": "vip",
+    "created_at": "2023-12-22T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-152",
+    "segment": "vip",
+    "created_at": "2023-12-21T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-246",
+    "segment": "consumer",
+    "created_at": "2023-12-21T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-278",
+    "segment": "vip",
+    "created_at": "2023-12-17T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-11",
+    "segment": "consumer",
+    "created_at": "2023-12-16T00:00:00.000Z"
+  },
+  {
+    "display_name": "CUSTOMER-166",
+    "segment": "consumer",
+    "created_at": "2023-12-10T00:00:00.000Z"
+  }
+]

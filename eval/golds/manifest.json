@@ -1,0 +1,1143 @@
+{
+  "dev-001": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-002": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-003": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-004": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-005": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-006": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-007": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-008": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-009": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-010": {
+    "set": "dev",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-011": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-012": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-013": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-014": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-015": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-016": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-017": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-018": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-019": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-020": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-021": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-022": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-023": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-024": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-025": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-026": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-027": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-028": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-029": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-030": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-031": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-032": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-033": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-034": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-035": {
+    "set": "dev",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "dev-036": {
+    "set": "dev",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "dev-037": {
+    "set": "dev",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "dev-038": {
+    "set": "dev",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "dev-039": {
+    "set": "dev",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "dev-040": {
+    "set": "dev",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "he-001": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-002": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-003": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-004": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-005": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-006": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-007": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-008": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-009": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-010": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-011": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-012": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-013": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-014": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-015": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-016": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-017": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "he-018": {
+    "set": "heldout",
+    "bucket": "easy",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-001": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-002": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-003": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-004": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-005": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-006": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-007": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-008": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-009": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-010": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-011": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-012": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-013": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-014": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": true,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-015": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-016": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-017": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-018": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-019": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "hh-020": {
+    "set": "heldout",
+    "bucket": "hard",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "ha-001": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ha-002": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ha-003": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ha-004": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ha-005": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ha-006": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ha-007": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ha-008": {
+    "set": "heldout",
+    "bucket": "ambiguous",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-001": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-002": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-003": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-004": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-005": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-006": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-007": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-008": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-009": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "hx-010": {
+    "set": "heldout",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ht-001": {
+    "set": "heldout",
+    "bucket": "tenant",
+    "allow_empty": false,
+    "tenant_pair": true,
+    "has_gold": true
+  },
+  "ht-002": {
+    "set": "heldout",
+    "bucket": "tenant",
+    "allow_empty": false,
+    "tenant_pair": true,
+    "has_gold": true
+  },
+  "ht-003": {
+    "set": "heldout",
+    "bucket": "tenant",
+    "allow_empty": false,
+    "tenant_pair": true,
+    "has_gold": true
+  },
+  "ht-004": {
+    "set": "heldout",
+    "bucket": "tenant",
+    "allow_empty": false,
+    "tenant_pair": true,
+    "has_gold": true
+  },
+  "ax-001": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-002": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-003": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-004": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-005": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-006": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-007": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-008": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-009": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-010": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-011": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-012": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-013": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-014": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-015": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-016": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-017": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-018": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-019": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-020": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-021": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-022": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-023": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-024": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-025": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-026": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-027": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-028": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-029": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-030": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-031": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-032": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-033": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-034": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-035": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-036": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-037": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-038": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-039": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-040": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-041": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-042": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-043": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-044": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-045": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-046": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-047": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-048": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-049": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-050": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "ax-051": {
+    "set": "attacks",
+    "bucket": "hostile",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": false
+  },
+  "pa-001": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-002": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-003": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-004": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-005": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-006": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-007": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-008": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-009": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-010": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-011": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  },
+  "pa-012": {
+    "set": "paraphrase",
+    "bucket": "paraphrase",
+    "allow_empty": false,
+    "tenant_pair": false,
+    "has_gold": true
+  }
+}

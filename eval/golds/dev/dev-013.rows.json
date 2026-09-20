@@ -1,0 +1,57 @@
+[
+  {
+    "display_name": "CUSTOMER-129",
+    "orders": 5,
+    "revenue": "8015.60400"
+  },
+  {
+    "display_name": "CUSTOMER-64",
+    "orders": 5,
+    "revenue": "7151.94600"
+  },
+  {
+    "display_name": "CUSTOMER-168",
+    "orders": 4,
+    "revenue": "7077.43200"
+  },
+  {
+    "display_name": "CUSTOMER-266",
+    "orders": 4,
+    "revenue": "6954.69000"
+  },
+  {
+    "display_name": "CUSTOMER-113",
+    "orders": 4,
+    "revenue": "6658.62400"
+  },
+  {
+    "display_name": "CUSTOMER-143",
+    "orders": 4,
+    "revenue": "6578.92200"
+  },
+  {
+    "display_name": "CUSTOMER-25",
+    "orders": 5,
+    "revenue": "6418.89400"
+  },
+  {
+    "display_name": "CUSTOMER-29",
+    "orders": 4,
+    "revenue": "6047.66000"
+  },
+  {
+    "display_name": "CUSTOMER-138",
+    "orders": 4,
+    "revenue": "5395.50800"
+  },
+  {
+    "display_name": "CUSTOMER-198",
+    "orders": 4,
+    "revenue": "4643.38500"
+  },
+  {
+    "display_name": "CUSTOMER-225",
+    "orders": 4,
+    "revenue": "3266.76900"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "region": "APAC",
+    "avg_order_value": "1488.2315849056603774",
+    "refunded_share": 0.13978494623655913,
+    "orders": 93
+  },
+  {
+    "region": "EU",
+    "avg_order_value": "1473.0251666666666667",
+    "refunded_share": 0.1232876712328767,
+    "orders": 146
+  },
+  {
+    "region": "NA",
+    "avg_order_value": "1524.3870476190476190",
+    "refunded_share": 0.09904153354632587,
+    "orders": 313
+  }
+]

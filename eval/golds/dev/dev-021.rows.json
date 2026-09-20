@@ -1,0 +1,14 @@
+[
+  {
+    "segment": "consumer",
+    "customers": 177
+  },
+  {
+    "segment": "vip",
+    "customers": 63
+  },
+  {
+    "segment": "corp",
+    "customers": 60
+  }
+]

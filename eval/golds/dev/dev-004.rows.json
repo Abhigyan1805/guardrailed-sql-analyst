@@ -1,0 +1,12 @@
+[
+  {
+    "sku": "SKU-042",
+    "name": "Product 42 Max",
+    "stock_qty": 0
+  },
+  {
+    "sku": "SKU-018",
+    "name": "Product 18 Lite",
+    "stock_qty": 7
+  }
+]

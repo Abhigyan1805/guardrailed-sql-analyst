@@ -1,0 +1,32 @@
+[
+  {
+    "product_id": 79,
+    "sku": "SKU-079",
+    "product_name": "Product 79 Lite",
+    "revenue": "14633.47200"
+  },
+  {
+    "product_id": 53,
+    "sku": "SKU-053",
+    "product_name": "Product 53 Max",
+    "revenue": "13677.28200"
+  },
+  {
+    "product_id": 91,
+    "sku": "SKU-091",
+    "product_name": "Product 91 Max",
+    "revenue": "13467.30000"
+  },
+  {
+    "product_id": 4,
+    "sku": "SKU-004",
+    "product_name": "Product 4 Pro",
+    "revenue": "13196.09600"
+  },
+  {
+    "product_id": 57,
+    "sku": "SKU-057",
+    "product_name": "Product 57 Ultra",
+    "revenue": "12718.97200"
+  }
+]

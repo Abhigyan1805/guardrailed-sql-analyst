@@ -1,0 +1,17 @@
+[
+  {
+    "region": "APAC",
+    "product_name": "Product 56 Ultra",
+    "units": 10
+  },
+  {
+    "region": "EU",
+    "product_name": "Product 100 Pro",
+    "units": 24
+  },
+  {
+    "region": "NA",
+    "product_name": "Product 53 Max",
+    "units": 33
+  }
+]

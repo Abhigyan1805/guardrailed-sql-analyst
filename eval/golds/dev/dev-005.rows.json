@@ -1,0 +1,17 @@
+[
+  {
+    "method": "card",
+    "payments": 249,
+    "total": "355934.77"
+  },
+  {
+    "method": "paypal",
+    "payments": 135,
+    "total": "192582.37"
+  },
+  {
+    "method": "wire",
+    "payments": 108,
+    "total": "178858.10"
+  }
+]

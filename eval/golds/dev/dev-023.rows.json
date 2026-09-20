@@ -1,0 +1,20 @@
+[
+  {
+    "product_id": 46,
+    "sku": "SKU-046",
+    "name": "Product 46 Max",
+    "list_price": "491.67"
+  },
+  {
+    "product_id": 57,
+    "sku": "SKU-057",
+    "name": "Product 57 Ultra",
+    "list_price": "491.08"
+  },
+  {
+    "product_id": 14,
+    "sku": "SKU-014",
+    "name": "Product 14 Ultra",
+    "list_price": "485.20"
+  }
+]
