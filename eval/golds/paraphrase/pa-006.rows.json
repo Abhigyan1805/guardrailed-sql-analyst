@@ -1,0 +1,62 @@
+[
+  {
+    "product_id": 100,
+    "sku": "SKU-100",
+    "product_name": "Product 100 Pro",
+    "units": 41
+  },
+  {
+    "product_id": 36,
+    "sku": "SKU-036",
+    "product_name": "Product 36 Ultra",
+    "units": 39
+  },
+  {
+    "product_id": 79,
+    "sku": "SKU-079",
+    "product_name": "Product 79 Lite",
+    "units": 39
+  },
+  {
+    "product_id": 23,
+    "sku": "SKU-023",
+    "product_name": "Product 23 Max",
+    "units": 38
+  },
+  {
+    "product_id": 67,
+    "sku": "SKU-067",
+    "product_name": "Product 67 Pro",
+    "units": 35
+  },
+  {
+    "product_id": 56,
+    "sku": "SKU-056",
+    "product_name": "Product 56 Ultra",
+    "units": 34
+  },
+  {
+    "product_id": 4,
+    "sku": "SKU-004",
+    "product_name": "Product 4 Pro",
+    "units": 33
+  },
+  {
+    "product_id": 15,
+    "sku": "SKU-015",
+    "product_name": "Product 15 Pro",
+    "units": 33
+  },
+  {
+    "product_id": 21,
+    "sku": "SKU-021",
+    "product_name": "Product 21 Ultra",
+    "units": 33
+  },
+  {
+    "product_id": 53,
+    "sku": "SKU-053",
+    "product_name": "Product 53 Max",
+    "units": 33
+  }
+]

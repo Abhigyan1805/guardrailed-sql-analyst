@@ -1,0 +1,102 @@
+[
+  {
+    "order_id": 20,
+    "categories": 3,
+    "revenue": "2004.32000"
+  },
+  {
+    "order_id": 29,
+    "categories": 3,
+    "revenue": "2256.20900"
+  },
+  {
+    "order_id": 41,
+    "categories": 3,
+    "revenue": "2252.56600"
+  },
+  {
+    "order_id": 43,
+    "categories": 3,
+    "revenue": "2179.25200"
+  },
+  {
+    "order_id": 45,
+    "categories": 3,
+    "revenue": "2620.30000"
+  },
+  {
+    "order_id": 53,
+    "categories": 3,
+    "revenue": "3938.49000"
+  },
+  {
+    "order_id": 63,
+    "categories": 3,
+    "revenue": "5057.69000"
+  },
+  {
+    "order_id": 75,
+    "categories": 3,
+    "revenue": "1875.97000"
+  },
+  {
+    "order_id": 80,
+    "categories": 3,
+    "revenue": "947.77700"
+  },
+  {
+    "order_id": 81,
+    "categories": 3,
+    "revenue": "2560.25600"
+  },
+  {
+    "order_id": 84,
+    "categories": 3,
+    "revenue": "640.34000"
+  },
+  {
+    "order_id": 88,
+    "categories": 3,
+    "revenue": "1640.07000"
+  },
+  {
+    "order_id": 89,
+    "categories": 3,
+    "revenue": "2964.32000"
+  },
+  {
+    "order_id": 101,
+    "categories": 3,
+    "revenue": "956.14000"
+  },
+  {
+    "order_id": 106,
+    "categories": 3,
+    "revenue": "2286.45500"
+  },
+  {
+    "order_id": 109,
+    "categories": 3,
+    "revenue": "3572.27000"
+  },
+  {
+    "order_id": 111,
+    "categories": 3,
+    "revenue": "2347.43800"
+  },
+  {
+    "order_id": 113,
+    "categories": 3,
+    "revenue": "991.27000"
+  },
+  {
+    "order_id": 114,
+    "categories": 3,
+    "revenue": "1264.36400"
+  },
+  {
+    "order_id": 116,
+    "categories": 3,
+    "revenue": "1035.50200"
+  }
+]

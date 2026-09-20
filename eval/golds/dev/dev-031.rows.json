@@ -1,0 +1,52 @@
+[
+  {
+    "category_name": "Grocery",
+    "revenue": "62051.53900",
+    "share": "0.12074785329506307043"
+  },
+  {
+    "category_name": "Books",
+    "revenue": "56856.77300",
+    "share": "0.11063921049620869220"
+  },
+  {
+    "category_name": "Electronics",
+    "revenue": "56770.25200",
+    "share": "0.11047084682331184186"
+  },
+  {
+    "category_name": "Sports",
+    "revenue": "56349.97800",
+    "share": "0.10965302370218459090"
+  },
+  {
+    "category_name": "Home",
+    "revenue": "55723.52000",
+    "share": "0.10843398127554117403"
+  },
+  {
+    "category_name": "Beauty",
+    "revenue": "55111.59000",
+    "share": "0.10724320929699527616"
+  },
+  {
+    "category_name": "Automotive",
+    "revenue": "53074.27500",
+    "share": "0.10327874013635396766"
+  },
+  {
+    "category_name": "Health",
+    "revenue": "43842.51100",
+    "share": "0.08531438819454887188"
+  },
+  {
+    "category_name": "Apparel",
+    "revenue": "39843.22300",
+    "share": "0.07753206001234687691"
+  },
+  {
+    "category_name": "Toys",
+    "revenue": "34269.85600",
+    "share": "0.06668668676744563796"
+  }
+]

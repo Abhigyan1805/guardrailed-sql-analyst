@@ -1,0 +1,38 @@
+[
+  {
+    "category_name": "Home",
+    "avg_order_value": "1846.0403521126760563"
+  },
+  {
+    "category_name": "Grocery",
+    "avg_order_value": "1819.4820298507462687"
+  },
+  {
+    "category_name": "Books",
+    "avg_order_value": "1786.6823437500000000"
+  },
+  {
+    "category_name": "Apparel",
+    "avg_order_value": "1782.8040200000000000"
+  },
+  {
+    "category_name": "Sports",
+    "avg_order_value": "1751.8013787878787879"
+  },
+  {
+    "category_name": "Automotive",
+    "avg_order_value": "1737.7976212121212121"
+  },
+  {
+    "category_name": "Electronics",
+    "avg_order_value": "1722.2802258064516129"
+  },
+  {
+    "category_name": "Health",
+    "avg_order_value": "1719.7707966101694915"
+  },
+  {
+    "category_name": "Beauty",
+    "avg_order_value": "1668.0689264705882353"
+  }
+]

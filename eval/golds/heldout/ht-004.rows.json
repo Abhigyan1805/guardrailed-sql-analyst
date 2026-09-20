@@ -1,0 +1,46 @@
+{
+  "tenant_a": [
+    {
+      "display_name": "CUSTOMER-94",
+      "revenue": "8023.61000"
+    },
+    {
+      "display_name": "CUSTOMER-129",
+      "revenue": "8015.60400"
+    },
+    {
+      "display_name": "CUSTOMER-64",
+      "revenue": "7151.94600"
+    },
+    {
+      "display_name": "CUSTOMER-168",
+      "revenue": "7077.43200"
+    },
+    {
+      "display_name": "CUSTOMER-266",
+      "revenue": "6954.69000"
+    }
+  ],
+  "tenant_b": [
+    {
+      "display_name": "CUSTOMER-293",
+      "revenue": "9060.45300"
+    },
+    {
+      "display_name": "CUSTOMER-147",
+      "revenue": "5476.63600"
+    },
+    {
+      "display_name": "CUSTOMER-15",
+      "revenue": "5418.84800"
+    },
+    {
+      "display_name": "CUSTOMER-90",
+      "revenue": "5258.36000"
+    },
+    {
+      "display_name": "CUSTOMER-73",
+      "revenue": "5251.59000"
+    }
+  ]
+}

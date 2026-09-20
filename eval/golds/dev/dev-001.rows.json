@@ -1,0 +1,32 @@
+[
+  {
+    "product_id": 46,
+    "sku": "SKU-046",
+    "name": "Product 46 Max",
+    "list_price": "491.67"
+  },
+  {
+    "product_id": 57,
+    "sku": "SKU-057",
+    "name": "Product 57 Ultra",
+    "list_price": "491.08"
+  },
+  {
+    "product_id": 14,
+    "sku": "SKU-014",
+    "name": "Product 14 Ultra",
+    "list_price": "485.20"
+  },
+  {
+    "product_id": 3,
+    "sku": "SKU-003",
+    "name": "Product 3 Ultra",
+    "list_price": "482.98"
+  },
+  {
+    "product_id": 54,
+    "sku": "SKU-054",
+    "name": "Product 54 Lite",
+    "list_price": "476.16"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "status": "paid",
+    "avg_items_per_order": "1.9800000000000000"
+  },
+  {
+    "status": "shipped",
+    "avg_items_per_order": "1.9858156028368794"
+  }
+]

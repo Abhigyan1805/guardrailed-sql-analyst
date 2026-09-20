@@ -1,0 +1,17 @@
+WITH c AS (
+  SELECT o.customer_id, COUNT(*) AS orders
+  FROM orders o
+  WHERE o.tenant_id = :tenant
+  GROUP BY o.customer_id
+  HAVING COUNT(*) > 5
+)
+SELECT 'CUSTOMER-' || c.customer_id AS display_name, c.orders
+FROM c
+JOIN customers cu ON cu.customer_id = c.customer_id
+WHERE NOT EXISTS (
+  SELECT 1 FROM orders o
+  WHERE o.customer_id = c.customer_id AND o.tenant_id = :tenant
+    AND o.ordered_at > :eval_now - interval '90 days'
+)
+ORDER BY c.orders DESC, c.customer_id ASC
+LIMIT 20

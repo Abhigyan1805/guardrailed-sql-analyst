@@ -1,0 +1,122 @@
+[
+  {
+    "product_id": 12,
+    "sku": "SKU-012",
+    "product_name": "Product 12 Lite",
+    "cancel_rate": 0.45454545454545453
+  },
+  {
+    "product_id": 86,
+    "sku": "SKU-086",
+    "product_name": "Product 86 Max",
+    "cancel_rate": 0.36363636363636365
+  },
+  {
+    "product_id": 16,
+    "sku": "SKU-016",
+    "product_name": "Product 16 Pro",
+    "cancel_rate": 0.3333333333333333
+  },
+  {
+    "product_id": 51,
+    "sku": "SKU-051",
+    "product_name": "Product 51 Ultra",
+    "cancel_rate": 0.3333333333333333
+  },
+  {
+    "product_id": 69,
+    "sku": "SKU-069",
+    "product_name": "Product 69 Pro",
+    "cancel_rate": 0.3333333333333333
+  },
+  {
+    "product_id": 61,
+    "sku": "SKU-061",
+    "product_name": "Product 61 Pro",
+    "cancel_rate": 0.2857142857142857
+  },
+  {
+    "product_id": 22,
+    "sku": "SKU-022",
+    "product_name": "Product 22 Max",
+    "cancel_rate": 0.2727272727272727
+  },
+  {
+    "product_id": 44,
+    "sku": "SKU-044",
+    "product_name": "Product 44 Pro",
+    "cancel_rate": 0.2727272727272727
+  },
+  {
+    "product_id": 31,
+    "sku": "SKU-031",
+    "product_name": "Product 31 Pro",
+    "cancel_rate": 0.25
+  },
+  {
+    "product_id": 72,
+    "sku": "SKU-072",
+    "product_name": "Product 72 Max",
+    "cancel_rate": 0.25
+  },
+  {
+    "product_id": 82,
+    "sku": "SKU-082",
+    "product_name": "Product 82 Ultra",
+    "cancel_rate": 0.25
+  },
+  {
+    "product_id": 92,
+    "sku": "SKU-092",
+    "product_name": "Product 92 Lite",
+    "cancel_rate": 0.25
+  },
+  {
+    "product_id": 75,
+    "sku": "SKU-075",
+    "product_name": "Product 75 Lite",
+    "cancel_rate": 0.2222222222222222
+  },
+  {
+    "product_id": 35,
+    "sku": "SKU-035",
+    "product_name": "Product 35 Ultra",
+    "cancel_rate": 0.21428571428571427
+  },
+  {
+    "product_id": 76,
+    "sku": "SKU-076",
+    "product_name": "Product 76 Max",
+    "cancel_rate": 0.21428571428571427
+  },
+  {
+    "product_id": 10,
+    "sku": "SKU-010",
+    "product_name": "Product 10 Lite",
+    "cancel_rate": 0.2
+  },
+  {
+    "product_id": 19,
+    "sku": "SKU-019",
+    "product_name": "Product 19 Ultra",
+    "cancel_rate": 0.2
+  },
+  {
+    "product_id": 21,
+    "sku": "SKU-021",
+    "product_name": "Product 21 Ultra",
+    "cancel_rate": 0.2
+  },
+  {
+    "product_id": 56,
+    "sku": "SKU-056",
+    "product_name": "Product 56 Ultra",
+    "cancel_rate": 0.2
+  },
+  {
+    "product_id": 87,
+    "sku": "SKU-087",
+    "product_name": "Product 87 Lite",
+    "cancel_rate": 0.2
+  }
+]

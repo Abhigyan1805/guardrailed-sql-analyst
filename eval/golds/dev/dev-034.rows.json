@@ -1,0 +1,122 @@
+[
+  {
+    "sku": "SKU-046",
+    "name": "Product 46 Max",
+    "category_name": "Grocery",
+    "list_price": "491.67"
+  },
+  {
+    "sku": "SKU-057",
+    "name": "Product 57 Ultra",
+    "category_name": "Sports",
+    "list_price": "491.08"
+  },
+  {
+    "sku": "SKU-014",
+    "name": "Product 14 Ultra",
+    "category_name": "Books",
+    "list_price": "485.20"
+  },
+  {
+    "sku": "SKU-003",
+    "name": "Product 3 Ultra",
+    "category_name": "Home",
+    "list_price": "482.98"
+  },
+  {
+    "sku": "SKU-054",
+    "name": "Product 54 Lite",
+    "category_name": "Books",
+    "list_price": "476.16"
+  },
+  {
+    "sku": "SKU-006",
+    "name": "Product 6 Lite",
+    "category_name": "Grocery",
+    "list_price": "465.22"
+  },
+  {
+    "sku": "SKU-012",
+    "name": "Product 12 Lite",
+    "category_name": "Apparel",
+    "list_price": "456.40"
+  },
+  {
+    "sku": "SKU-029",
+    "name": "Product 29 Lite",
+    "category_name": "Automotive",
+    "list_price": "452.55"
+  },
+  {
+    "sku": "SKU-070",
+    "name": "Product 70 Ultra",
+    "category_name": "Health",
+    "list_price": "439.84"
+  },
+  {
+    "sku": "SKU-091",
+    "name": "Product 91 Max",
+    "category_name": "Electronics",
+    "list_price": "437.25"
+  },
+  {
+    "sku": "SKU-053",
+    "name": "Product 53 Max",
+    "category_name": "Home",
+    "list_price": "431.46"
+  },
+  {
+    "sku": "SKU-073",
+    "name": "Product 73 Pro",
+    "category_name": "Home",
+    "list_price": "418.39"
+  },
+  {
+    "sku": "SKU-072",
+    "name": "Product 72 Max",
+    "category_name": "Apparel",
+    "list_price": "416.85"
+  },
+  {
+    "sku": "SKU-016",
+    "name": "Product 16 Pro",
+    "category_name": "Grocery",
+    "list_price": "412.87"
+  },
+  {
+    "sku": "SKU-069",
+    "name": "Product 69 Pro",
+    "category_name": "Automotive",
+    "list_price": "410.04"
+  },
+  {
+    "sku": "SKU-064",
+    "name": "Product 64 Max",
+    "category_name": "Books",
+    "list_price": "408.88"
+  },
+  {
+    "sku": "SKU-058",
+    "name": "Product 58 Pro",
+    "category_name": "Beauty",
+    "list_price": "403.40"
+  },
+  {
+    "sku": "SKU-094",
+    "name": "Product 94 Lite",
+    "category_name": "Books",
+    "list_price": "402.69"
+  },
+  {
+    "sku": "SKU-004",
+    "name": "Product 4 Pro",
+    "category_name": "Books",
+    "list_price": "402.32"
+  },
+  {
+    "sku": "SKU-082",
+    "name": "Product 82 Ultra",
+    "category_name": "Apparel",
+    "list_price": "395.72"
+  }
+]

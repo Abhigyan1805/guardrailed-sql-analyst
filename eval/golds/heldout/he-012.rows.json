@@ -1,0 +1,22 @@
+[
+  {
+    "status": "paid",
+    "orders": 200
+  },
+  {
+    "status": "shipped",
+    "orders": 141
+  },
+  {
+    "status": "pending",
+    "orders": 88
+  },
+  {
+    "status": "refunded",
+    "orders": 62
+  },
+  {
+    "status": "cancelled",
+    "orders": 61
+  }
+]

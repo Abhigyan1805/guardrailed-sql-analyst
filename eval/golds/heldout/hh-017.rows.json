@@ -1,0 +1,102 @@
+[
+  {
+    "display_name": "CUSTOMER-132",
+    "first_order_at": "2024-01-02T00:00:00.000Z",
+    "first_order_revenue": "620.50000"
+  },
+  {
+    "display_name": "CUSTOMER-148",
+    "first_order_at": "2024-01-02T00:00:00.000Z",
+    "first_order_revenue": "1240.06400"
+  },
+  {
+    "display_name": "CUSTOMER-135",
+    "first_order_at": "2024-01-03T00:00:00.000Z",
+    "first_order_revenue": "268.12000"
+  },
+  {
+    "display_name": "CUSTOMER-199",
+    "first_order_at": "2024-01-03T00:00:00.000Z",
+    "first_order_revenue": "807.30000"
+  },
+  {
+    "display_name": "CUSTOMER-104",
+    "first_order_at": "2024-01-09T00:00:00.000Z",
+    "first_order_revenue": "762.57000"
+  },
+  {
+    "display_name": "CUSTOMER-87",
+    "first_order_at": "2024-01-10T00:00:00.000Z",
+    "first_order_revenue": "1537.08500"
+  },
+  {
+    "display_name": "CUSTOMER-230",
+    "first_order_at": "2024-01-12T00:00:00.000Z",
+    "first_order_revenue": "1835.47000"
+  },
+  {
+    "display_name": "CUSTOMER-182",
+    "first_order_at": "2024-01-13T00:00:00.000Z",
+    "first_order_revenue": "821.52000"
+  },
+  {
+    "display_name": "CUSTOMER-26",
+    "first_order_at": "2024-01-15T00:00:00.000Z",
+    "first_order_revenue": "2017.00000"
+  },
+  {
+    "display_name": "CUSTOMER-293",
+    "first_order_at": "2024-01-15T00:00:00.000Z",
+    "first_order_revenue": "537.70500"
+  },
+  {
+    "display_name": "CUSTOMER-118",
+    "first_order_at": "2024-01-17T00:00:00.000Z",
+    "first_order_revenue": "2143.15000"
+  },
+  {
+    "display_name": "CUSTOMER-205",
+    "first_order_at": "2024-01-24T00:00:00.000Z",
+    "first_order_revenue": "1035.50200"
+  },
+  {
+    "display_name": "CUSTOMER-71",
+    "first_order_at": "2024-01-25T00:00:00.000Z",
+    "first_order_revenue": "433.86500"
+  },
+  {
+    "display_name": "CUSTOMER-275",
+    "first_order_at": "2024-01-26T00:00:00.000Z",
+    "first_order_revenue": "3577.99000"
+  },
+  {
+    "display_name": "CUSTOMER-59",
+    "first_order_at": "2024-01-27T00:00:00.000Z",
+    "first_order_revenue": "3007.65000"
+  },
+  {
+    "display_name": "CUSTOMER-262",
+    "first_order_at": "2024-01-27T00:00:00.000Z",
+    "first_order_revenue": "2560.25600"
+  },
+  {
+    "display_name": "CUSTOMER-75",
+    "first_order_at": "2024-01-28T00:00:00.000Z",
+    "first_order_revenue": "2388.03600"
+  },
+  {
+    "display_name": "CUSTOMER-92",
+    "first_order_at": "2024-02-02T00:00:00.000Z",
+    "first_order_revenue": "654.25000"
+  },
+  {
+    "display_name": "CUSTOMER-108",
+    "first_order_at": "2024-02-02T00:00:00.000Z",
+    "first_order_revenue": "1203.40800"
+  },
+  {
+    "display_name": "CUSTOMER-12",
+    "first_order_at": "2024-02-03T00:00:00.000Z",
+    "first_order_revenue": "790.86000"
+  }
+]

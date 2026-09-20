@@ -1,0 +1,66 @@
+{
+  "tenant_a": [
+    {
+      "product_id": 79,
+      "sku": "SKU-079",
+      "product_name": "Product 79 Lite",
+      "revenue": "14633.47200"
+    },
+    {
+      "product_id": 53,
+      "sku": "SKU-053",
+      "product_name": "Product 53 Max",
+      "revenue": "13677.28200"
+    },
+    {
+      "product_id": 91,
+      "sku": "SKU-091",
+      "product_name": "Product 91 Max",
+      "revenue": "13467.30000"
+    },
+    {
+      "product_id": 4,
+      "sku": "SKU-004",
+      "product_name": "Product 4 Pro",
+      "revenue": "13196.09600"
+    },
+    {
+      "product_id": 57,
+      "sku": "SKU-057",
+      "product_name": "Product 57 Ultra",
+      "revenue": "12718.97200"
+    }
+  ],
+  "tenant_b": [
+    {
+      "product_id": 91,
+      "sku": "SKU-091",
+      "product_name": "Product 91 Max",
+      "revenue": "8745.00000"
+    },
+    {
+      "product_id": 53,
+      "sku": "SKU-053",
+      "product_name": "Product 53 Max",
+      "revenue": "8672.34600"
+    },
+    {
+      "product_id": 6,
+      "sku": "SKU-006",
+      "product_name": "Product 6 Lite",
+      "revenue": "7350.47600"
+    },
+    {
+      "product_id": 54,
+      "sku": "SKU-054",
+      "product_name": "Product 54 Lite",
+      "revenue": "6951.93600"
+    },
+    {
+      "product_id": 90,
+      "sku": "SKU-090",
+      "product_name": "Product 90 Max",
+      "revenue": "6727.04000"
+    }
+  ]
+}

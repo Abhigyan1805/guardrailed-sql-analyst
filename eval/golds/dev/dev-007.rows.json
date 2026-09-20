@@ -1,0 +1,62 @@
+[
+  {
+    "order_id": 726,
+    "status": "paid",
+    "ordered_at": "2025-08-28T00:00:00.000Z",
+    "region": "NA"
+  },
+  {
+    "order_id": 627,
+    "status": "paid",
+    "ordered_at": "2025-08-26T00:00:00.000Z",
+    "region": "APAC"
+  },
+  {
+    "order_id": 111,
+    "status": "shipped",
+    "ordered_at": "2025-08-26T00:00:00.000Z",
+    "region": "NA"
+  },
+  {
+    "order_id": 575,
+    "status": "paid",
+    "ordered_at": "2025-08-25T00:00:00.000Z",
+    "region": "EU"
+  },
+  {
+    "order_id": 41,
+    "status": "pending",
+    "ordered_at": "2025-08-25T00:00:00.000Z",
+    "region": "EU"
+  },
+  {
+    "order_id": 381,
+    "status": "shipped",
+    "ordered_at": "2025-08-24T00:00:00.000Z",
+    "region": "NA"
+  },
+  {
+    "order_id": 89,
+    "status": "paid",
+    "ordered_at": "2025-08-20T00:00:00.000Z",
+    "region": "EU"
+  },
+  {
+    "order_id": 416,
+    "status": "pending",
+    "ordered_at": "2025-08-18T00:00:00.000Z",
+    "region": "APAC"
+  },
+  {
+    "order_id": 271,
+    "status": "paid",
+    "ordered_at": "2025-08-18T00:00:00.000Z",
+    "region": "NA"
+  },
+  {
+    "order_id": 213,
+    "status": "paid",
+    "ordered_at": "2025-08-17T00:00:00.000Z",
+    "region": "APAC"
+  }
+]

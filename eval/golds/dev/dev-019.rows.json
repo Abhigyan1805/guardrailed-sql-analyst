@@ -1,0 +1,42 @@
+[
+  {
+    "category_name": "Electronics",
+    "avg_discount": "0.02830188679245283019"
+  },
+  {
+    "category_name": "Toys",
+    "avg_discount": "0.02777777777777777778"
+  },
+  {
+    "category_name": "Apparel",
+    "avg_discount": "0.02577319587628865979"
+  },
+  {
+    "category_name": "Beauty",
+    "avg_discount": "0.02459016393442622951"
+  },
+  {
+    "category_name": "Automotive",
+    "avg_discount": "0.02429906542056074766"
+  },
+  {
+    "category_name": "Sports",
+    "avg_discount": "0.01980198019801980198"
+  },
+  {
+    "category_name": "Home",
+    "avg_discount": "0.01707317073170731707"
+  },
+  {
+    "category_name": "Books",
+    "avg_discount": "0.01698113207547169811"
+  },
+  {
+    "category_name": "Grocery",
+    "avg_discount": "0.01600000000000000000"
+  },
+  {
+    "category_name": "Health",
+    "avg_discount": "0.01386138613861386139"
+  }
+]

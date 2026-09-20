@@ -1,0 +1,1052 @@
+[
+  {
+    "category_name": "Apparel",
+    "month": "2024-01",
+    "revenue": "1757.03700",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-02",
+    "revenue": "1777.20000",
+    "mom_growth": "0.01147556938186276100"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-03",
+    "revenue": "2857.74800",
+    "mom_growth": "0.60800585190186810713"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-04",
+    "revenue": "363.40200",
+    "mom_growth": "-0.87283623328579006966"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-05",
+    "revenue": "1545.85000",
+    "mom_growth": "3.2538290928503420"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-07",
+    "revenue": "8963.72000",
+    "mom_growth": "4.7985703658181583"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-08",
+    "revenue": "4960.97400",
+    "mom_growth": "-0.44654964679842743861"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-09",
+    "revenue": "898.20000",
+    "mom_growth": "-0.81894684390605554474"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-10",
+    "revenue": "2607.78000",
+    "mom_growth": "1.9033400133600534"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2024-12",
+    "revenue": "3141.58800",
+    "mom_growth": "0.20469824908542898557"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2025-03",
+    "revenue": "1289.30000",
+    "mom_growth": "-0.58960245582807166312"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2025-04",
+    "revenue": "989.26000",
+    "mom_growth": "-0.23271542697587838362"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2025-05",
+    "revenue": "1378.80300",
+    "mom_growth": "0.39377211248812243495"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2025-06",
+    "revenue": "1404.50100",
+    "mom_growth": "0.01863790548758597131"
+  },
+  {
+    "category_name": "Apparel",
+    "month": "2025-08",
+    "revenue": "5907.86000",
+    "mom_growth": "3.2063764995539341"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-01",
+    "revenue": "2564.43000",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-02",
+    "revenue": "1839.25200",
+    "mom_growth": "-0.28278330857149542003"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-03",
+    "revenue": "2822.25000",
+    "mom_growth": "0.53445531118084960625"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-04",
+    "revenue": "1161.06000",
+    "mom_growth": "-0.58860483656656922668"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-05",
+    "revenue": "3836.99500",
+    "mom_growth": "2.3047344667803559"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-07",
+    "revenue": "6845.09000",
+    "mom_growth": "0.78397157150322061926"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-08",
+    "revenue": "1330.03000",
+    "mom_growth": "-0.80569576148743113677"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-09",
+    "revenue": "4825.87500",
+    "mom_growth": "2.6283956000992459"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-10",
+    "revenue": "2849.76900",
+    "mom_growth": "-0.40948138938534462662"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-11",
+    "revenue": "2940.21400",
+    "mom_growth": "0.03173766014017276488"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2024-12",
+    "revenue": "1744.35000",
+    "mom_growth": "-0.40672685729678179888"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2025-01",
+    "revenue": "1193.83500",
+    "mom_growth": "-0.31559893370023217818"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2025-02",
+    "revenue": "1794.38000",
+    "mom_growth": "0.50303852709964107268"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2025-03",
+    "revenue": "2219.57100",
+    "mom_growth": "0.23695705480444498936"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2025-04",
+    "revenue": "874.88000",
+    "mom_growth": "-0.60583373994343952052"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2025-06",
+    "revenue": "1795.05000",
+    "mom_growth": "1.0517670994879298"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2025-07",
+    "revenue": "1334.03400",
+    "mom_growth": "-0.25682627224868388067"
+  },
+  {
+    "category_name": "Automotive",
+    "month": "2025-08",
+    "revenue": "11103.21000",
+    "mom_growth": "7.3230337457665997"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-01",
+    "revenue": "3433.84000",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-02",
+    "revenue": "3423.03000",
+    "mom_growth": "-0.00314807911842135918"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-03",
+    "revenue": "617.13400",
+    "mom_growth": "-0.81971119154667063975"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-04",
+    "revenue": "480.74000",
+    "mom_growth": "-0.22101196822732178101"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-05",
+    "revenue": "1775.64400",
+    "mom_growth": "2.6935640886965928"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-07",
+    "revenue": "3537.09000",
+    "mom_growth": "0.99200402783440824850"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-08",
+    "revenue": "5452.78000",
+    "mom_growth": "0.54160058126878309571"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-09",
+    "revenue": "3297.20600",
+    "mom_growth": "-0.39531651744614673616"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-10",
+    "revenue": "2350.61000",
+    "mom_growth": "-0.28709034255063226259"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-11",
+    "revenue": "1516.25100",
+    "mom_growth": "-0.35495424591914439231"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2024-12",
+    "revenue": "47.26000",
+    "mom_growth": "-0.96883101808341758719"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2025-01",
+    "revenue": "1047.60000",
+    "mom_growth": "21.1667371984765129"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2025-02",
+    "revenue": "1990.00700",
+    "mom_growth": "0.89958667430316914853"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2025-03",
+    "revenue": "5410.31000",
+    "mom_growth": "1.7187391803144411"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2025-04",
+    "revenue": "244.76400",
+    "mom_growth": "-0.95475970877824006388"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2025-05",
+    "revenue": "325.11000",
+    "mom_growth": "0.32825905770456439673"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2025-06",
+    "revenue": "5165.85000",
+    "mom_growth": "14.8895450770508443"
+  },
+  {
+    "category_name": "Beauty",
+    "month": "2025-08",
+    "revenue": "14996.36400",
+    "mom_growth": "1.9029809227910218"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-01",
+    "revenue": "1297.90000",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-02",
+    "revenue": "3994.95700",
+    "mom_growth": "2.0780160258879729"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-03",
+    "revenue": "1940.80000",
+    "mom_growth": "-0.51418751190563502936"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-04",
+    "revenue": "6290.45400",
+    "mom_growth": "2.2411654987633965"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-05",
+    "revenue": "3202.91600",
+    "mom_growth": "-0.49082911980597902790"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-07",
+    "revenue": "8689.07000",
+    "mom_growth": "1.7128622792480352"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-08",
+    "revenue": "1252.58000",
+    "mom_growth": "-0.85584418125299945794"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-09",
+    "revenue": "4251.70800",
+    "mom_growth": "2.3943604400517332"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-10",
+    "revenue": "5299.58200",
+    "mom_growth": "0.24645954049525508337"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-11",
+    "revenue": "1112.28000",
+    "mom_growth": "-0.79011929620109661479"
+  },
+  {
+    "category_name": "Books",
+    "month": "2024-12",
+    "revenue": "485.20000",
+    "mom_growth": "-0.56377890459236882799"
+  },
+  {
+    "category_name": "Books",
+    "month": "2025-01",
+    "revenue": "1644.75000",
+    "mom_growth": "2.3898392415498763"
+  },
+  {
+    "category_name": "Books",
+    "month": "2025-02",
+    "revenue": "5022.73300",
+    "mom_growth": "2.0537972336221310"
+  },
+  {
+    "category_name": "Books",
+    "month": "2025-04",
+    "revenue": "513.26800",
+    "mom_growth": "-0.89781101245079123258"
+  },
+  {
+    "category_name": "Books",
+    "month": "2025-05",
+    "revenue": "402.32000",
+    "mom_growth": "-0.21615997880249694117"
+  },
+  {
+    "category_name": "Books",
+    "month": "2025-07",
+    "revenue": "2098.33200",
+    "mom_growth": "4.2155796380990257"
+  },
+  {
+    "category_name": "Books",
+    "month": "2025-08",
+    "revenue": "9357.92300",
+    "mom_growth": "3.4596960824121254"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-01",
+    "revenue": "356.00400",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-02",
+    "revenue": "5115.45000",
+    "mom_growth": "13.3690801226952506"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-03",
+    "revenue": "3077.12000",
+    "mom_growth": "-0.39846543314859885250"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-04",
+    "revenue": "2785.96000",
+    "mom_growth": "-0.09462094425956738769"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-05",
+    "revenue": "2607.95000",
+    "mom_growth": "-0.06389538973998190929"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-07",
+    "revenue": "6279.48200",
+    "mom_growth": "1.4078230027416170"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-08",
+    "revenue": "4276.96900",
+    "mom_growth": "-0.31889780080586264918"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-09",
+    "revenue": "1970.07000",
+    "mom_growth": "-0.53937706819946555610"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-10",
+    "revenue": "1958.43900",
+    "mom_growth": "-0.00590385113219327232"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-11",
+    "revenue": "4189.34000",
+    "mom_growth": "1.1391220252456165"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2024-12",
+    "revenue": "2171.61000",
+    "mom_growth": "-0.48163433858316584474"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-01",
+    "revenue": "486.27000",
+    "mom_growth": "-0.77607857764515727962"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-02",
+    "revenue": "2241.42000",
+    "mom_growth": "3.6094145227959775"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-03",
+    "revenue": "3277.41000",
+    "mom_growth": "0.46220253232325936237"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-04",
+    "revenue": "1848.16100",
+    "mom_growth": "-0.43609099868493719126"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-05",
+    "revenue": "3075.39200",
+    "mom_growth": "0.66402818802041597025"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-06",
+    "revenue": "1801.33600",
+    "mom_growth": "-0.41427434291303352548"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-07",
+    "revenue": "2633.50900",
+    "mom_growth": "0.46197544489201348333"
+  },
+  {
+    "category_name": "Electronics",
+    "month": "2025-08",
+    "revenue": "6618.36000",
+    "mom_growth": "1.5131336175422222"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-01",
+    "revenue": "363.27000",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-02",
+    "revenue": "1601.45000",
+    "mom_growth": "3.4084289922096512"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-03",
+    "revenue": "1175.84000",
+    "mom_growth": "-0.26576540010615379812"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-04",
+    "revenue": "3531.84000",
+    "mom_growth": "2.0036739692475167"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-05",
+    "revenue": "6506.04900",
+    "mom_growth": "0.84211317613481924436"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-07",
+    "revenue": "3873.73400",
+    "mom_growth": "-0.40459501611500313016"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-08",
+    "revenue": "7737.64600",
+    "mom_growth": "0.99746446193775824566"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-09",
+    "revenue": "1125.25000",
+    "mom_growth": "-0.85457463419753242782"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-10",
+    "revenue": "2684.95400",
+    "mom_growth": "1.3860955343257054"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-11",
+    "revenue": "2458.35000",
+    "mom_growth": "-0.08439772152521048778"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2024-12",
+    "revenue": "4109.83000",
+    "mom_growth": "0.67178392010901621006"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-01",
+    "revenue": "2905.47000",
+    "mom_growth": "-0.29304375120138789196"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-02",
+    "revenue": "1645.92000",
+    "mom_growth": "-0.43350989684973515473"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-03",
+    "revenue": "968.72000",
+    "mom_growth": "-0.41144162535238650724"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-04",
+    "revenue": "5940.20200",
+    "mom_growth": "5.1320113138987530"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-05",
+    "revenue": "5522.94000",
+    "mom_growth": "-0.07024373918597381032"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-06",
+    "revenue": "870.58000",
+    "mom_growth": "-0.84237018689321267296"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-07",
+    "revenue": "1966.68000",
+    "mom_growth": "1.2590456936754807"
+  },
+  {
+    "category_name": "Grocery",
+    "month": "2025-08",
+    "revenue": "7062.81400",
+    "mom_growth": "2.5912370085626538"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-01",
+    "revenue": "1653.97000",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-02",
+    "revenue": "2682.53000",
+    "mom_growth": "0.62187343180347890228"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-03",
+    "revenue": "1654.10000",
+    "mom_growth": "-0.38338061456908217243"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-04",
+    "revenue": "1396.45000",
+    "mom_growth": "-0.15576446405900489692"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-05",
+    "revenue": "1463.12400",
+    "mom_growth": "0.04774535429123849762"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-07",
+    "revenue": "4959.69000",
+    "mom_growth": "2.3897947132300475"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-08",
+    "revenue": "1983.40000",
+    "mom_growth": "-0.60009597374029425226"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-09",
+    "revenue": "3495.39800",
+    "mom_growth": "0.76232630835938287789"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-10",
+    "revenue": "1705.40000",
+    "mom_growth": "-0.51210134010490364760"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-11",
+    "revenue": "2959.54400",
+    "mom_growth": "0.73539580157147883195"
+  },
+  {
+    "category_name": "Health",
+    "month": "2024-12",
+    "revenue": "116.70000",
+    "mom_growth": "-0.96056824970333267557"
+  },
+  {
+    "category_name": "Health",
+    "month": "2025-01",
+    "revenue": "2032.03600",
+    "mom_growth": "16.4124764353041988"
+  },
+  {
+    "category_name": "Health",
+    "month": "2025-03",
+    "revenue": "116.70000",
+    "mom_growth": "-0.94256991509992933196"
+  },
+  {
+    "category_name": "Health",
+    "month": "2025-04",
+    "revenue": "2507.20000",
+    "mom_growth": "20.4841473864610111"
+  },
+  {
+    "category_name": "Health",
+    "month": "2025-05",
+    "revenue": "116.70000",
+    "mom_growth": "-0.95345405232929164008"
+  },
+  {
+    "category_name": "Health",
+    "month": "2025-06",
+    "revenue": "4600.34000",
+    "mom_growth": "38.4202227934875750"
+  },
+  {
+    "category_name": "Health",
+    "month": "2025-07",
+    "revenue": "2674.26100",
+    "mom_growth": "-0.41868188003495393819"
+  },
+  {
+    "category_name": "Health",
+    "month": "2025-08",
+    "revenue": "7724.96800",
+    "mom_growth": "1.8886365242584774"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-01",
+    "revenue": "268.12000",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-02",
+    "revenue": "1072.49000",
+    "mom_growth": "3.0000372967328062"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-03",
+    "revenue": "4256.36100",
+    "mom_growth": "2.9686719689694076"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-04",
+    "revenue": "1208.18000",
+    "mom_growth": "-0.71614719710099777721"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-05",
+    "revenue": "6060.51000",
+    "mom_growth": "4.0162310251783675"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-07",
+    "revenue": "2025.69000",
+    "mom_growth": "-0.66575585223025784959"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-08",
+    "revenue": "5585.53200",
+    "mom_growth": "1.7573478666528442"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-09",
+    "revenue": "4392.85500",
+    "mom_growth": "-0.21352970495916951152"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-10",
+    "revenue": "183.03000",
+    "mom_growth": "-0.95833461382176283988"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-11",
+    "revenue": "3597.17200",
+    "mom_growth": "18.6534557176419166"
+  },
+  {
+    "category_name": "Home",
+    "month": "2024-12",
+    "revenue": "616.32900",
+    "mom_growth": "-0.82866290519330184934"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-01",
+    "revenue": "3829.15000",
+    "mom_growth": "5.2128343790410641"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-02",
+    "revenue": "2534.65800",
+    "mom_growth": "-0.33806249428724390531"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-03",
+    "revenue": "2856.56000",
+    "mom_growth": "0.12700017122625616553"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-04",
+    "revenue": "4938.31000",
+    "mom_growth": "0.72876116727812473745"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-05",
+    "revenue": "537.52000",
+    "mom_growth": "-0.89115304628506513362"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-06",
+    "revenue": "1192.56000",
+    "mom_growth": "1.2186337252567346"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-07",
+    "revenue": "2632.63500",
+    "mom_growth": "1.2075493056953109"
+  },
+  {
+    "category_name": "Home",
+    "month": "2025-08",
+    "revenue": "7935.85800",
+    "mom_growth": "2.0144163547168521"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-03",
+    "revenue": "8441.14600",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-04",
+    "revenue": "2575.85800",
+    "mom_growth": "-0.69484498905717304262"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-05",
+    "revenue": "2663.81000",
+    "mom_growth": "0.03414473934510365090"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-07",
+    "revenue": "7373.49900",
+    "mom_growth": "1.7680273743247454"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-08",
+    "revenue": "4220.02000",
+    "mom_growth": "-0.42767741610868869718"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-09",
+    "revenue": "2323.05000",
+    "mom_growth": "-0.44951682693446950488"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-10",
+    "revenue": "1181.01000",
+    "mom_growth": "-0.49161232001033124556"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2024-11",
+    "revenue": "1321.47000",
+    "mom_growth": "0.11893210049025833820"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2025-01",
+    "revenue": "794.70000",
+    "mom_growth": "-0.39862425934754477968"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2025-02",
+    "revenue": "4823.46000",
+    "mom_growth": "5.0695356738391846"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2025-04",
+    "revenue": "9061.59600",
+    "mom_growth": "0.87865059521588237489"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2025-05",
+    "revenue": "811.86000",
+    "mom_growth": "-0.91040651117087983176"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2025-06",
+    "revenue": "690.96000",
+    "mom_growth": "-0.14891730101248983815"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2025-07",
+    "revenue": "972.08900",
+    "mom_growth": "0.40686725714947319671"
+  },
+  {
+    "category_name": "Sports",
+    "month": "2025-08",
+    "revenue": "9095.45000",
+    "mom_growth": "8.3566021218221788"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-02",
+    "revenue": "378.40000",
+    "mom_growth": null
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-03",
+    "revenue": "1284.65700",
+    "mom_growth": "2.3949709302325581"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-04",
+    "revenue": "959.25000",
+    "mom_growth": "-0.25330263253148505788"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-05",
+    "revenue": "2057.09700",
+    "mom_growth": "1.1444847537138389"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-07",
+    "revenue": "3830.02800",
+    "mom_growth": "0.86186067064411644176"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-08",
+    "revenue": "185.68000",
+    "mom_growth": "-0.95151993666887030591"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-09",
+    "revenue": "1777.07100",
+    "mom_growth": "8.5706107281344248"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-10",
+    "revenue": "121.41000",
+    "mom_growth": "-0.93167971341606497433"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-11",
+    "revenue": "1737.70500",
+    "mom_growth": "13.3127007659995058"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2024-12",
+    "revenue": "1124.12900",
+    "mom_growth": "-0.35309560598605632141"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2025-01",
+    "revenue": "1017.93600",
+    "mom_growth": "-0.09446691616353639129"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2025-02",
+    "revenue": "5103.78800",
+    "mom_growth": "4.0138594174879364"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2025-03",
+    "revenue": "2009.63700",
+    "mom_growth": "-0.60624598827380761113"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2025-04",
+    "revenue": "1780.99200",
+    "mom_growth": "-0.11377427863838096134"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2025-05",
+    "revenue": "40.47000",
+    "mom_growth": "-0.97727670871065114273"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2025-06",
+    "revenue": "438.63000",
+    "mom_growth": "9.8383988139362491"
+  },
+  {
+    "category_name": "Toys",
+    "month": "2025-08",
+    "revenue": "10422.97600",
+    "mom_growth": "22.7625698196657775"
+  }
+]
