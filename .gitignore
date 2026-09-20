@@ -2,5 +2,9 @@ node_modules/
 .next/
 .pglite-data/
 eval/results.json
+eval/security-results.json
+eval/ablation-results.json
 *.log
 .env
+tsconfig.tsbuildinfo
+.scratch/

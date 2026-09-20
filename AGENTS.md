@@ -14,7 +14,26 @@ This file is the project's committed home for project-intrinsic agent knowledge:
   `$PGDATA_DIR` at once can corrupt it; if the DB aborts on open, delete the dir and re-seed.
 - Gold validation: `npx tsx scripts/validate-golds.ts` (add `--regen` to rematerialize
   `eval/golds/**/<id>.rows.json` and rewrite `gold_rows_hash`). The CI workflow
-  `.github/workflows/eval.yml` runs seed -> vitest -> validate-golds -> runner.
+  `.github/workflows/eval.yml` runs seed -> vitest -> validate-golds -> runner, then
+  seeds real Postgres and runs the attacks + ablation security suite.
+
+## Security suite (real Postgres, spec 6.3/7)
+
+- `npm run eval:attacks` (add `--strict` for the CI gate) runs `eval/sets/attacks.json`
+  through the pipeline and asserts BLOCK/CLARIFY, no execution, an audit row, and an
+  unchanged business-table checksum. `npm run eval:ablate` writes the defense-in-depth
+  matrix. `npm run eval:security` runs attacks -> ablation -> `scripts/security-report.ts`,
+  which regenerates `eval/SECURITY.md` from the JSON results.
+- Security claims run against real Postgres via `DATABASE_URL`; accuracy/LLM/calibration
+  stays on PGlite. PGlite silently ignores `statement_timeout` and can't exercise
+  filesystem/network functions, so it cannot prove the layer-fidelity claims.
+  `DATABASE_URL` is the only switch in `lib/db.ts`; both engines share the `withTenant` API.
+- No-root local real Postgres: unpack the PG debs to a private prefix, `initdb` and
+  `pg_ctl` as the normal user, then `DATABASE_URL=postgresql://postgres@127.0.0.1:55432/shop
+  npm run db:seed` (the seed now drives either engine).
+- `lib/checksum.ts` hashes business tables only; `audit_log` is excluded because every
+  BLOCK appends a row. `lib/sql-guard.ts` has a default-deny function allowlist plus
+  structural blocks for `tenant_id`, `OR 1=1`, huge LIMIT, and view-to-view cartesians.
 
 ## Eval v2 (frozen sets + dual golds)
 

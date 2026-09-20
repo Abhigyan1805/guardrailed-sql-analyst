@@ -1,13 +1,10 @@
-import { PGlite } from '@electric-sql/pglite';
+import { getDb, closeDb, DATA_DIR, DATABASE_URL } from '../lib/db';
 import { readFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { homedir } from 'node:os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-// Keep WASM data on fast Linux FS, not /mnt/d (9P is very slow).
-const DATA_DIR = process.env.PGDATA_DIR ?? join(homedir(), '.cache', 'guardrailed-sql-analyst-pglite');
 
 // Deterministic PRNG (mulberry32, seed=42)
 function mulberry32(seed: number) {
@@ -28,11 +25,10 @@ const FIRST = ['Ava','Liam','Maya','Noah','Priya','Ravi','Sofia','Kenji','Amara'
 const LAST = ['Sharma','Patel','Garcia','Kim','Nguyen','Mueller','Rossi','Tanaka','Khan','Ali','Silva','Novak','Chen','Das','Iyer','Kaur','Mehta','Okafor','Johansson','Singh'];
 
 async function main() {
-  console.log('PGlite dir:', DATA_DIR);
+  console.log(DATABASE_URL ? `Postgres: ${DATABASE_URL}` : `PGlite dir: ${DATA_DIR}`);
   // PGlite creates DATA_DIR itself, but not its parent; CI runners have no ~/.cache.
-  mkdirSync(DATA_DIR, { recursive: true });
-  const db = new PGlite(DATA_DIR);
-  await db.exec(readFileSync(join(ROOT, 'db/001_schema.sql'), 'utf8'));
+  if (!DATABASE_URL) mkdirSync(DATA_DIR, { recursive: true });
+  const db = await getDb();
   await db.exec('TRUNCATE reviews, payments, order_items, orders, products, customers, categories RESTART IDENTITY CASCADE;');
 
   // Categories — one statement
@@ -148,6 +144,10 @@ async function main() {
   // role must already exist. Views + RLS themselves come after the data.
   await db.exec(readFileSync(join(ROOT, 'db/003_roles_audit.sql'), 'utf8'));
   await db.exec(readFileSync(join(ROOT, 'db/002_views_rls.sql'), 'utf8'));
+  // Real planner statistics so the cost gate sees real cardinalities. Safe on
+  // both engines now that withTenant re-enables seqscan (PGlite defaults it off,
+  // which adds a fixed 1e10 penalty to every seq scan's cost).
+  await db.exec('ANALYZE;');
 
   const counts = (await db.query<{ t: string; c: string }>(`
     SELECT 'customers' t, count(*)::text c FROM customers UNION ALL
@@ -159,4 +159,4 @@ async function main() {
   console.log('Seed OK:', JSON.stringify(counts));
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+main().then(closeDb).catch(async e => { console.error(e); await closeDb(); process.exit(1); });
