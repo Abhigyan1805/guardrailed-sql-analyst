@@ -4,8 +4,12 @@ import { join } from 'node:path';
 import { accuracy, decisionMatrix, falseClarifyRate, missedClarifyRate } from './metrics/accuracy';
 import { wilson } from './metrics/wilson';
 import { latencyByDecision } from './metrics/latency';
-import { costPer100q, type CostOptions, type UsageRecord } from './metrics/cost';
-import { reliability, ece, mce, thresholdSweep, defaultThresholds, type CalibrationPoint } from './metrics/calibration';
+import { costPer100q, costPer100qByBasis, PRICE_BASES, type CostOptions, type UsageRecord } from './metrics/cost';
+import {
+  reliability, ece, mce, defaultThresholds,
+  thresholdCell, thresholdGrid, chooseOperatingPoint,
+  type CalibrationPoint,
+} from './metrics/calibration';
 import { TemplatesEngine } from './engines/templates';
 import { HybridEngine, DEFAULT_HYBRID_THRESHOLD } from './engines/hybrid';
 import { LlmEngine, SubagentBackend, DEFAULT_MODEL } from './engines/llm';
@@ -108,8 +112,35 @@ export function writeReportMd(reports: RunReport[], attacks: AttackReport | null
     lines.push(`Model: \`${modelRow?.meta.model}\` · provider: \`${modelRow?.meta.provider}\` · temperature: ${modelRow?.meta.temperature} · effort: ${modelRow?.meta.effort} · commit: \`${rs[0]?.meta.git_sha}\` · repeats: ${repeats}`, '');
     const basis = modelRow?.meta.cost_basis as any;
     if (basis?.source_url) {
-      lines.push(`Cost basis: ${basis.cost_per_100q_reference}; served model: \`${basis.model_served}\` (effort ${basis.reasoning_effort}); peak rate 2x (${basis.peak_rate_caveat}); snapshot ${basis.price_snapshot_date}, ${basis.source_url}; usage_source=\`${basis.usage_source}\`.`, '');
+      const costSource = modelRow?.summary.cost_per_100q.source === 'provider'
+        ? 'provider-reported cost'
+        : 'reference-priced estimate';
+      lines.push(`Cost (${costSource}): served model \`${basis.model_served}\` (effort ${basis.reasoning_effort}); reference sheet ${basis.cost_per_100q_reference}; snapshot ${basis.price_snapshot_date}, ${basis.source_url}; usage_source=\`${basis.usage_source}\`. Both published bases are compared below.`, '');
     }
+  }
+  const llmReports = reports.filter((r) => r.meta.engine !== 'templates');
+  if (llmReports.length) {
+    lines.push('## Cost basis comparison', '');
+    lines.push('The same measured token counts (one repeat pass, retries included) priced under each published list. The model actually served is recorded per run; the non-served basis is a comparison, not a charge.', '');
+    lines.push(`| set / engine | tokens in | tokens out | provider $/100q (measured) | ${PRICE_BASES.map((b) => `${b.label} $/100q (est)`).join(' | ')} |`);
+    lines.push(`|---|--:|--:|--:|${PRICE_BASES.map(() => '--:').join('|')}|`);
+    for (const r of llmReports) {
+      const records = r.items.map((i) => ({ tokensIn: i.tokensIn, tokensOut: i.tokensOut }));
+      const tokensIn = records.reduce((s, x) => s + x.tokensIn, 0);
+      const tokensOut = records.reduce((s, x) => s + x.tokensOut, 0);
+      const scored = r.summary.scored || r.items.length;
+      const bases = costPer100qByBasis(records, scored);
+      const provider = r.summary.cost_per_100q;
+      const providerCell = provider.value === null
+        ? 'n/a'
+        : `$${provider.value.toFixed(4)}${provider.source === 'estimated' ? '*' : ''}`;
+      lines.push(`| ${String(r.meta.set)} / ${String(r.meta.engine)} | ${tokensIn} | ${tokensOut} | ${providerCell} | ${bases.map((b) => `$${(b.value ?? 0).toFixed(4)}`).join(' | ')} |`);
+    }
+    lines.push('');
+    for (const b of PRICE_BASES) {
+      lines.push(`- ${b.label}: $${b.inputPer1M.toFixed(3)} in${b.cachedInputPer1M !== null ? ` ($${b.cachedInputPer1M.toFixed(3)} cached)` : ''} / $${b.outputPer1M.toFixed(2)} out per 1M — ${b.source}, retrieved ${b.retrieved}${b.flat ? ', flat' : ', off-peak; peak is 2x'}. ${b.note}.`);
+    }
+    lines.push('');
   }
   if (attacks) {
     lines.push('## Adversarial', '');
@@ -120,23 +151,98 @@ export function writeReportMd(reports: RunReport[], attacks: AttackReport | null
   writeFileSync(join(ROOT, 'eval', 'REPORT.md'), lines.join('\n'));
 }
 
-export function writeCalibrationMd(report: RunReport): void {
-  const s = report.summary;
+function calPoints(report: RunReport): CalibrationPoint[] {
+  return report.items.map((i) => ({
+    id: i.id,
+    confidence: i.confidence,
+    correct: i.row_correct,
+    expected: i.expected_decision,
+  }));
+}
+
+function pct(x: number): string {
+  return `${(x * 100).toFixed(1)}%`;
+}
+
+/**
+ * Calibration report (spec 6.2). Tuned on dev only (R2): the threshold sweep
+ * and the operating-point choice read the dev confidence/outcome pairs. The
+ * held-out set is applied at the chosen point purely to report what that point
+ * costs when it generalizes; held-out never influences the choice.
+ */
+export function writeCalibrationMd(reports: RunReport[]): void {
+  const devReport = reports.find((r) => r.meta.set === 'dev' && r.meta.engine === 'llm') ?? reports.find((r) => r.meta.set === 'dev');
+  if (!devReport) return;
+  const heldReport = reports.find((r) => r.meta.set === 'heldout' && r.meta.engine === devReport.meta.engine);
+  const points = calPoints(devReport);
+  const thresholds = defaultThresholds();
+  const grid = thresholdGrid(points, thresholds, thresholds);
+  const preferred = { allow: GATE.allow, clarify: GATE.clarify };
+  const chosen = chooseOperatingPoint(grid, { preferred });
+  const retained = Math.abs(chosen.allow - preferred.allow) < 1e-9 && Math.abs(chosen.clarify - preferred.clarify) < 1e-9;
+
+  const operatingPoints = points.filter((p) => p.expected !== 'ALLOW' || p.confidence >= chosen.clarify - 1e-9);
+  const bins = reliability(operatingPoints);
+  const devCell = thresholdCell(points, chosen.allow, chosen.clarify);
+
   const lines: string[] = [];
-  lines.push('# Calibration', '', `Engine: ${report.meta.engine} · set: ${report.meta.set} · model: ${report.meta.model} · commit: ${report.meta.git_sha}`, '');
-  lines.push('## Reliability (executed ALLOW answers)', '');
+  lines.push('# Calibration', '');
+  lines.push(`Model: \`${devReport.meta.model}\` · provider: \`${devReport.meta.provider}\` · effort: ${devReport.meta.effort} · temperature: ${devReport.meta.temperature} · commit: \`${devReport.meta.git_sha}\``);
+  lines.push(`Set: dev (${devReport.items.length} questions, ${points.filter((p) => p.expected === 'ALLOW').length} expected-ALLOW) · EVAL_NOW: ${EVAL_NOW} · seed: ${EVAL_SEED}`);
+  lines.push('');
+  lines.push('The confidence signal is only meaningful for the LLM engine; the template engine returns fixed per-template constants, so this table uses the dev LLM run. Held-out is applied at the chosen point for reporting only and is never used to choose it (R2).', '');
+  lines.push('## Reliability (executed answers at the chosen point)', '');
   lines.push('| confidence bin | n | mean confidence | observed accuracy |', '|---|---|---|---|');
-  for (const b of s.calibration.bins) {
-    lines.push(`| ${b.label} | ${b.count} | ${b.meanConfidence.toFixed(3)} | ${b.count ? (b.accuracy * 100).toFixed(1) + '%' : '—'} |`);
+  for (const b of bins) {
+    lines.push(`| ${b.label} | ${b.count} | ${b.meanConfidence.toFixed(3)} | ${b.count ? pct(b.accuracy) : '—'} |`);
   }
-  lines.push('', `ECE: ${s.calibration.ece.toFixed(4)} · MCE: ${s.calibration.mce.toFixed(4)}`, '');
-  lines.push(`Chosen operating point: ALLOW >= ${GATE.allow}, CLARIFY < ${GATE.clarify}.`, '');
+  lines.push('');
+  lines.push(`ECE: ${ece(bins).toFixed(4)} · MCE: ${mce(bins).toFixed(4)}`, '');
+  lines.push('## Operating point', '');
+  lines.push(`- Gate: **ALLOW >= ${chosen.allow.toFixed(2)}**, caveat band [${chosen.clarify.toFixed(2)}, ${chosen.allow.toFixed(2)}), **CLARIFY < ${chosen.clarify.toFixed(2)}**.`);
+  lines.push(`- Source: dev-only sweep below (allow × clarify over 0.40–0.90 in 0.05 steps). Selection rule: respect a ${pct(0.15)} dev false-clarify budget and a ${pct(0.25)} dev caveat budget, maximise executed accuracy, then coverage, then stay closest to the pre-registered ${preferred.allow.toFixed(2)}/${preferred.clarify.toFixed(2)} point. A challenger must beat the pre-registered point by more than 5 percentage points (about two dev questions) to replace it.`);
+  if (retained) {
+    lines.push(`- Outcome: the pre-registered ${preferred.allow.toFixed(2)}/${preferred.clarify.toFixed(2)} point is retained. No dev-tuned alternative improves executed accuracy by more than 5 percentage points inside the budgets, so the sweep does not justify moving the gate.`);
+  } else {
+    lines.push(`- Outcome: the sweep replaces the pre-registered ${preferred.allow.toFixed(2)}/${preferred.clarify.toFixed(2)} point with ${chosen.allow.toFixed(2)}/${chosen.clarify.toFixed(2)} (executed accuracy ${pct(devCell.accuracy)} on ${devCell.executed} dev questions, false-clarify ${pct(devCell.falseClarifyRate)}).`);
+  }
+  lines.push(`- Dev at this point: ${devCell.executed} executed, accuracy ${pct(devCell.accuracy)}, false-clarify ${pct(devCell.falseClarifyRate)}, caveated ${pct(devCell.caveatRate)}, missed-clarify ${pct(devCell.missedClarifyRate)}.`);
+  if (heldReport) {
+    const heldPoints = calPoints(heldReport);
+    const heldCell = thresholdCell(heldPoints, chosen.allow, chosen.clarify);
+    const baseline = thresholdCell(heldPoints, GATE.allow, GATE.clarify);
+    lines.push(`- Held-out cost of this point (reported, not tuned): ${heldCell.executed}/${heldPoints.filter((p) => p.expected === 'ALLOW').length} expected-ALLOW executed at ${pct(heldCell.accuracy)} accuracy, ${pct(heldCell.falseClarifyRate)} false-clarify, ${pct(heldCell.missedClarifyRate)} missed-clarify${retained ? '' : ` (pre-registered point: ${baseline.executed} executed at ${pct(baseline.accuracy)}, ${pct(baseline.falseClarifyRate)} false-clarify)`}.`);
+  } else {
+    lines.push('- Held-out cost: no held-out report was part of this run, so it cannot be reported here. Run `npm run eval:matrix` for the full doc.');
+  }
+  lines.push('');
   lines.push('## Threshold sweep (dev only, R2)', '');
-  lines.push('| ALLOW threshold | executed | accuracy (executed) | false-clarify rate |', '|---|---|---|---|');
-  const points: CalibrationPoint[] = report.items.map((i) => ({ id: i.id, confidence: i.confidence, correct: i.row_correct, expected: i.expected_decision }));
-  for (const row of thresholdSweep(points, defaultThresholds())) {
-    lines.push(`| ${row.threshold.toFixed(2)} | ${row.executed} | ${(row.accuracy * 100).toFixed(1)}% | ${(row.falseClarifyRate * 100).toFixed(1)}% |`);
+  lines.push(`### CLARIFY boundary at the chosen ALLOW=${chosen.allow.toFixed(2)} (this is the execution tradeoff)`, '');
+  lines.push('| CLARIFY >= | executed | correct | accuracy | false-clarify | missed-clarify | caveated |');
+  lines.push('|---|---|---|---|---|---|---|');
+  for (const c of grid.filter((g) => Math.abs(g.allow - chosen.allow) < 1e-9)) {
+    lines.push(`| ${c.clarify.toFixed(2)} | ${c.executed} | ${c.correct} | ${pct(c.accuracy)} | ${pct(c.falseClarifyRate)} | ${pct(c.missedClarifyRate)} | ${pct(c.caveatRate)} |`);
   }
+  lines.push('');
+  lines.push(`### ALLOW boundary at the chosen CLARIFY=${chosen.clarify.toFixed(2)} (caveat band only; does not move execution)`, '');
+  lines.push('| ALLOW >= | executed | accuracy | false-clarify | caveated |');
+  lines.push('|---|---|---|---|---|');
+  for (const c of grid.filter((g) => Math.abs(g.clarify - chosen.clarify) < 1e-9)) {
+    lines.push(`| ${c.allow.toFixed(2)} | ${c.executed} | ${pct(c.accuracy)} | ${pct(c.falseClarifyRate)} | ${pct(c.caveatRate)} |`);
+  }
+  lines.push('');
+  lines.push('### Full dev grid — accuracy (false-clarify)', '');
+  lines.push(`Rows: ALLOW >=; columns: CLARIFY >=. Only CLARIFY changes the executed set, so accuracy and false-clarify are constant down each column; ALLOW only moves answers into the caveat band.`, '');
+  lines.push(`| ALLOW \\ CLARIFY | ${thresholds.map((t) => t.toFixed(2)).join(' | ')} |`);
+  lines.push(`|---|${thresholds.map(() => '---').join('|')}|`);
+  for (const a of thresholds) {
+    const cells = thresholds.map((cl) => {
+      const cell = grid.find((g) => Math.abs(g.allow - a) < 1e-9 && Math.abs(g.clarify - cl) < 1e-9);
+      return cell ? `${pct(cell.accuracy)} (${pct(cell.falseClarifyRate)})` : '—';
+    });
+    lines.push(`| ${a.toFixed(2)} | ${cells.join(' | ')} |`);
+  }
+  lines.push('');
   writeFileSync(join(ROOT, 'eval', 'CALIBRATION.md'), lines.join('\n'));
 }
 

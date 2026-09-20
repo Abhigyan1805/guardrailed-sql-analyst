@@ -10,8 +10,8 @@
     "effort": "none",
     "eval_now": "2025-09-01T00:00:00Z",
     "seed": 42,
-    "git_sha": "463610661eba6630db1c8bd3f35628d21e43f3f2",
-    "timestamp": "2026-09-20T16:53:13.721Z",
+    "git_sha": "f0c399d4643bb1ba4b6790fed7e5670117eb4b1c",
+    "timestamp": "2026-09-20T18:59:42.213Z",
     "repeats": 1,
     "gate": {
       "allow": 0.75,
@@ -83,24 +83,24 @@
         "latency": {
           "overall": {
             "n": 12,
-            "p50": 0,
-            "p95": 12.249999999999982,
-            "p99": 23.250000000000014,
-            "max": 26
+            "p50": 1,
+            "p95": 135.7,
+            "p99": 147.14000000000001,
+            "max": 150
           },
           "ALLOW": {
             "n": 1,
-            "p50": 26,
-            "p95": 26,
-            "p99": 26,
-            "max": 26
+            "p50": 124,
+            "p95": 124,
+            "p99": 124,
+            "max": 124
           },
           "CLARIFY": {
             "n": 11,
-            "p50": 0,
-            "p95": 0.5,
-            "p99": 0.9000000000000004,
-            "max": 1
+            "p50": 1,
+            "p95": 84,
+            "p99": 136.80000000000004,
+            "max": 150
           },
           "BLOCK": {
             "n": 0,
@@ -109,7 +109,7 @@
             "p99": 0,
             "max": 0
           },
-          "p95Allow": 26
+          "p95Allow": 124
         },
         "cost_per_100q": {
           "value": 0,
@@ -268,24 +268,24 @@
     "latency": {
       "overall": {
         "n": 12,
-        "p50": 0,
-        "p95": 12.249999999999982,
-        "p99": 23.250000000000014,
-        "max": 26
+        "p50": 1,
+        "p95": 135.7,
+        "p99": 147.14000000000001,
+        "max": 150
       },
       "ALLOW": {
         "n": 1,
-        "p50": 26,
-        "p95": 26,
-        "p99": 26,
-        "max": 26
+        "p50": 124,
+        "p95": 124,
+        "p99": 124,
+        "max": 124
       },
       "CLARIFY": {
         "n": 11,
-        "p50": 0,
-        "p95": 0.5,
-        "p99": 0.9000000000000004,
-        "max": 1
+        "p50": 1,
+        "p95": 84,
+        "p99": 136.80000000000004,
+        "max": 150
       },
       "BLOCK": {
         "n": 0,
@@ -294,7 +294,7 @@
         "p99": 0,
         "max": 0
       },
-      "p95Allow": 26
+      "p95Allow": 124
     },
     "cost_per_100q": {
       "value": 0,
@@ -405,7 +405,7 @@
       "confidence": 0,
       "correct": false,
       "row_correct": null,
-      "latencyMs": 0,
+      "latencyMs": 150,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -429,7 +429,7 @@
       "confidence": 0,
       "correct": false,
       "row_correct": null,
-      "latencyMs": 0,
+      "latencyMs": 1,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -453,7 +453,7 @@
       "confidence": 0,
       "correct": false,
       "row_correct": null,
-      "latencyMs": 0,
+      "latencyMs": 1,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -501,7 +501,7 @@
       "confidence": 0,
       "correct": false,
       "row_correct": null,
-      "latencyMs": 1,
+      "latencyMs": 0,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -525,7 +525,7 @@
       "confidence": 0,
       "correct": false,
       "row_correct": null,
-      "latencyMs": 0,
+      "latencyMs": 4,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -549,7 +549,7 @@
       "confidence": 0.8,
       "correct": false,
       "row_correct": false,
-      "latencyMs": 26,
+      "latencyMs": 124,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -597,7 +597,7 @@
       "confidence": 0,
       "correct": false,
       "row_correct": null,
-      "latencyMs": 0,
+      "latencyMs": 1,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -621,7 +621,7 @@
       "confidence": 0,
       "correct": false,
       "row_correct": null,
-      "latencyMs": 0,
+      "latencyMs": 18,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,

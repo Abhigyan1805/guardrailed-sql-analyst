@@ -102,3 +102,120 @@ export function defaultThresholds(): number[] {
   for (let t = 0.4; t <= 0.9 + EPS; t += 0.05) out.push(Number(t.toFixed(2)));
   return out;
 }
+
+/**
+ * One point of the two-threshold grid (spec 6.2). `allow` is the high-confidence
+ * edge of the caveat band; `clarify` is the execution boundary. Only `clarify`
+ * changes whether a question executes, so only it moves accuracy and
+ * false-clarify. `allow` sets how many executed clear questions carry a caveat
+ * banner (`caveat`), which is a UX cost rather than a scoring one.
+ */
+export interface GridCell {
+  allow: number;
+  clarify: number;
+  /** expected-ALLOW questions with an observable outcome that executed. */
+  executed: number;
+  correct: number;
+  accuracy: number;
+  /** expected-ALLOW questions pushed to CLARIFY (no execution). */
+  falseClarify: number;
+  falseClarifyRate: number;
+  /** expected-ALLOW questions executed inside the caveat band [clarify, allow). */
+  caveat: number;
+  caveatRate: number;
+  /** expected-CLARIFY questions that executed instead of clarifying. */
+  missedClarify: number;
+  missedClarifyRate: number;
+}
+
+/** Evaluate the two-threshold gate at one (allow, clarify) point. */
+export function thresholdCell(points: CalibrationPoint[], allow: number, clarify: number): GridCell {
+  const clear = points.filter((p) => p.expected === 'ALLOW');
+  const ambiguous = points.filter((p) => p.expected === 'CLARIFY');
+  const executedItems = clear.filter((p) => p.confidence >= clarify - EPS && p.correct !== null);
+  const correct = executedItems.filter((p) => p.correct === true).length;
+  const falseClarify = clear.filter((p) => p.confidence < clarify - EPS).length;
+  const caveat = clear.filter((p) => p.confidence >= clarify - EPS && p.confidence < allow - EPS).length;
+  const missed = ambiguous.filter((p) => p.confidence >= clarify - EPS).length;
+  return {
+    allow,
+    clarify,
+    executed: executedItems.length,
+    correct,
+    accuracy: executedItems.length ? correct / executedItems.length : 0,
+    falseClarify,
+    falseClarifyRate: clear.length ? falseClarify / clear.length : 0,
+    caveat,
+    caveatRate: clear.length ? caveat / clear.length : 0,
+    missedClarify: missed,
+    missedClarifyRate: ambiguous.length ? missed / ambiguous.length : 0,
+  };
+}
+
+/**
+ * Sweep BOTH gate thresholds independently across the given values (spec 6.2).
+ * Only points with `allow >= clarify` are a valid band; others are omitted.
+ */
+export function thresholdGrid(
+  points: CalibrationPoint[],
+  allowThresholds: number[] = defaultThresholds(),
+  clarifyThresholds: number[] = defaultThresholds(),
+): GridCell[] {
+  const cells: GridCell[] = [];
+  for (const allow of allowThresholds) {
+    for (const clarify of clarifyThresholds) {
+      if (allow < clarify - EPS) continue;
+      cells.push(thresholdCell(points, allow, clarify));
+    }
+  }
+  return cells;
+}
+
+export interface OperatingPointOptions {
+  /** Max dev false-clarify rate the chosen point may have. */
+  falseClarifyBudget?: number;
+  /** Max dev caveat rate the chosen point may have. */
+  caveatBudget?: number;
+  /**
+   * The pre-registered point. Retained unless a dev-tuned alternative improves
+   * executed accuracy by more than `tolerance`, so a flat sweep cannot silently
+   * move the production gate.
+   */
+  preferred?: { allow: number; clarify: number };
+  tolerance?: number;
+}
+
+/**
+ * Pick a dev-only operating point (R2). Eligible points respect the
+ * false-clarify and caveat budgets; among them we maximise executed accuracy,
+ * breaking ties toward more executions, then toward the pre-registered clarify
+ * threshold, then toward a narrower caveat band. The pre-registered point is
+ * retained unless an alternative beats it by more than `tolerance`, so a flat
+ * or noisy dev sweep cannot silently move the production gate. The default
+ * tolerance (0.05) is about two dev questions, i.e. larger than single-question
+ * sampling noise.
+ */
+export function chooseOperatingPoint(cells: GridCell[], opts: OperatingPointOptions = {}): GridCell {
+  const fcBudget = opts.falseClarifyBudget ?? 0.15;
+  const caveatBudget = opts.caveatBudget ?? 0.25;
+  const tolerance = opts.tolerance ?? 0.05;
+  const eligible = cells.filter((c) => c.falseClarifyRate <= fcBudget + EPS && c.caveatRate <= caveatBudget + EPS);
+  const pool = eligible.length ? eligible : cells;
+  const clarifyDistance = (c: GridCell): number =>
+    opts.preferred ? Math.abs(c.clarify - opts.preferred.clarify) : c.clarify;
+  const ranked = [...pool].sort(
+    (a, b) =>
+      b.accuracy - a.accuracy ||
+      b.executed - a.executed ||
+      clarifyDistance(a) - clarifyDistance(b) ||
+      a.allow - b.allow,
+  );
+  const best = ranked[0];
+  if (opts.preferred) {
+    const pref = pool.find(
+      (c) => Math.abs(c.allow - opts.preferred!.allow) < EPS && Math.abs(c.clarify - opts.preferred!.clarify) < EPS,
+    );
+    if (pref && best.accuracy - pref.accuracy <= tolerance + EPS) return pref;
+  }
+  return best;
+}
