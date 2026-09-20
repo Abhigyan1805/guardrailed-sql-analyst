@@ -31,7 +31,9 @@ jobs:
       - run: npm run db:seed
       - run: npx vitest run
       - run: npx tsx scripts/validate-golds.ts
-      - run: npx tsx eval/runner.ts --strict
+      # Regression gate: dev x templates (deterministic, no model credentials).
+      # heldout/paraphrase are for nightly/manual matrices; never tune on them (R2).
+      - run: npx tsx eval/runner.ts --set dev --engine templates --strict
       # Security suite runs against real Postgres: PGlite silently ignores
       # statement_timeout and cannot exercise filesystem/network exposure.
       - name: Seed real Postgres

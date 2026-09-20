@@ -1,41 +1,47 @@
 # Eval Report — Guardrailed Text-to-SQL Analyst
-_Date: 2026-09-18T23:11:59.007Z · Engine: offline-template_
 
-## Headline (core 40, primary context)
-- **Execution accuracy: 100.0% (40/40 evaluated, 0 skipped)** (gate: ≥84%)
-- **Guardrail violations: 0** (gate: 0)
-- **Latency p50/p95: 37ms / 82ms, p95 ALLOW: 82ms** (gate: p95 ≤2400ms)
-- Core adversarial refusal: 5/5
+Generated: 2026-09-20T15:17:28.964Z · EVAL_NOW: 2025-09-01T00:00:00Z · seed: 42
 
-> Engine offline-template is deterministic (no API calls, no quota). Set LLM_PROVIDER=openai (+ key) or LLM_PROVIDER=gemini (+ key) to route template misses to a model; gates and comparison are unchanged.
+Costs marked `*` are **estimated** from a pinned tokenizer and published prices, not measured.
 
-## Beyond the headline
-- Secondary context (tenant_b/EU): 35/35
-- Paraphrase variants: 12/12 (wording robustness)
-- Adversarial corpus (52 probes + 5 admin replays): 57/57
+## dev
 
-## Confidence calibration (ALLOW decisions)
-| confidence | accuracy | n |
-|---|---|---|
-| 0.50-0.59 | — | 0 |
-| 0.60-0.69 | — | 0 |
-| 0.70-0.79 | — | 0 |
-| 0.80-0.89 | 100% | 6 |
-| 0.90-1.00 | 100% | 29 |
+| Engine | exact rows | accuracy (Wilson 95%) | p95 ALLOW | $/100q (retries incl.) | violations |
+|---|---|---|---|---|---|
+| templates | 35/35 | 100.0% [90.1%, 100.0%] | 79ms | $0.0000 | 0 |
+| llm | 17/35 | 45.7% (42.9–48.6%) [33.0%, 64.4%] | 22332ms | $0.0484* | 0 |
+| hybrid | 35/35 | 100.0% [90.1%, 100.0%] | 45ms | $0.0000* | 0 |
 
-## Per-bucket (core)
-| bucket | pass | total |
-|---|---|---|
-| easy | 10 | 10 |
-| medium | 15 | 15 |
-| hard | 10 | 10 |
-| adversarial | 5 | 5 |
+Model: `opencode/big-pickle` · provider: `opencode` · temperature: 0 · commit: `0ca90b5000759ff0ced5f182b2098ac906deef2b` · repeats: 1/3
 
-## Failures (core)
-None.
+Cost basis: DeepSeek V4.1 Flash off-peak reference prices ($0.15/$0.60 per 1M in/out); model actually served: `opencode/big-pickle` (free (OpenCode Zen)); peak rate 2x (peak hours (01:00-04:00 and 06:00-10:00 UTC Mon-Fri) are 2x these rates); snapshot 2026-09-20, https://api-docs.deepseek.com/quick_start/pricing; usage_source=`estimated`.
 
-## Variant misses
-None.
+## heldout
 
-## Adversarial misses
-None.
+| Engine | exact rows | accuracy (Wilson 95%) | p95 ALLOW | $/100q (retries incl.) | violations |
+|---|---|---|---|---|---|
+| templates | 3/42 | 7.1% [2.5%, 19.0%] | 49ms | $0.0000 | 0 |
+| llm | 21/42 | 51.6% (50.0–54.8%) [35.5%, 64.5%] | 28991ms | $0.0502* | 0 |
+| hybrid | 12/42 | 27.8% (26.2–28.6%) [17.2%, 43.6%] | 16951ms | $0.0267* | 0 |
+
+Model: `opencode/big-pickle` · provider: `opencode` · temperature: 0 · commit: `0ca90b5000759ff0ced5f182b2098ac906deef2b` · repeats: 1/3
+
+Cost basis: DeepSeek V4.1 Flash off-peak reference prices ($0.15/$0.60 per 1M in/out); model actually served: `opencode/big-pickle` (free (OpenCode Zen)); peak rate 2x (peak hours (01:00-04:00 and 06:00-10:00 UTC Mon-Fri) are 2x these rates); snapshot 2026-09-20, https://api-docs.deepseek.com/quick_start/pricing; usage_source=`estimated`.
+
+## paraphrase
+
+| Engine | exact rows | accuracy (Wilson 95%) | p95 ALLOW | $/100q (retries incl.) | violations |
+|---|---|---|---|---|---|
+| templates | 0/12 | 0.0% [0.0%, 24.2%] | 19ms | $0.0000 | 0 |
+| llm | 2/12 | 19.4% (8.3–33.3%) [4.7%, 44.8%] | 15499ms | $0.0372* | 0 |
+| hybrid | 0/12 | 0.0% [0.0%, 24.2%] | 24ms | $0.0000* | 0 |
+
+Model: `opencode/big-pickle` · provider: `opencode` · temperature: 0 · commit: `0ca90b5000759ff0ced5f182b2098ac906deef2b` · repeats: 1/3
+
+Cost basis: DeepSeek V4.1 Flash off-peak reference prices ($0.15/$0.60 per 1M in/out); model actually served: `opencode/big-pickle` (free (OpenCode Zen)); peak rate 2x (peak hours (01:00-04:00 and 06:00-10:00 UTC Mon-Fri) are 2x these rates); snapshot 2026-09-20, https://api-docs.deepseek.com/quick_start/pricing; usage_source=`estimated`.
+
+## Adversarial
+
+- blocked: 51/51
+- executed violations: 0 (gate: 0)
+- DB fingerprint unchanged: yes

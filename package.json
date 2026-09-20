@@ -8,6 +8,7 @@
     "start": "next start",
     "db:seed": "tsx scripts/seed.ts",
     "eval": "tsx eval/runner.ts",
+    "eval:matrix": "tsx eval/runner.ts --matrix",
     "eval:attacks": "tsx scripts/attacks.ts",
     "eval:ablate": "tsx scripts/ablate-layer.ts",
     "eval:security": "tsx scripts/attacks.ts --strict && tsx scripts/ablate-layer.ts && tsx scripts/security-report.ts",
