@@ -1,0 +1,688 @@
+{
+  "meta": {
+    "set": "paraphrase",
+    "set_source": "eval/sets/paraphrase.json",
+    "set_hash": "sha256:93957916d8e718a46904ffdb5a13650a1c0508169f96db78cb0bb1b896ce6ef8",
+    "engine": "templates",
+    "model": "deterministic-templates",
+    "provider": "none",
+    "temperature": 0,
+    "effort": "none",
+    "eval_now": "2025-09-01T00:00:00Z",
+    "seed": 42,
+    "git_sha": "463610661eba6630db1c8bd3f35628d21e43f3f2",
+    "timestamp": "2026-09-20T16:53:13.721Z",
+    "repeats": 1,
+    "gate": {
+      "allow": 0.75,
+      "clarify": 0.55
+    },
+    "hybrid_threshold": 0.55,
+    "usage_source": "provider",
+    "usage_source_note": "exact provider-reported usage",
+    "cost_basis": {
+      "note": "deterministic templates: no model, $0 measured"
+    },
+    "repeat_summaries": [
+      {
+        "repeats": 1,
+        "evaluated": 12,
+        "tenant_pair": {
+          "runs": 0,
+          "differs": 0,
+          "matches_gold": 0,
+          "disjoint": 0
+        },
+        "scored": 12,
+        "correct": 0,
+        "accuracy": 0,
+        "ci95": {
+          "low": 2.7755575615628914e-17,
+          "high": 0.24249400665524085
+        },
+        "decision_matrix": {
+          "expected": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "actual": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "counts": [
+            [
+              1,
+              11,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "false_clarify_rate": {
+          "rate": 0.9166666666666666,
+          "n": 12,
+          "falseClarify": 11
+        },
+        "missed_clarify_rate": {
+          "rate": 0,
+          "n": 0,
+          "missed": 0
+        },
+        "violations": 0,
+        "latency": {
+          "overall": {
+            "n": 12,
+            "p50": 0,
+            "p95": 12.249999999999982,
+            "p99": 23.250000000000014,
+            "max": 26
+          },
+          "ALLOW": {
+            "n": 1,
+            "p50": 26,
+            "p95": 26,
+            "p99": 26,
+            "max": 26
+          },
+          "CLARIFY": {
+            "n": 11,
+            "p50": 0,
+            "p95": 0.5,
+            "p99": 0.9000000000000004,
+            "max": 1
+          },
+          "BLOCK": {
+            "n": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "p95Allow": 26
+        },
+        "cost_per_100q": {
+          "value": 0,
+          "source": "provider",
+          "totalUsd": 0
+        },
+        "excluded_golds": {
+          "count": 0,
+          "ids": []
+        },
+        "calibration": {
+          "bins": [
+            {
+              "label": "0.00-0.10",
+              "low": 0,
+              "high": 0.1,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.10-0.20",
+              "low": 0.1,
+              "high": 0.2,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.20-0.30",
+              "low": 0.2,
+              "high": 0.3,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.30-0.40",
+              "low": 0.3,
+              "high": 0.4,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.40-0.50",
+              "low": 0.4,
+              "high": 0.5,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.50-0.60",
+              "low": 0.5,
+              "high": 0.6,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.60-0.70",
+              "low": 0.6,
+              "high": 0.7,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.70-0.80",
+              "low": 0.7,
+              "high": 0.8,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.80-0.90",
+              "low": 0.8,
+              "high": 0.9,
+              "count": 1,
+              "meanConfidence": 0.8,
+              "accuracy": 0
+            },
+            {
+              "label": "0.90-1.00",
+              "low": 0.9,
+              "high": 1,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            }
+          ],
+          "ece": 0.8,
+          "mce": 0.8
+        }
+      }
+    ]
+  },
+  "summary": {
+    "repeats": 1,
+    "evaluated": 12,
+    "tenant_pair": {
+      "runs": 0,
+      "differs": 0,
+      "matches_gold": 0,
+      "disjoint": 0
+    },
+    "scored": 12,
+    "correct": 0,
+    "accuracy": 0,
+    "ci95": {
+      "low": 2.7755575615628914e-17,
+      "high": 0.24249400665524085
+    },
+    "decision_matrix": {
+      "expected": [
+        "ALLOW",
+        "CLARIFY",
+        "BLOCK"
+      ],
+      "actual": [
+        "ALLOW",
+        "CLARIFY",
+        "BLOCK"
+      ],
+      "counts": [
+        [
+          1,
+          11,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "false_clarify_rate": {
+      "rate": 0.9166666666666666,
+      "n": 12,
+      "falseClarify": 11
+    },
+    "missed_clarify_rate": {
+      "rate": 0,
+      "n": 0,
+      "missed": 0
+    },
+    "violations": 0,
+    "latency": {
+      "overall": {
+        "n": 12,
+        "p50": 0,
+        "p95": 12.249999999999982,
+        "p99": 23.250000000000014,
+        "max": 26
+      },
+      "ALLOW": {
+        "n": 1,
+        "p50": 26,
+        "p95": 26,
+        "p99": 26,
+        "max": 26
+      },
+      "CLARIFY": {
+        "n": 11,
+        "p50": 0,
+        "p95": 0.5,
+        "p99": 0.9000000000000004,
+        "max": 1
+      },
+      "BLOCK": {
+        "n": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0
+      },
+      "p95Allow": 26
+    },
+    "cost_per_100q": {
+      "value": 0,
+      "source": "provider",
+      "totalUsd": 0
+    },
+    "excluded_golds": {
+      "count": 0,
+      "ids": []
+    },
+    "calibration": {
+      "bins": [
+        {
+          "label": "0.00-0.10",
+          "low": 0,
+          "high": 0.1,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.10-0.20",
+          "low": 0.1,
+          "high": 0.2,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.20-0.30",
+          "low": 0.2,
+          "high": 0.3,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.30-0.40",
+          "low": 0.3,
+          "high": 0.4,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.40-0.50",
+          "low": 0.4,
+          "high": 0.5,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.50-0.60",
+          "low": 0.5,
+          "high": 0.6,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.60-0.70",
+          "low": 0.6,
+          "high": 0.7,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.70-0.80",
+          "low": 0.7,
+          "high": 0.8,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.80-0.90",
+          "low": 0.8,
+          "high": 0.9,
+          "count": 1,
+          "meanConfidence": 0.8,
+          "accuracy": 0
+        },
+        {
+          "label": "0.90-1.00",
+          "low": 0.9,
+          "high": 1,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        }
+      ],
+      "ece": 0.8,
+      "mce": 0.8
+    },
+    "accuracy_min": 0,
+    "accuracy_max": 0,
+    "repeats_observed": 1
+  },
+  "items": [
+    {
+      "id": "pa-001",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-002",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-003",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-004",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-005",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 1,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-006",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-007",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "ALLOW",
+      "confidence": 0.8,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 26,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT COUNT(*) AS cancelled_orders FROM analytics_orders WHERE status = 'cancelled' ",
+      "executed_sql": "SELECT COUNT(*) AS cancelled_orders FROM analytics_orders WHERE status = 'cancelled' LIMIT 200",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "row multiset differs at sorted position 0",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-008",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-009",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-010",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-011",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-012",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 0,
+      "tokensIn": 0,
+      "tokensOut": 0,
+      "retries": 0,
+      "costUsd": 0,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "engine abstained",
+      "violation": false,
+      "isolation": null
+    }
+  ]
+}

@@ -53,6 +53,25 @@ This file is the project's committed home for project-intrinsic agent knowledge:
   name for adversarial data-injection coverage (spec 7.2). It is inserted after all
   generated data so it does not shift the seeded dataset.
 
+## Measurement harness (three engines)
+
+- Entry point `eval/runner.ts`: `npm run eval -- --set <dev|heldout|paraphrase> --engine
+  <templates|llm|hybrid> [--repeats N] [--strict]`, `--attacks`, and `npm run eval:matrix`
+  (writes `eval/REPORT.md`, `eval/CALIBRATION.md`, `eval/reports/<set>-<engine>-<sha>.json`).
+  Default repeats: 1 for templates, 3 for LLM-involving engines.
+- Scoring is positional by value with normalized types, never by column name, and requires
+  matching arity (`eval/metrics/accuracy.ts`); the LLM prompt contract is built in
+  `eval/engines/llm.ts` with dev-only exemplars in `lib/prompts/exemplars.ts`.
+- LLM backend: one fresh headless `opencode run --pure --agent <agent> --model <pinned>
+  --format json` per generation. The agent is defined inline via `OPENCODE_CONFIG_CONTENT`
+  (temperature 0, every tool denied) and MCP hosts are disabled; model is pinned by
+  `EVAL_LLM_MODEL`. Reports carry model, provider, temperature and `usage_source`
+  (`provider` = exact backend tokens/cost; `estimated` must be labelled wherever shown).
+- Use the materialized `eval/golds/<set>/<id>.rows.json` for comparison; the runner loads it
+  directly and only falls back to executing gold SQL on the privileged `getDb()` connection.
+- When another worktree may run at the same time, point `PGDATA_DIR` at a worktree-local
+  path before `db:seed`/eval: the default dir is single-process and shared.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.
