@@ -1,0 +1,1064 @@
+{
+  "meta": {
+    "set": "paraphrase",
+    "set_source": "eval/sets/paraphrase.json",
+    "set_hash": "sha256:93957916d8e718a46904ffdb5a13650a1c0508169f96db78cb0bb1b896ce6ef8",
+    "engine": "llm",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "provider": "opencode-go",
+    "temperature": 0,
+    "effort": "low",
+    "eval_now": "2025-09-01T00:00:00Z",
+    "seed": 42,
+    "git_sha": "463610661eba6630db1c8bd3f35628d21e43f3f2",
+    "timestamp": "2026-09-20T17:00:01.824Z",
+    "repeats": 3,
+    "gate": {
+      "allow": 0.75,
+      "clarify": 0.55
+    },
+    "hybrid_threshold": 0.55,
+    "usage_source": "estimated",
+    "usage_source_note": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out); served model: opencode-go/deepseek-v4.1-flash (effort low); tokens are provider-reported, priced at the published sheet",
+    "cost_basis": {
+      "cost_per_100q_reference": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+      "price_snapshot_date": "2026-09-20",
+      "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "peak_rate_caveat": "peak hours (01:00-04:00 and 06:00-10:00 UTC Mon-Fri) are 2x these rates",
+      "model_served": "opencode-go/deepseek-v4.1-flash",
+      "reasoning_effort": "low",
+      "usage_source": "estimated"
+    },
+    "repeat_summaries": [
+      {
+        "repeats": 3,
+        "evaluated": 12,
+        "tenant_pair": {
+          "runs": 0,
+          "differs": 0,
+          "matches_gold": 0,
+          "disjoint": 0
+        },
+        "scored": 12,
+        "correct": 1,
+        "accuracy": 0.08333333333333333,
+        "ci95": {
+          "low": 0.014865094404917095,
+          "high": 0.35387991114111694
+        },
+        "decision_matrix": {
+          "expected": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "actual": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "counts": [
+            [
+              8,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "false_clarify_rate": {
+          "rate": 0.3333333333333333,
+          "n": 12,
+          "falseClarify": 4
+        },
+        "missed_clarify_rate": {
+          "rate": 0,
+          "n": 0,
+          "missed": 0
+        },
+        "violations": 0,
+        "latency": {
+          "overall": {
+            "n": 12,
+            "p50": 10012.5,
+            "p95": 11983.55,
+            "p99": 12431.91,
+            "max": 12544
+          },
+          "ALLOW": {
+            "n": 8,
+            "p50": 10207,
+            "p95": 12187.349999999999,
+            "p99": 12472.67,
+            "max": 12544
+          },
+          "CLARIFY": {
+            "n": 4,
+            "p50": 9836,
+            "p95": 10677.55,
+            "p99": 10747.51,
+            "max": 10765
+          },
+          "BLOCK": {
+            "n": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "p95Allow": 12187.349999999999
+        },
+        "cost_per_100q": {
+          "value": 0.18870374999999998,
+          "source": "estimated",
+          "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+          "totalUsd": 0.02264445
+        },
+        "excluded_golds": {
+          "count": 0,
+          "ids": []
+        },
+        "calibration": {
+          "bins": [
+            {
+              "label": "0.00-0.10",
+              "low": 0,
+              "high": 0.1,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.10-0.20",
+              "low": 0.1,
+              "high": 0.2,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.20-0.30",
+              "low": 0.2,
+              "high": 0.3,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.30-0.40",
+              "low": 0.3,
+              "high": 0.4,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.40-0.50",
+              "low": 0.4,
+              "high": 0.5,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.50-0.60",
+              "low": 0.5,
+              "high": 0.6,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.60-0.70",
+              "low": 0.6,
+              "high": 0.7,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.70-0.80",
+              "low": 0.7,
+              "high": 0.8,
+              "count": 2,
+              "meanConfidence": 0.75,
+              "accuracy": 0
+            },
+            {
+              "label": "0.80-0.90",
+              "low": 0.8,
+              "high": 0.9,
+              "count": 4,
+              "meanConfidence": 0.84,
+              "accuracy": 0
+            },
+            {
+              "label": "0.90-1.00",
+              "low": 0.9,
+              "high": 1,
+              "count": 2,
+              "meanConfidence": 0.91,
+              "accuracy": 0.5
+            }
+          ],
+          "ece": 0.71,
+          "mce": 0.84
+        }
+      },
+      {
+        "repeats": 3,
+        "evaluated": 12,
+        "tenant_pair": {
+          "runs": 0,
+          "differs": 0,
+          "matches_gold": 0,
+          "disjoint": 0
+        },
+        "scored": 12,
+        "correct": 1,
+        "accuracy": 0.08333333333333333,
+        "ci95": {
+          "low": 0.014865094404917095,
+          "high": 0.35387991114111694
+        },
+        "decision_matrix": {
+          "expected": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "actual": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "counts": [
+            [
+              7,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "false_clarify_rate": {
+          "rate": 0.4166666666666667,
+          "n": 12,
+          "falseClarify": 5
+        },
+        "missed_clarify_rate": {
+          "rate": 0,
+          "n": 0,
+          "missed": 0
+        },
+        "violations": 0,
+        "latency": {
+          "overall": {
+            "n": 12,
+            "p50": 10025.5,
+            "p95": 14261.799999999996,
+            "p99": 16648.360000000004,
+            "max": 17245
+          },
+          "ALLOW": {
+            "n": 7,
+            "p50": 9942,
+            "p95": 11499.099999999999,
+            "p99": 11756.619999999999,
+            "max": 11821
+          },
+          "CLARIFY": {
+            "n": 5,
+            "p50": 10551,
+            "p95": 16001.599999999999,
+            "p99": 16996.32,
+            "max": 17245
+          },
+          "BLOCK": {
+            "n": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "p95Allow": 11499.099999999999
+        },
+        "cost_per_100q": {
+          "value": 0.18889499999999995,
+          "source": "estimated",
+          "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+          "totalUsd": 0.022667399999999997
+        },
+        "excluded_golds": {
+          "count": 0,
+          "ids": []
+        },
+        "calibration": {
+          "bins": [
+            {
+              "label": "0.00-0.10",
+              "low": 0,
+              "high": 0.1,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.10-0.20",
+              "low": 0.1,
+              "high": 0.2,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.20-0.30",
+              "low": 0.2,
+              "high": 0.3,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.30-0.40",
+              "low": 0.3,
+              "high": 0.4,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.40-0.50",
+              "low": 0.4,
+              "high": 0.5,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.50-0.60",
+              "low": 0.5,
+              "high": 0.6,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.60-0.70",
+              "low": 0.6,
+              "high": 0.7,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.70-0.80",
+              "low": 0.7,
+              "high": 0.8,
+              "count": 1,
+              "meanConfidence": 0.72,
+              "accuracy": 0
+            },
+            {
+              "label": "0.80-0.90",
+              "low": 0.8,
+              "high": 0.9,
+              "count": 4,
+              "meanConfidence": 0.845,
+              "accuracy": 0
+            },
+            {
+              "label": "0.90-1.00",
+              "low": 0.9,
+              "high": 1,
+              "count": 2,
+              "meanConfidence": 0.91,
+              "accuracy": 0.5
+            }
+          ],
+          "ece": 0.7028571428571427,
+          "mce": 0.845
+        }
+      },
+      {
+        "repeats": 3,
+        "evaluated": 12,
+        "tenant_pair": {
+          "runs": 0,
+          "differs": 0,
+          "matches_gold": 0,
+          "disjoint": 0
+        },
+        "scored": 12,
+        "correct": 3,
+        "accuracy": 0.25,
+        "ci95": {
+          "low": 0.08894166839405476,
+          "high": 0.5323053349335656
+        },
+        "decision_matrix": {
+          "expected": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "actual": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "counts": [
+            [
+              9,
+              3,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "false_clarify_rate": {
+          "rate": 0.25,
+          "n": 12,
+          "falseClarify": 3
+        },
+        "missed_clarify_rate": {
+          "rate": 0,
+          "n": 0,
+          "missed": 0
+        },
+        "violations": 0,
+        "latency": {
+          "overall": {
+            "n": 12,
+            "p50": 11361.5,
+            "p95": 22155.1,
+            "p99": 22312.62,
+            "max": 22352
+          },
+          "ALLOW": {
+            "n": 9,
+            "p50": 11407,
+            "p95": 22208.8,
+            "p99": 22323.36,
+            "max": 22352
+          },
+          "CLARIFY": {
+            "n": 3,
+            "p50": 11316,
+            "p95": 11907.3,
+            "p99": 11959.86,
+            "max": 11973
+          },
+          "BLOCK": {
+            "n": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "p95Allow": 22208.8
+        },
+        "cost_per_100q": {
+          "value": 0.19558999999999996,
+          "source": "estimated",
+          "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+          "totalUsd": 0.023470799999999997
+        },
+        "excluded_golds": {
+          "count": 0,
+          "ids": []
+        },
+        "calibration": {
+          "bins": [
+            {
+              "label": "0.00-0.10",
+              "low": 0,
+              "high": 0.1,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.10-0.20",
+              "low": 0.1,
+              "high": 0.2,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.20-0.30",
+              "low": 0.2,
+              "high": 0.3,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.30-0.40",
+              "low": 0.3,
+              "high": 0.4,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.40-0.50",
+              "low": 0.4,
+              "high": 0.5,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.50-0.60",
+              "low": 0.5,
+              "high": 0.6,
+              "count": 1,
+              "meanConfidence": 0.55,
+              "accuracy": 0
+            },
+            {
+              "label": "0.60-0.70",
+              "low": 0.6,
+              "high": 0.7,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.70-0.80",
+              "low": 0.7,
+              "high": 0.8,
+              "count": 1,
+              "meanConfidence": 0.7,
+              "accuracy": 0
+            },
+            {
+              "label": "0.80-0.90",
+              "low": 0.8,
+              "high": 0.9,
+              "count": 5,
+              "meanConfidence": 0.8480000000000001,
+              "accuracy": 0.4
+            },
+            {
+              "label": "0.90-1.00",
+              "low": 0.9,
+              "high": 1,
+              "count": 2,
+              "meanConfidence": 0.9,
+              "accuracy": 0.5
+            }
+          ],
+          "ece": 0.47666666666666674,
+          "mce": 0.7
+        }
+      }
+    ]
+  },
+  "summary": {
+    "repeats": 3,
+    "evaluated": 12,
+    "tenant_pair": {
+      "runs": 0,
+      "differs": 0,
+      "matches_gold": 0,
+      "disjoint": 0
+    },
+    "scored": 12,
+    "correct": 1,
+    "accuracy": 0.13888888888888887,
+    "ci95": {
+      "low": 0.014865094404917095,
+      "high": 0.35387991114111694
+    },
+    "decision_matrix": {
+      "expected": [
+        "ALLOW",
+        "CLARIFY",
+        "BLOCK"
+      ],
+      "actual": [
+        "ALLOW",
+        "CLARIFY",
+        "BLOCK"
+      ],
+      "counts": [
+        [
+          8,
+          4,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "false_clarify_rate": {
+      "rate": 0.3333333333333333,
+      "n": 12,
+      "falseClarify": 4
+    },
+    "missed_clarify_rate": {
+      "rate": 0,
+      "n": 0,
+      "missed": 0
+    },
+    "violations": 0,
+    "latency": {
+      "overall": {
+        "n": 12,
+        "p50": 10012.5,
+        "p95": 11983.55,
+        "p99": 12431.91,
+        "max": 12544
+      },
+      "ALLOW": {
+        "n": 8,
+        "p50": 10207,
+        "p95": 12187.349999999999,
+        "p99": 12472.67,
+        "max": 12544
+      },
+      "CLARIFY": {
+        "n": 4,
+        "p50": 9836,
+        "p95": 10677.55,
+        "p99": 10747.51,
+        "max": 10765
+      },
+      "BLOCK": {
+        "n": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0
+      },
+      "p95Allow": 12187.349999999999
+    },
+    "cost_per_100q": {
+      "value": 0.18870374999999998,
+      "source": "estimated",
+      "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+      "totalUsd": 0.02264445
+    },
+    "excluded_golds": {
+      "count": 0,
+      "ids": []
+    },
+    "calibration": {
+      "bins": [
+        {
+          "label": "0.00-0.10",
+          "low": 0,
+          "high": 0.1,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.10-0.20",
+          "low": 0.1,
+          "high": 0.2,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.20-0.30",
+          "low": 0.2,
+          "high": 0.3,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.30-0.40",
+          "low": 0.3,
+          "high": 0.4,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.40-0.50",
+          "low": 0.4,
+          "high": 0.5,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.50-0.60",
+          "low": 0.5,
+          "high": 0.6,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.60-0.70",
+          "low": 0.6,
+          "high": 0.7,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.70-0.80",
+          "low": 0.7,
+          "high": 0.8,
+          "count": 2,
+          "meanConfidence": 0.75,
+          "accuracy": 0
+        },
+        {
+          "label": "0.80-0.90",
+          "low": 0.8,
+          "high": 0.9,
+          "count": 4,
+          "meanConfidence": 0.84,
+          "accuracy": 0
+        },
+        {
+          "label": "0.90-1.00",
+          "low": 0.9,
+          "high": 1,
+          "count": 2,
+          "meanConfidence": 0.91,
+          "accuracy": 0.5
+        }
+      ],
+      "ece": 0.71,
+      "mce": 0.84
+    },
+    "accuracy_min": 0.08333333333333333,
+    "accuracy_max": 0.25,
+    "repeats_observed": 3
+  },
+  "items": [
+    {
+      "id": "pa-001",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.85,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 12544,
+      "tokensIn": 12167,
+      "tokensOut": 121,
+      "retries": 0,
+      "costUsd": 0.00197205,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_id, product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id, product_name ORDER BY revenue DESC, product_id ASC LIMIT 5",
+      "executed_sql": "SELECT product_id, product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id, product_name ORDER BY revenue DESC, product_id ASC LIMIT 5",
+      "rows_returned": 5,
+      "gold_rows": 5,
+      "block_stage": null,
+      "note": "column count 3 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-002",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.87,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 9843,
+      "tokensIn": 12166,
+      "tokensOut": 116,
+      "retries": 0,
+      "costUsd": 0.0019641,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_id, product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id, product_name ORDER BY revenue DESC, product_id ASC LIMIT 5",
+      "executed_sql": "SELECT product_id, product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id, product_name ORDER BY revenue DESC, product_id ASC LIMIT 5",
+      "rows_returned": 5,
+      "gold_rows": 5,
+      "block_stage": null,
+      "note": "column count 3 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-003",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.9,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 9808,
+      "tokensIn": 12167,
+      "tokensOut": 117,
+      "retries": 0,
+      "costUsd": 0.00193665,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_id, product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id, product_name ORDER BY revenue DESC, product_id ASC LIMIT 5",
+      "executed_sql": "SELECT product_id, product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id, product_name ORDER BY revenue DESC, product_id ASC LIMIT 5",
+      "rows_returned": 5,
+      "gold_rows": 5,
+      "block_stage": null,
+      "note": "column count 3 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-004",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0.25,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 10182,
+      "tokensIn": 12165,
+      "tokensOut": 62,
+      "retries": 0,
+      "costUsd": 0.00196035,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "'Last month' is a relative time window with no anchor date available in the prompt, and rules forbid now()/CURRENT_DATE. Cannot derive explicit literal bounds, so refusing rather than guessing.",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-005",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.78,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 10571,
+      "tokensIn": 12164,
+      "tokensOut": 166,
+      "retries": 0,
+      "costUsd": 0.0020958,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT to_char(date_trunc('month', ordered_at),'YYYY-MM') AS month, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') AND ordered_at >= '2026-01-01' AND ordered_at < '2027-01-01' GROUP BY 1 ORDER BY 1 ASC LIMIT 200",
+      "executed_sql": "SELECT to_char(date_trunc('month', ordered_at),'YYYY-MM') AS month, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') AND ordered_at >= '2026-01-01' AND ordered_at < '2027-01-01' GROUP BY 1 ORDER BY 1 ASC LIMIT 200",
+      "rows_returned": 0,
+      "gold_rows": 8,
+      "block_stage": null,
+      "note": "expected 8 rows, got empty set",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-006",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.82,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 11445,
+      "tokensIn": 12168,
+      "tokensOut": 102,
+      "retries": 0,
+      "costUsd": 0.002058,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_id, SUM(qty) AS units_sold FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id ORDER BY units_sold DESC, product_id ASC LIMIT 10",
+      "executed_sql": "SELECT product_id, SUM(qty) AS units_sold FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY product_id ORDER BY units_sold DESC, product_id ASC LIMIT 10",
+      "rows_returned": 10,
+      "gold_rows": 10,
+      "block_stage": null,
+      "note": "column count 2 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-007",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "ALLOW",
+      "confidence": 0.92,
+      "correct": true,
+      "row_correct": true,
+      "latencyMs": 9389,
+      "tokensIn": 12166,
+      "tokensOut": 87,
+      "retries": 0,
+      "costUsd": 0.0019125,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT COUNT(*) AS cancelled_orders FROM analytics_orders WHERE status = 'cancelled' AND ordered_at >= '2023-01-01' AND ordered_at < '2024-01-01' LIMIT 200",
+      "executed_sql": "SELECT COUNT(*) AS cancelled_orders FROM analytics_orders WHERE status = 'cancelled' AND ordered_at >= '2023-01-01' AND ordered_at < '2024-01-01' LIMIT 200",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-008",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0.25,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 9288,
+      "tokensIn": 12164,
+      "tokensOut": 63,
+      "retries": 0,
+      "costUsd": 0.0019224,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "Ambiguous: 'typical order size' has no defined metric (revenue, quantity, or line count), no time window, and no grouping, so no single defensible query can be generated.",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-009",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.82,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 8823,
+      "tokensIn": 12162,
+      "tokensOut": 165,
+      "retries": 0,
+      "costUsd": 0.0019563,
+      "usageSource": "provider",
+      "predicted_sql": "WITH t AS (SELECT SUM(line_revenue) AS total FROM analytics_order_lines WHERE status IN ('paid','shipped')), c AS (SELECT category_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY category_name) SELECT c.category_name, c.revenue, c.revenue / t.total AS share FROM c, t ORDER BY share DESC, c.category_name ASC LIMIT 200",
+      "executed_sql": "WITH t AS (SELECT SUM(line_revenue) AS total FROM analytics_order_lines WHERE status IN ('paid','shipped')), c AS (SELECT category_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid','shipped') GROUP BY category_name) SELECT c.category_name, c.revenue, c.revenue / t.total AS share FROM c, t ORDER BY share DESC, c.category_name ASC LIMIT 200",
+      "rows_returned": 10,
+      "gold_rows": 10,
+      "block_stage": null,
+      "note": "column count 3 != gold 2",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-010",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0.3,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 10765,
+      "tokensIn": 12119,
+      "tokensOut": 74,
+      "retries": 0,
+      "costUsd": 0.00202305,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "Question is ambiguous: \"buyers\" is not a defined entity in the schema (could mean all customers, distinct customers with orders, or customers with paid/shipped orders), and it specifies no metric window or grouping. Refusing rather than guessing.",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-011",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.72,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 11525,
+      "tokensIn": 12165,
+      "tokensOut": 106,
+      "retries": 0,
+      "costUsd": 0.00209895,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT l.product_id, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l WHERE l.status IN ('paid','shipped') GROUP BY l.product_id ORDER BY revenue DESC, l.product_id ASC LIMIT 1",
+      "executed_sql": "SELECT l.product_id, SUM(l.line_revenue) AS revenue FROM analytics_order_lines l WHERE l.status IN ('paid','shipped') GROUP BY l.product_id ORDER BY revenue DESC, l.product_id ASC LIMIT 1",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "column count 2 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-012",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "CLARIFY",
+      "confidence": 0.25,
+      "correct": false,
+      "row_correct": null,
+      "latencyMs": 9490,
+      "tokensIn": 12166,
+      "tokensOut": 77,
+      "retries": 0,
+      "costUsd": 0.0019191,
+      "usageSource": "provider",
+      "predicted_sql": null,
+      "executed_sql": null,
+      "rows_returned": 0,
+      "gold_rows": 0,
+      "block_stage": null,
+      "note": "The time window 'the past week' is relative and unspecified; no anchor date is provided and current-date functions are disallowed, so the range cannot be determined. Also 'earned' does not state whether to include all statuses or only paid/shipped.",
+      "violation": false,
+      "isolation": null
+    }
+  ]
+}
