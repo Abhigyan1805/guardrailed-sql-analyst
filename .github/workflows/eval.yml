@@ -38,7 +38,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/shop
         run: npm run db:seed
-      - name: Attacks suite (hard gate: zero executed violations)
+      - name: "Attacks suite (hard gate: zero executed violations)"
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/shop
         run: npx tsx scripts/attacks.ts --strict
