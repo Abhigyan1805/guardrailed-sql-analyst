@@ -8,14 +8,15 @@
 // All three engines pass through the identical pre-generation guardrail, SQL
 // guardrail, confidence gate and execution pipeline (see pipeline.ts). The
 // engine changes generation only.
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { getDb } from '../lib/db';
 import { runQuestion, type ItemResult, type PipelineDeps } from './pipeline';
-import { runAttacks } from './attacks';
+import { runAttacks, type AttackReport } from './attacks';
 import {
   parseArgs, loadEnv, loadSet, setExists, gitSha,
   EVAL_NOW, EVAL_SEED, GATE, ROOT, REPORTS_DIR,
+  LATENCY_GATES_MS, ACCURACY_FLOORS,
 } from './loader';
 import { makeEngine, engineMeta, summarizePass, writeReportMd, writeCalibrationMd, DEFAULT_HYBRID_THRESHOLD, type RunReport } from './report';
 import { REFERENCE_PRICING, type CostOptions } from './metrics/cost';
@@ -43,6 +44,8 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
     allPasses.push(items);
   }
 
+  // Amended R5: the reference sheet is a fallback for when the backend cannot
+  // expose exact usage; it never overrides provider-reported cost.
   const llmInvolved = engineName !== 'templates';
   const costOptions: CostOptions = llmInvolved
     ? { referencePricing: REFERENCE_PRICING.offPeak, referenceLabel: REFERENCE_PRICING.label }
@@ -69,7 +72,9 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
       hybrid_threshold: DEFAULT_HYBRID_THRESHOLD,
       usage_source: primary.cost_per_100q.source,
       usage_source_note: llmInvolved
-        ? `${REFERENCE_PRICING.label}; served model: ${meta.model} (effort ${meta.effort}); tokens are provider-reported, priced at the published sheet`
+        ? primary.cost_per_100q.source === 'provider'
+          ? `exact provider-reported token counts and cost from the headless subagent; published sheet ${REFERENCE_PRICING.label} recorded for reference`
+          : `provider usage unavailable; estimated from ${REFERENCE_PRICING.label}; served model: ${meta.model} (effort ${meta.effort})`
         : primary.cost_per_100q.source === 'unavailable'
           ? (primary.cost_per_100q.reason ?? 'usage unavailable')
           : 'exact provider-reported usage',
@@ -101,6 +106,57 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
   return report;
 }
 
+/** Newest committed report per (set, engine), ignoring the attacks file. */
+function loadCommittedReports(): RunReport[] {
+  const files = readdirSync(REPORTS_DIR).filter((f) => f.endsWith('.json') && !f.startsWith('attacks-'));
+  const byKey = new Map<string, RunReport>();
+  for (const f of files) {
+    let r: RunReport;
+    try {
+      r = JSON.parse(readFileSync(join(REPORTS_DIR, f), 'utf8')) as RunReport;
+    } catch {
+      continue;
+    }
+    const set = String(r.meta?.set ?? '');
+    const engine = String(r.meta?.engine ?? '');
+    if (!set || !engine) continue;
+    const key = `${set}/${engine}`;
+    const prev = byKey.get(key);
+    if (!prev || String(r.meta.timestamp) > String(prev.meta.timestamp)) byKey.set(key, r);
+  }
+  return [...byKey.values()];
+}
+
+/** Newest committed attacks report, with its own meta stripped. */
+function loadLatestAttacks(): AttackReport | null {
+  const files = readdirSync(REPORTS_DIR).filter((f) => f.startsWith('attacks-') && f.endsWith('.json'));
+  let best: { meta?: { timestamp?: string } } & Record<string, unknown> = null as never;
+  for (const f of files) {
+    const j = JSON.parse(readFileSync(join(REPORTS_DIR, f), 'utf8'));
+    if (!best || String(j.meta?.timestamp) > String(best.meta?.timestamp)) best = j;
+  }
+  if (!best) return null;
+  const { meta: _meta, ...rest } = best;
+  return rest as unknown as AttackReport;
+}
+
+/** Per-engine strict gates (spec 8). Returns human-readable failures. */
+function strictFailures(r: RunReport): string[] {
+  const out: string[] = [];
+  const engine = String(r.meta.engine);
+  const set = String(r.meta.set);
+  if (r.summary.violations > 0) out.push(`violations=${r.summary.violations}`);
+  const gate = LATENCY_GATES_MS[engine];
+  if (gate !== undefined && r.summary.latency.p95Allow > gate) {
+    out.push(`p95 ALLOW ${Math.round(r.summary.latency.p95Allow)}ms > ${gate}ms (${engine})`);
+  }
+  const floor = ACCURACY_FLOORS[`${set}/${engine}`];
+  if (floor !== undefined && r.summary.accuracy < floor) {
+    out.push(`accuracy ${(r.summary.accuracy * 100).toFixed(1)}% < floor ${(floor * 100).toFixed(1)}% (${set}/${engine})`);
+  }
+  return out;
+}
+
 function formatSummary(label: string, r: RunReport): string {
   const s = r.summary;
   const cost = s.cost_per_100q.value === null
@@ -111,7 +167,18 @@ function formatSummary(label: string, r: RunReport): string {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.attacks && !args.matrix && !args.set) throw new Error('--set is required (or use --attacks / --matrix)');
+
+  // Regenerate the markdown from already-committed reports (no engine calls).
+  if (args.report) {
+    const reports = loadCommittedReports();
+    if (!reports.length) throw new Error('no committed reports found in eval/reports');
+    writeReportMd(reports, loadLatestAttacks());
+    writeCalibrationMd(reports);
+    console.log(`wrote eval/REPORT.md and eval/CALIBRATION.md from ${reports.length} committed reports`);
+    return;
+  }
+
+  if (!args.attacks && !args.matrix && !args.set) throw new Error('--set is required (or use --attacks / --matrix / --report)');
   if (!args.attacks && !args.matrix && !args.engine) throw new Error('--engine is required (or use --matrix)');
 
   loadEnv();
@@ -155,12 +222,17 @@ async function main(): Promise<void> {
       ...attacks,
     }, null, 2));
     writeReportMd(reports, attacks);
-    const calSource = reports.find((r) => r.meta.set === 'dev' && r.meta.engine === 'llm') ?? reports.find((r) => r.meta.set === 'dev');
-    if (calSource) writeCalibrationMd(calSource);
+    writeCalibrationMd(reports);
     console.log('wrote eval/REPORT.md');
     if (args.strict) {
-      const bad = reports.some((r) => r.summary.violations > 0) || attacks.violations > 0 || !attacks.dbUnchanged;
-      if (bad) { console.error('STRICT matrix gates FAILED'); process.exit(1); }
+      const failures = reports.flatMap((r) => strictFailures(r).map((m) => `${r.meta.set}/${r.meta.engine}: ${m}`));
+      if (attacks.violations > 0) failures.push(`attacks: ${attacks.violations} executed violations`);
+      if (!attacks.dbUnchanged) failures.push('attacks: DB fingerprint changed');
+      if (failures.length) {
+        for (const m of failures) console.error(`STRICT FAIL ${m}`);
+        console.error('STRICT matrix gates FAILED');
+        process.exit(1);
+      }
       console.log('STRICT matrix gates PASSED');
     }
     return;
@@ -168,11 +240,15 @@ async function main(): Promise<void> {
 
   const repeats = args.repeats ?? (args.engine === 'templates' ? 1 : 3);
   const report = await runSetEngine(args.set!, args.engine!, repeats, deps, args.limit);
-  if (args.set === 'dev') writeCalibrationMd(report);
+  if (args.set === 'dev') writeCalibrationMd([report]);
   console.log(formatSummary(`${args.set}/${args.engine}`, report));
   if (args.strict) {
-    const s = report.summary;
-    if (s.violations > 0) { console.error('STRICT gates FAILED: violations > 0'); process.exit(1); }
+    const failures = strictFailures(report);
+    if (failures.length) {
+      for (const m of failures) console.error(`STRICT FAIL ${m}`);
+      console.error('STRICT gates FAILED');
+      process.exit(1);
+    }
     console.log('STRICT gates PASSED');
   }
 }

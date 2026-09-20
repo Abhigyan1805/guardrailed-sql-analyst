@@ -24,18 +24,35 @@ export const GATE = {
   clarify: Number(process.env.EVAL_GATE_CLARIFY ?? 0.55),
 };
 
+// Per-engine CI gates (spec 8): latency ceilings are per engine, never one
+// global number, because the deterministic path is milliseconds and the model
+// path is tens of seconds. Override any of them from the environment.
+export const LATENCY_GATES_MS: Record<string, number> = {
+  templates: Number(process.env.EVAL_LATENCY_GATE_TEMPLATES ?? 1_500),
+  llm: Number(process.env.EVAL_LATENCY_GATE_LLM ?? 120_000),
+  hybrid: Number(process.env.EVAL_LATENCY_GATE_HYBRID ?? 90_000),
+};
+
+// Accuracy floors only where determinism makes a drop a real regression (the
+// template engine on its own dev set). LLM/hybrid scores vary run to run and
+// are reported, not gated.
+export const ACCURACY_FLOORS: Record<string, number> = {
+  'dev/templates': Number(process.env.EVAL_MIN_ACC_DEV_TEMPLATES ?? 1),
+};
+
 export interface CliArgs {
   set?: string;
   engine?: string;
   attacks: boolean;
   matrix: boolean;
   strict: boolean;
+  report: boolean;
   repeats?: number;
   limit?: number;
 }
 
 export function parseArgs(argv: string[]): CliArgs {
-  const args: CliArgs = { attacks: false, matrix: false, strict: false };
+  const args: CliArgs = { attacks: false, matrix: false, strict: false, report: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--set') args.set = argv[++i];
@@ -43,6 +60,7 @@ export function parseArgs(argv: string[]): CliArgs {
     else if (a === '--attacks') args.attacks = true;
     else if (a === '--matrix') args.matrix = true;
     else if (a === '--strict') args.strict = true;
+    else if (a === '--report') args.report = true;
     else if (a === '--repeats') args.repeats = Number(argv[++i]);
     else if (a === '--limit') args.limit = Number(argv[++i]);
     else if (a.startsWith('--')) throw new Error(`unknown flag: ${a}`);

@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { costPer100q, estimatedCostUsd, type UsageRecord } from './cost';
+import { costPer100q, costPer100qByBasis, estimatedCostUsd, PRICE_BASES, type UsageRecord } from './cost';
 
 const rec = (o: Partial<UsageRecord>): UsageRecord => ({ tokensIn: 0, tokensOut: 0, costUsd: null, usageSource: 'provider', ...o });
 
@@ -12,6 +12,27 @@ describe('costPer100q', () => {
     expect(r.source).toBe('provider');
     expect(r.value).toBeCloseTo((0.04 * 100) / 2, 10); // $2 / 100q
     expect(r.totalUsd).toBeCloseTo(0.04, 10);
+  });
+
+  it('uses provider cost even when a reference price sheet is supplied', () => {
+    const records = [rec({ costUsd: 0.02, tokensIn: 1_000_000 })];
+    const r = costPer100q(records, 1, 'opencode-go/deepseek-v4.1-flash', {
+      referencePricing: { inputPer1M: 0.15, outputPer1M: 0.6 },
+      referenceLabel: 'reference',
+    });
+    expect(r.source).toBe('provider');
+    expect(r.value).toBeCloseTo(2, 10);
+  });
+
+  it('falls back to the reference sheet when provider cost is missing', () => {
+    const r = costPer100q(
+      [rec({ tokensIn: 1_000_000, tokensOut: 1_000_000, usageSource: 'estimated' })],
+      1,
+      'opencode-go/deepseek-v4.1-flash',
+      { referencePricing: { inputPer1M: 0.15, outputPer1M: 0.6 }, referenceLabel: 'reference' },
+    );
+    expect(r.source).toBe('estimated');
+    expect(r.value).toBeCloseTo(75, 6);
   });
 
   it('estimates when provider cost is missing but pricing is pinned', () => {
@@ -37,5 +58,23 @@ describe('costPer100q', () => {
 
   it('estimatedCostUsd applies per-1M prices', () => {
     expect(estimatedCostUsd({ tokensIn: 2_000_000, tokensOut: 0 }, { inputPer1M: 0.5, outputPer1M: 2 })).toBeCloseTo(1, 9);
+  });
+});
+
+describe('costPer100qByBasis', () => {
+  it('prices the same token counts under every basis', () => {
+    // 1M in + 1M out, 10 scored questions.
+    const rows = costPer100qByBasis([rec({ tokensIn: 1_000_000, tokensOut: 1_000_000 })], 10);
+    expect(rows).toHaveLength(PRICE_BASES.length);
+    const byId = Object.fromEntries(rows.map((r) => [r.basis.id, r.value]));
+    // DeepSeek off-peak: (1M*0.15 + 1M*0.60)/1M * 100/10 = 7.5
+    expect(byId['deepseek-v4.1-flash-offpeak']).toBeCloseTo(7.5, 6);
+    // GLM-5.3-Flash flat: (1M*0.15 + 1M*0.50)/1M * 100/10 = 6.5
+    expect(byId['glm-5.3-flash']).toBeCloseTo(6.5, 6);
+  });
+
+  it('reports null when there are no scored questions', () => {
+    const rows = costPer100qByBasis([rec({ tokensIn: 100 })], 0);
+    expect(rows.every((r) => r.value === null)).toBe(true);
   });
 });

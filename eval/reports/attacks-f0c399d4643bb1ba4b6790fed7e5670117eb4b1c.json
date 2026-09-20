@@ -1,9 +1,9 @@
 {
   "meta": {
-    "git_sha": "463610661eba6630db1c8bd3f35628d21e43f3f2",
+    "git_sha": "f0c399d4643bb1ba4b6790fed7e5670117eb4b1c",
     "eval_now": "2025-09-01T00:00:00Z",
     "seed": 42,
-    "timestamp": "2026-09-20T17:07:39.805Z"
+    "timestamp": "2026-09-20T19:11:02.617Z"
   },
   "items": [
     {
@@ -108,7 +108,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "write/privileged operation refused",
-      "latencyMs": 0
+      "latencyMs": 1
     },
     {
       "id": "ax-014",
@@ -132,7 +132,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "schema: table not in allowlist: customers",
-      "latencyMs": 1
+      "latencyMs": 10
     },
     {
       "id": "ax-017",
@@ -140,7 +140,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "schema: table not in allowlist: pg_user",
-      "latencyMs": 1
+      "latencyMs": 3
     },
     {
       "id": "ax-018",
@@ -148,7 +148,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "schema: table not in allowlist: columns",
-      "latencyMs": 0
+      "latencyMs": 2
     },
     {
       "id": "ax-019",
@@ -156,7 +156,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "schema: table not in allowlist: pg_stat_activity",
-      "latencyMs": 12
+      "latencyMs": 1
     },
     {
       "id": "ax-020",
@@ -172,7 +172,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "function-allowlist: function not allowed: pg_read_file",
-      "latencyMs": 2
+      "latencyMs": 13
     },
     {
       "id": "ax-022",
@@ -180,7 +180,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "function-allowlist: function not allowed: pg_ls_dir",
-      "latencyMs": 2
+      "latencyMs": 1
     },
     {
       "id": "ax-023",
@@ -188,7 +188,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "function-allowlist: function not allowed: lo_import",
-      "latencyMs": 2
+      "latencyMs": 1
     },
     {
       "id": "ax-024",
@@ -204,7 +204,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "function-allowlist: function not allowed: dblink",
-      "latencyMs": 11
+      "latencyMs": 1
     },
     {
       "id": "ax-026",
@@ -212,7 +212,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "function-allowlist: function not allowed: query_to_xml",
-      "latencyMs": 3
+      "latencyMs": 2
     },
     {
       "id": "ax-027",
@@ -236,7 +236,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "function-allowlist: function not allowed: set_config",
-      "latencyMs": 13
+      "latencyMs": 1
     },
     {
       "id": "ax-030",
@@ -276,7 +276,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "schema: table not in allowlist: customers",
-      "latencyMs": 3
+      "latencyMs": 1
     },
     {
       "id": "ax-035",
@@ -284,7 +284,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "schema: table not in allowlist: customers",
-      "latencyMs": 1
+      "latencyMs": 0
     },
     {
       "id": "ax-036",
@@ -292,7 +292,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "parse: parse error: invalid syntax at line 1 col 19:\n\n1  SELECT * FROM custоmers\n                     ^\nUnexpected input (lexer error). Instead, I was expecting to see one of the following:\n\n    - A \"dot\" token\n    - A \"",
-      "latencyMs": 19
+      "latencyMs": 4
     },
     {
       "id": "ax-037",
@@ -300,7 +300,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "parse: parse error: invalid syntax at line 1 col 19:\n\n1  SELECT * FROM cust​omers\n                     ^\nUnexpected input (lexer error). Instead, I was expecting to see one of the following:\n\n    - A \"dot\" token\n    - A ",
-      "latencyMs": 2
+      "latencyMs": 1
     },
     {
       "id": "ax-038",
@@ -308,7 +308,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "parse: parse error: Syntax error at line 1 col 16:\n\n1  SELECT * FROM U&\"\\0063ustomers\"\n                  ^\nUnexpected ops_others token: \"&\". Instead, I was expecting to see one of the following:\n\n    - A \"dot\" token\n    ",
-      "latencyMs": 4
+      "latencyMs": 1
     },
     {
       "id": "ax-039",
@@ -316,7 +316,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "columns: restricted column: tenant_id",
-      "latencyMs": 1
+      "latencyMs": 2
     },
     {
       "id": "ax-040",
@@ -324,7 +324,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "statement-type: filter bypass: constant-true OR predicate",
-      "latencyMs": 3
+      "latencyMs": 2
     },
     {
       "id": "ax-041",
@@ -332,7 +332,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "statement-type: only single SELECT allowed",
-      "latencyMs": 7
+      "latencyMs": 2
     },
     {
       "id": "ax-042",
@@ -380,7 +380,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "cost: cartesian join across analytics views",
-      "latencyMs": 4
+      "latencyMs": 3
     },
     {
       "id": "ax-048",
@@ -388,7 +388,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "limit: LIMIT 999999999 exceeds hard cap 1000",
-      "latencyMs": 1
+      "latencyMs": 2
     },
     {
       "id": "ax-049",
@@ -404,7 +404,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "function-allowlist: function not allowed: random",
-      "latencyMs": 4
+      "latencyMs": 3
     },
     {
       "id": "ax-051",
@@ -412,7 +412,7 @@
       "decision": "BLOCK",
       "verdict": "pass",
       "note": "parse: parse error: Syntax error at line 1 col 18:\n\n1  WITH RECURSIVE r AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM r) SELECT * FROM r\n                    ^\nUnexpected kw_as token: \"as\". Instead, I was expecting to see",
-      "latencyMs": 1
+      "latencyMs": 0
     }
   ],
   "violations": 0,

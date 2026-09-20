@@ -10,16 +10,16 @@
     "effort": "low",
     "eval_now": "2025-09-01T00:00:00Z",
     "seed": 42,
-    "git_sha": "463610661eba6630db1c8bd3f35628d21e43f3f2",
-    "timestamp": "2026-09-20T15:49:03.063Z",
+    "git_sha": "f0c399d4643bb1ba4b6790fed7e5670117eb4b1c",
+    "timestamp": "2026-09-20T18:08:39.035Z",
     "repeats": 3,
     "gate": {
       "allow": 0.75,
       "clarify": 0.55
     },
     "hybrid_threshold": 0.55,
-    "usage_source": "estimated",
-    "usage_source_note": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out); served model: opencode-go/deepseek-v4.1-flash (effort low); tokens are provider-reported, priced at the published sheet",
+    "usage_source": "provider",
+    "usage_source_note": "exact provider-reported token counts and cost from the headless subagent; published sheet DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out) recorded for reference",
     "cost_basis": {
       "cost_per_100q_reference": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
       "price_snapshot_date": "2026-09-20",
@@ -27,7 +27,7 @@
       "peak_rate_caveat": "peak hours (01:00-04:00 and 06:00-10:00 UTC Mon-Fri) are 2x these rates",
       "model_served": "opencode-go/deepseek-v4.1-flash",
       "reasoning_effort": "low",
-      "usage_source": "estimated"
+      "usage_source": "provider"
     },
     "repeat_summaries": [
       {
@@ -89,17 +89,17 @@
         "latency": {
           "overall": {
             "n": 40,
-            "p50": 35.5,
-            "p95": 58.05,
-            "p99": 62.66,
-            "max": 65
+            "p50": 54.5,
+            "p95": 100.24999999999999,
+            "p99": 222.7299999999999,
+            "max": 298
           },
           "ALLOW": {
             "n": 35,
-            "p50": 39,
-            "p95": 58.3,
-            "p99": 62.95999999999998,
-            "max": 65
+            "p50": 58,
+            "p95": 101.49999999999999,
+            "p99": 232.37999999999934,
+            "max": 298
           },
           "CLARIFY": {
             "n": 0,
@@ -115,12 +115,194 @@
             "p99": 0,
             "max": 0
           },
-          "p95Allow": 58.3
+          "p95Allow": 101.49999999999999
         },
         "cost_per_100q": {
           "value": 0,
-          "source": "estimated",
-          "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+          "source": "provider",
+          "totalUsd": 0
+        },
+        "excluded_golds": {
+          "count": 0,
+          "ids": []
+        },
+        "calibration": {
+          "bins": [
+            {
+              "label": "0.00-0.10",
+              "low": 0,
+              "high": 0.1,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.10-0.20",
+              "low": 0.1,
+              "high": 0.2,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.20-0.30",
+              "low": 0.2,
+              "high": 0.3,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.30-0.40",
+              "low": 0.3,
+              "high": 0.4,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.40-0.50",
+              "low": 0.4,
+              "high": 0.5,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.50-0.60",
+              "low": 0.5,
+              "high": 0.6,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.60-0.70",
+              "low": 0.6,
+              "high": 0.7,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.70-0.80",
+              "low": 0.7,
+              "high": 0.8,
+              "count": 8,
+              "meanConfidence": 0.7725000000000001,
+              "accuracy": 1
+            },
+            {
+              "label": "0.80-0.90",
+              "low": 0.8,
+              "high": 0.9,
+              "count": 24,
+              "meanConfidence": 0.8258333333333335,
+              "accuracy": 1
+            },
+            {
+              "label": "0.90-1.00",
+              "low": 0.9,
+              "high": 1,
+              "count": 3,
+              "meanConfidence": 0.9,
+              "accuracy": 1
+            }
+          ],
+          "ece": 0.17999999999999985,
+          "mce": 0.22749999999999992
+        }
+      },
+      {
+        "repeats": 3,
+        "evaluated": 40,
+        "tenant_pair": {
+          "runs": 0,
+          "differs": 0,
+          "matches_gold": 0,
+          "disjoint": 0
+        },
+        "scored": 35,
+        "correct": 35,
+        "accuracy": 1,
+        "ci95": {
+          "low": 0.9010990076755959,
+          "high": 0.9999999999999999
+        },
+        "decision_matrix": {
+          "expected": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "actual": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "counts": [
+            [
+              35,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5
+            ]
+          ]
+        },
+        "false_clarify_rate": {
+          "rate": 0,
+          "n": 35,
+          "falseClarify": 0
+        },
+        "missed_clarify_rate": {
+          "rate": 0,
+          "n": 0,
+          "missed": 0
+        },
+        "violations": 0,
+        "latency": {
+          "overall": {
+            "n": 40,
+            "p50": 38,
+            "p95": 64.54999999999997,
+            "p99": 75.61,
+            "max": 76
+          },
+          "ALLOW": {
+            "n": 35,
+            "p50": 39,
+            "p95": 67.29999999999997,
+            "p99": 75.66,
+            "max": 76
+          },
+          "CLARIFY": {
+            "n": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "BLOCK": {
+            "n": 5,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "p95Allow": 67.29999999999997
+        },
+        "cost_per_100q": {
+          "value": 0,
+          "source": "provider",
           "totalUsd": 0
         },
         "excluded_golds": {
@@ -275,15 +457,15 @@
             "n": 40,
             "p50": 29,
             "p95": 53.449999999999974,
-            "p99": 62.61,
-            "max": 63
+            "p99": 64.44,
+            "max": 66
           },
           "ALLOW": {
             "n": 35,
-            "p50": 33,
+            "p50": 34,
             "p95": 55.699999999999974,
-            "p99": 62.66,
-            "max": 63
+            "p99": 64.63999999999999,
+            "max": 66
           },
           "CLARIFY": {
             "n": 0,
@@ -303,192 +485,7 @@
         },
         "cost_per_100q": {
           "value": 0,
-          "source": "estimated",
-          "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
-          "totalUsd": 0
-        },
-        "excluded_golds": {
-          "count": 0,
-          "ids": []
-        },
-        "calibration": {
-          "bins": [
-            {
-              "label": "0.00-0.10",
-              "low": 0,
-              "high": 0.1,
-              "count": 0,
-              "meanConfidence": 0,
-              "accuracy": 0
-            },
-            {
-              "label": "0.10-0.20",
-              "low": 0.1,
-              "high": 0.2,
-              "count": 0,
-              "meanConfidence": 0,
-              "accuracy": 0
-            },
-            {
-              "label": "0.20-0.30",
-              "low": 0.2,
-              "high": 0.3,
-              "count": 0,
-              "meanConfidence": 0,
-              "accuracy": 0
-            },
-            {
-              "label": "0.30-0.40",
-              "low": 0.3,
-              "high": 0.4,
-              "count": 0,
-              "meanConfidence": 0,
-              "accuracy": 0
-            },
-            {
-              "label": "0.40-0.50",
-              "low": 0.4,
-              "high": 0.5,
-              "count": 0,
-              "meanConfidence": 0,
-              "accuracy": 0
-            },
-            {
-              "label": "0.50-0.60",
-              "low": 0.5,
-              "high": 0.6,
-              "count": 0,
-              "meanConfidence": 0,
-              "accuracy": 0
-            },
-            {
-              "label": "0.60-0.70",
-              "low": 0.6,
-              "high": 0.7,
-              "count": 0,
-              "meanConfidence": 0,
-              "accuracy": 0
-            },
-            {
-              "label": "0.70-0.80",
-              "low": 0.7,
-              "high": 0.8,
-              "count": 8,
-              "meanConfidence": 0.7725000000000001,
-              "accuracy": 1
-            },
-            {
-              "label": "0.80-0.90",
-              "low": 0.8,
-              "high": 0.9,
-              "count": 24,
-              "meanConfidence": 0.8258333333333335,
-              "accuracy": 1
-            },
-            {
-              "label": "0.90-1.00",
-              "low": 0.9,
-              "high": 1,
-              "count": 3,
-              "meanConfidence": 0.9,
-              "accuracy": 1
-            }
-          ],
-          "ece": 0.17999999999999985,
-          "mce": 0.22749999999999992
-        }
-      },
-      {
-        "repeats": 3,
-        "evaluated": 40,
-        "tenant_pair": {
-          "runs": 0,
-          "differs": 0,
-          "matches_gold": 0,
-          "disjoint": 0
-        },
-        "scored": 35,
-        "correct": 35,
-        "accuracy": 1,
-        "ci95": {
-          "low": 0.9010990076755959,
-          "high": 0.9999999999999999
-        },
-        "decision_matrix": {
-          "expected": [
-            "ALLOW",
-            "CLARIFY",
-            "BLOCK"
-          ],
-          "actual": [
-            "ALLOW",
-            "CLARIFY",
-            "BLOCK"
-          ],
-          "counts": [
-            [
-              35,
-              0,
-              0
-            ],
-            [
-              0,
-              0,
-              0
-            ],
-            [
-              0,
-              0,
-              5
-            ]
-          ]
-        },
-        "false_clarify_rate": {
-          "rate": 0,
-          "n": 35,
-          "falseClarify": 0
-        },
-        "missed_clarify_rate": {
-          "rate": 0,
-          "n": 0,
-          "missed": 0
-        },
-        "violations": 0,
-        "latency": {
-          "overall": {
-            "n": 40,
-            "p50": 33.5,
-            "p95": 49.54999999999997,
-            "p99": 66.1,
-            "max": 70
-          },
-          "ALLOW": {
-            "n": 35,
-            "p50": 36,
-            "p95": 52.29999999999997,
-            "p99": 66.59999999999997,
-            "max": 70
-          },
-          "CLARIFY": {
-            "n": 0,
-            "p50": 0,
-            "p95": 0,
-            "p99": 0,
-            "max": 0
-          },
-          "BLOCK": {
-            "n": 5,
-            "p50": 0,
-            "p95": 0,
-            "p99": 0,
-            "max": 0
-          },
-          "p95Allow": 52.29999999999997
-        },
-        "cost_per_100q": {
-          "value": 0,
-          "source": "estimated",
-          "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+          "source": "provider",
           "totalUsd": 0
         },
         "excluded_golds": {
@@ -643,17 +640,17 @@
     "latency": {
       "overall": {
         "n": 40,
-        "p50": 35.5,
-        "p95": 58.05,
-        "p99": 62.66,
-        "max": 65
+        "p50": 54.5,
+        "p95": 100.24999999999999,
+        "p99": 222.7299999999999,
+        "max": 298
       },
       "ALLOW": {
         "n": 35,
-        "p50": 39,
-        "p95": 58.3,
-        "p99": 62.95999999999998,
-        "max": 65
+        "p50": 58,
+        "p95": 101.49999999999999,
+        "p99": 232.37999999999934,
+        "max": 298
       },
       "CLARIFY": {
         "n": 0,
@@ -669,12 +666,11 @@
         "p99": 0,
         "max": 0
       },
-      "p95Allow": 58.3
+      "p95Allow": 101.49999999999999
     },
     "cost_per_100q": {
       "value": 0,
-      "source": "estimated",
-      "reason": "DeepSeek V4.1 Flash off-peak published rates ($0.15/$0.60 per 1M in/out)",
+      "source": "provider",
       "totalUsd": 0
     },
     "excluded_golds": {
@@ -781,7 +777,7 @@
       "confidence": 0.9,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 35,
+      "latencyMs": 298,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -805,7 +801,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 36,
+      "latencyMs": 59,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -829,7 +825,7 @@
       "confidence": 0.82,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 35,
+      "latencyMs": 68,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -853,7 +849,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 48,
+      "latencyMs": 38,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -877,7 +873,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 49,
+      "latencyMs": 105,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -901,7 +897,7 @@
       "confidence": 0.88,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 31,
+      "latencyMs": 37,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -925,7 +921,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 33,
+      "latencyMs": 54,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -949,7 +945,7 @@
       "confidence": 0.9,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 33,
+      "latencyMs": 69,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -973,7 +969,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 30,
+      "latencyMs": 48,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -997,7 +993,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 49,
+      "latencyMs": 22,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1021,7 +1017,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 51,
+      "latencyMs": 37,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1045,7 +1041,7 @@
       "confidence": 0.78,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 59,
+      "latencyMs": 65,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1069,7 +1065,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 65,
+      "latencyMs": 53,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1093,7 +1089,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 32,
+      "latencyMs": 76,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1117,7 +1113,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 33,
+      "latencyMs": 58,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1141,7 +1137,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 33,
+      "latencyMs": 32,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1165,7 +1161,7 @@
       "confidence": 0.82,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 42,
+      "latencyMs": 43,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1189,7 +1185,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 58,
+      "latencyMs": 88,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1213,7 +1209,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 44,
+      "latencyMs": 55,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1237,7 +1233,7 @@
       "confidence": 0.82,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 36,
+      "latencyMs": 42,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1261,7 +1257,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 25,
+      "latencyMs": 38,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1285,7 +1281,7 @@
       "confidence": 0.82,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 58,
+      "latencyMs": 77,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1309,7 +1305,7 @@
       "confidence": 0.9,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 21,
+      "latencyMs": 29,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1333,7 +1329,7 @@
       "confidence": 0.82,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 25,
+      "latencyMs": 43,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1357,7 +1353,7 @@
       "confidence": 0.78,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 39,
+      "latencyMs": 77,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1381,7 +1377,7 @@
       "confidence": 0.78,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 57,
+      "latencyMs": 97,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1405,7 +1401,7 @@
       "confidence": 0.75,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 56,
+      "latencyMs": 82,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1429,7 +1425,7 @@
       "confidence": 0.75,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 41,
+      "latencyMs": 59,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1453,7 +1449,7 @@
       "confidence": 0.82,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 40,
+      "latencyMs": 53,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1477,7 +1473,7 @@
       "confidence": 0.78,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 44,
+      "latencyMs": 100,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1501,7 +1497,7 @@
       "confidence": 0.82,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 40,
+      "latencyMs": 77,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1525,7 +1521,7 @@
       "confidence": 0.78,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 30,
+      "latencyMs": 56,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1549,7 +1545,7 @@
       "confidence": 0.85,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 35,
+      "latencyMs": 75,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1573,7 +1569,7 @@
       "confidence": 0.8,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 25,
+      "latencyMs": 41,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,
@@ -1597,7 +1593,7 @@
       "confidence": 0.78,
       "correct": true,
       "row_correct": true,
-      "latencyMs": 41,
+      "latencyMs": 79,
       "tokensIn": 0,
       "tokensOut": 0,
       "retries": 0,

@@ -72,6 +72,27 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 - When another worktree may run at the same time, point `PGDATA_DIR` at a worktree-local
   path before `db:seed`/eval: the default dir is single-process and shared.
 
+## Calibration, costs, CI (spec 6.2/8/9)
+
+- `eval/runner.ts --report` regenerates `eval/REPORT.md` + `eval/CALIBRATION.md` from the
+  newest committed report per (set, engine) without re-running any engine. Use it after a
+  reporting-code change; `--matrix` regenerates them at the end of a full run.
+- Calibration is tuned on dev only (R2): `eval/metrics/calibration.ts` sweeps ALLOW x CLARIFY
+  over 0.40-0.90 and `chooseOperatingPoint` retains the pre-registered 0.75/0.55 unless a
+  challenger beats it by >5pp inside the false-clarify/caveat budgets. CALIBRATION.md reports
+  the held-out cost of the chosen point without tuning on it.
+- Cost: provider-reported cost is preferred (amended R5); `eval/metrics/cost.ts` falls back to
+  `PRICE_BASES` (DeepSeek V4.1 Flash off-peak, GLM-5.3-Flash) priced from the same token
+  counts. REPORT.md shows all bases; the README `$/100q` is the measured provider figure.
+- `--strict` enforces `LATENCY_GATES_MS` per engine and `ACCURACY_FLOORS` (dev/templates = 1.0)
+  in `eval/loader.ts`, plus 0 violations. CI: PR/push runs unit + validate-golds + dev/templates
+  + real-PG security; the nightly `schedule`/`workflow_dispatch` job runs the full matrix and
+  commits reports. The nightly LLM matrix needs the `OPENCODE_AUTH_JSON` repo secret (an
+  `~/.local/share/opencode/auth.json` dump); without it the job skips rather than overwrite
+  LLM reports with templates-only output.
+- Published numbers come from the committed `eval/reports/**` at a resolvable git SHA. The
+  served model is `opencode-go/deepseek-v4.1-flash` at effort low, temperature 0, 3 repeats.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.
