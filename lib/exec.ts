@@ -1,13 +1,12 @@
 import { getDb, withTenant, type TenantCtx } from './db';
-import { validateSql } from './sql-guard';
+import { validateSql, type GuardOptions } from './sql-guard';
+
+export interface ExecOptions extends GuardOptions {
+  disableCostGate?: boolean;
+}
 
 export const PLAN_COST_CAP = 500_000;
 export const PLAN_ROWS_CAP = 100_000;
-// Absolute plan costs ≥1e9 indicate planner penalties (e.g. PGlite/disabled
-// seqscan adds exactly 1e10), not real expense — fall back to row-count.
-// Note: this gates plan risk, not actual execution cost. The statement_timeout
-// in lib/db.ts is the backstop for queries that run long despite a cheap plan.
-export const PLAN_ABSURD_COST = 1_000_000_000;
 
 export type Decision = 'ALLOW' | 'BLOCK' | 'CLARIFY';
 
@@ -22,40 +21,56 @@ export interface ExecResult {
   latencyMs: number;
 }
 
+/** Max Total Cost / Plan Rows over the WHOLE plan tree. The top node is often
+ *  an Aggregate (Plan Rows = 1), which hides a cartesian explosion in a child;
+ *  the gate must see the worst node, not the cheapest. */
+export function planTreeMax(plan: any): { cost: number; rows: number } {
+  let cost = Number(plan?.['Total Cost'] ?? 0);
+  let rows = Number(plan?.['Plan Rows'] ?? 0);
+  for (const child of plan?.Plans ?? []) {
+    const m = planTreeMax(child);
+    if (m.cost > cost) cost = m.cost;
+    if (m.rows > rows) rows = m.rows;
+  }
+  return { cost, rows };
+}
+
 export async function explainCost(sql: string, ctx: TenantCtx): Promise<{ cost: number; rows: number }> {
   return withTenant(ctx, async (db) => {
     const r = (await db.query(`EXPLAIN (FORMAT JSON, COSTS ON) ${sql}`)).rows as any[];
     const plan = r[0]['QUERY PLAN'][0].Plan;
-    return { cost: Number(plan['Total Cost'] ?? 0), rows: Number(plan['Plan Rows'] ?? 0) };
+    return planTreeMax(plan);
   });
 }
 
-export async function executeGuarded(proposedSql: string, ctx: TenantCtx, requestId = ''): Promise<ExecResult> {
+export async function executeGuarded(proposedSql: string, ctx: TenantCtx, requestId = '', opts: ExecOptions = {}): Promise<ExecResult> {
   const t0 = Date.now();
-  const v = validateSql(proposedSql);
+  const v = validateSql(proposedSql, opts);
   if (!v.ok) {
     await writeAudit(ctx, requestId, '', proposedSql, null, 'BLOCK', v.stage, v.reason, null, Date.now() - t0, 0, null);
     return { decision: 'BLOCK', blockStage: v.stage, blockReason: v.reason, latencyMs: Date.now() - t0 };
   }
   const finalSql = v.rewritten!;
 
-  // Cost gate (Plan Rows always enforced; absolute cost ignored when absurd)
+  // Cost gate: worst-node cost and row estimate across the whole plan tree.
   let cost = 0;
   let planRows = 0;
-  try {
-    const ex = await explainCost(finalSql, ctx);
-    cost = ex.cost; planRows = ex.rows;
-  } catch (e: any) {
-    await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'explain', String(e?.message ?? e).slice(0, 300), null, Date.now() - t0, 0, null);
-    return { decision: 'BLOCK', blockStage: 'explain', blockReason: 'EXPLAIN failed or timed out', latencyMs: Date.now() - t0 };
-  }
-  if (planRows > PLAN_ROWS_CAP) {
-    await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'cost', `EXPLAIN plan rows ${planRows} > cap`, null, Date.now() - t0, 0, cost);
-    return { decision: 'BLOCK', blockStage: 'cost', blockReason: `query touches too many rows (${planRows})`, explainCost: cost, latencyMs: Date.now() - t0 };
-  }
-  if (cost > PLAN_COST_CAP && cost < PLAN_ABSURD_COST) {
-    await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'cost', `EXPLAIN cost ${Math.round(cost)} > cap`, null, Date.now() - t0, 0, cost);
-    return { decision: 'BLOCK', blockStage: 'cost', blockReason: `query too expensive (${Math.round(cost)})`, explainCost: cost, latencyMs: Date.now() - t0 };
+  if (!opts.disableCostGate) {
+    try {
+      const ex = await explainCost(finalSql, ctx);
+      cost = ex.cost; planRows = ex.rows;
+    } catch (e: any) {
+      await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'explain', String(e?.message ?? e).slice(0, 300), null, Date.now() - t0, 0, null);
+      return { decision: 'BLOCK', blockStage: 'explain', blockReason: 'EXPLAIN failed or timed out', latencyMs: Date.now() - t0 };
+    }
+    if (planRows > PLAN_ROWS_CAP) {
+      await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'cost', `EXPLAIN plan rows ${planRows} > cap`, null, Date.now() - t0, 0, cost);
+      return { decision: 'BLOCK', blockStage: 'cost', blockReason: `query touches too many rows (${planRows})`, explainCost: cost, latencyMs: Date.now() - t0 };
+    }
+    if (cost > PLAN_COST_CAP) {
+      await writeAudit(ctx, requestId, '', proposedSql, finalSql, 'BLOCK', 'cost', `EXPLAIN cost ${Math.round(cost)} > cap`, null, Date.now() - t0, 0, cost);
+      return { decision: 'BLOCK', blockStage: 'cost', blockReason: `query too expensive (${Math.round(cost)})`, explainCost: cost, latencyMs: Date.now() - t0 };
+    }
   }
 
   try {

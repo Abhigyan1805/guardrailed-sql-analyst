@@ -22,6 +22,13 @@ describe('sql-guard', () => {
     ]) expect(validateSql(q).ok).toBe(false);
   });
 
+  it('rejects cartesian products across views but allows a cross join onto a CTE', () => {
+    expect(validateSql('SELECT count(*) FROM analytics_order_lines a, analytics_order_lines b').ok).toBe(false);
+    expect(validateSql('SELECT count(*) FROM analytics_order_lines a CROSS JOIN analytics_orders b').ok).toBe(false);
+    const ct = validateSql(`WITH avg_c AS (SELECT AVG(order_id) AS avg_rev FROM analytics_orders) SELECT o.order_id FROM analytics_orders o, avg_c`);
+    expect(ct.ok).toBe(true);
+  });
+
   it('blocks base tables and PII columns', () => {
     expect(validateSql('SELECT * FROM customers').ok).toBe(false);
     expect(validateSql('SELECT email FROM analytics_customers_masked').ok).toBe(false);
@@ -35,10 +42,58 @@ describe('sql-guard', () => {
     expect(validateSql(`SELECT * FROM analytics_orders -- hi`).ok).toBe(false);
   });
 
-  it('caps huge LIMIT', () => {
-    const r = validateSql('SELECT order_id FROM analytics_orders LIMIT 50000');
+  it('caps injected LIMIT and blocks a declared LIMIT above the hard cap', () => {
+    const r = validateSql('SELECT order_id FROM analytics_orders');
     expect(r.ok).toBe(true);
-    expect(r.rewritten).toMatch(/LIMIT 1000/);
+    expect(r.rewritten).toMatch(/LIMIT 200/);
+    const big = validateSql('SELECT order_id FROM analytics_orders LIMIT 50000');
+    expect(big.ok).toBe(false);
+    expect(big.stage).toBe('limit');
+    expect(validateSql('SELECT order_id FROM analytics_orders LIMIT 1000').ok).toBe(true);
+  });
+
+  it('blocks session mutation and set_config', () => {
+    for (const q of [
+      `SELECT set_config('app.tenant_id', 'tenant_b', false), count(*) FROM analytics_orders`,
+      `SELECT set_config('role', 'postgres', false)`,
+      `SET ROLE postgres`,
+      `SET search_path TO pg_catalog`,
+      `RESET ALL`,
+      `SHOW search_path`,
+      `SELECT current_setting('app.tenant_id', true)`,
+    ]) expect(validateSql(q).ok, q).toBe(false);
+  });
+
+  it('rejects functions outside the allowlist (fail closed)', () => {
+    for (const q of [
+      `SELECT pg_read_file('/etc/passwd')`,
+      `SELECT pg_sleep(5)`,
+      `SELECT dblink('host=x', 'select 1')`,
+      `SELECT query_to_xml('SELECT * FROM customers', true, false, '')`,
+      `SELECT foo_bar(1) FROM analytics_orders`,
+      `SELECT random() FROM analytics_orders`,
+      `SELECT * FROM analytics_orders ORDER BY random()`,
+      `SELECT lo_import('/etc/passwd')`,
+    ]) expect(validateSql(q).ok, q).toBe(false);
+  });
+
+  it('allows the safe function allowlist', () => {
+    for (const q of [
+      `SELECT count(*), sum(line_revenue), avg(qty) FROM analytics_order_lines`,
+      `SELECT date_trunc('month', ordered_at) AS m, to_char(ordered_at, 'YYYY-MM') AS c FROM analytics_orders GROUP BY 1, 2`,
+      `SELECT lower(status), upper(status), length(status), coalesce(status, 'x'), round(1.234, 2) FROM analytics_orders`,
+      `SELECT row_number() OVER (ORDER BY order_id) AS rn FROM analytics_orders`,
+    ]) expect(validateSql(q).ok, q).toBe(true);
+  });
+
+  it('blocks the RLS tenant-boundary column and constant-true OR bypass', () => {
+    for (const q of [
+      `SELECT * FROM analytics_orders WHERE tenant_id = 'tenant_b'`,
+      `SELECT tenant_id FROM analytics_orders`,
+      `SELECT * FROM analytics_orders WHERE tenant_id IS NOT NULL`,
+      `SELECT * FROM analytics_orders WHERE status = 'paid' OR 1 = 1`,
+      `SELECT * FROM analytics_orders WHERE status = 'paid' OR true`,
+    ]) expect(validateSql(q).ok, q).toBe(false);
   });
 
   it('rejects unparsable SQL', () => {

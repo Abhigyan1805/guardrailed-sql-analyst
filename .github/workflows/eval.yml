@@ -8,16 +8,53 @@ on:
 jobs:
   eval:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: shop
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      # Accuracy/LLM/calibration fixture stays on PGlite (embedded, no service).
+      # No DATABASE_URL here, so the seed targets the PGlite data dir.
       - run: npm run db:seed
       - run: npx vitest run
       - run: npx tsx scripts/validate-golds.ts
       - run: npx tsx eval/runner.ts --strict
+      # Security suite runs against real Postgres: PGlite silently ignores
+      # statement_timeout and cannot exercise filesystem/network exposure.
+      - name: Seed real Postgres
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/shop
+        run: npm run db:seed
+      - name: "Attacks suite (hard gate: zero executed violations)"
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/shop
+        run: npx tsx scripts/attacks.ts --strict
+      - name: Defense-in-depth ablation matrix
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/shop
+        run: npx tsx scripts/ablate-layer.ts
+      - name: Regenerate eval/SECURITY.md from measured results
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/shop
+        run: npx tsx scripts/security-report.ts
       - uses: actions/upload-artifact@v4
         with:
           name: eval-report
-          path: eval/REPORT.md
+          path: |
+            eval/REPORT.md
+            eval/SECURITY.md
+            eval/security-results.json
+            eval/ablation-results.json
