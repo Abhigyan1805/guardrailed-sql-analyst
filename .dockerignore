@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.github
+infra
+eval/reports
+*.md
+!README.md
+tsconfig.tsbuildinfo
+.env*

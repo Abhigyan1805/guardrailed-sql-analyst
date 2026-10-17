@@ -1,12 +1,102 @@
 # Guardrailed Text-to-SQL Analyst
 
-Plain-English questions in, SQL + chart + caveats out. Everything runs against a
-read-only Postgres role with a cost cap and enforced row-level security, and when
-the question is ambiguous the system asks first instead of guessing.
+[![ci](https://github.com/Abhigyan1805/guardrailed-sql-analyst/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhigyan1805/guardrailed-sql-analyst/actions/workflows/ci.yml)
+[![live demo](https://img.shields.io/badge/live%20demo-LIVE_DEMO_URL-blue)](https://LIVE_DEMO_URL)
 
-`text-to-sql` · `llm-guardrails` · `postgres` · `rls` · `langgraph` · `evaluation`
+Ask questions about your sales data in plain English and get SQL, a chart and
+caveats back. Every query runs as a read-only database role under row-level
+security, unsafe requests are blocked and logged, and ambiguous questions get a
+clarifying question instead of a guess.
 
-## Latest eval
+**Live demo:** LIVE_DEMO_URL (demo tenants, scale-to-zero, so the first request after idle takes a few seconds).
+API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /api/health`.
+
+`text-to-sql` · `llm-guardrails` · `postgres` · `rls` · `langgraph` · `docker` · `azure-container-apps`
+
+## Architecture
+
+```mermaid
+flowchart LR
+  web[Web UI] --> api
+  mobile[Mobile app] --> api
+  api["Next.js API<br/>/api/query"] --> auth[Auth + rate limits<br/>token, per user/tenant/IP]
+  auth --> agent[LangGraph agent<br/>link, generate, validate, gate]
+  agent <--> llm[(LLM: Gemini / OpenAI-compatible<br/>or offline templates)]
+  agent --> guard["Guard layers<br/>AST gate, function allowlist,<br/>view allowlist, EXPLAIN cost cap"]
+  guard --> pg[(Postgres or embedded PGlite<br/>app_reader, RLS, read-only txn,<br/>statement timeout)]
+  guard --> audit[(audit_log)]
+```
+
+## Run with Docker
+
+```bash
+docker build -t gsa .
+docker run --rm -p 3000:3000 -e AUTH_SECRET=$(openssl rand -hex 32) -e ALLOW_MOCK_AUTH=true gsa
+# optional free LLM: -e LLM_PROVIDER=gemini -e GOOGLE_API_KEY=...
+```
+
+The image is multi-stage, runs as a non-root user, and ships an embedded PGlite
+database pre-seeded with the demo dataset, so it needs no external services.
+Set `DATABASE_URL` to use a real Postgres instead (the schema is applied on first connect).
+Open http://localhost:3000 or call the API:
+
+```bash
+TOKEN=$(curl -s -XPOST localhost:3000/api/auth/token -H 'content-type: application/json' -d '{"tenant":"tenant_a"}' | jq -r .token)
+curl -s -XPOST localhost:3000/api/query -H "x-ctx-token: $TOKEN" -d '{"question":"Top 5 products by revenue"}'
+```
+
+Config: `AUTH_SECRET` (required in production), `LLM_PROVIDER` (`offline` default, `gemini`, `openai`),
+`GOOGLE_API_KEY` / `OPENAI_API_KEY` / `LLM_*`, `PER_IP_PER_MIN` (default 30).
+`ALLOW_MOCK_AUTH=true` lets the UI mint tokens for the two demo tenants; it is demo-only,
+so replace it with a real identity provider before using real data.
+
+## Deploy to Azure
+
+Azure Container Apps on the consumption plan, scaling to zero, with the image
+pulled from public GHCR (no Azure Container Registry cost). Defined in
+`infra/main.bicep`; secrets (`AUTH_SECRET`, API keys) are Container Apps secrets and never committed.
+Expected cost: about $0 to a few cents a month at demo traffic (scale-to-zero; the free monthly
+grant covers idle and light use; Log Analytics is capped at 0.1 GB/day).
+
+One-time setup (Azure CLI, Owner/Contributor on the subscription):
+
+```bash
+az login
+az account set --subscription "<Azure for Students subscription>"
+
+# 1. Federated identity so GitHub Actions can deploy without a stored password
+APP_ID=$(az ad app create --display-name gsa-deploy --query appId -o tsv)
+az ad sp create --id $APP_ID
+az group create -n gsa-rg -l centralindia
+az role assignment create --assignee $APP_ID --role Contributor \
+  --scope /subscriptions/$(az account show --query id -o tsv)/resourceGroups/gsa-rg
+az ad app federated-credential create --id $APP_ID --parameters '{
+  "name":"gh-main","issuer":"https://token.actions.githubusercontent.com",
+  "subject":"repo:Abhigyan1805/guardrailed-sql-analyst:ref:refs/heads/main",
+  "audiences":["api://AzureADTokenExchange"]}'
+
+# 2. GitHub repo secrets
+gh secret set AZURE_CLIENT_ID --body $APP_ID
+gh secret set AZURE_TENANT_ID --body $(az account show --query tenantId -o tsv)
+gh secret set AZURE_SUBSCRIPTION_ID --body $(az account show --query id -o tsv)
+gh secret set AUTH_SECRET --body $(openssl rand -hex 32)
+gh secret set GOOGLE_API_KEY --body <free Google AI Studio key>   # optional
+
+# 3. Push to main. CI builds, pushes ghcr.io/<owner>/guardrailed-sql-analyst, and deploys.
+#    After the first push, set the GHCR package visibility to Public once
+#    (GitHub > Packages > guardrailed-sql-analyst > Package settings) so Azure can pull it.
+```
+
+Manual deploy without CI: `AUTH_SECRET=... ./infra/deploy.sh ghcr.io/<owner>/guardrailed-sql-analyst:<tag>`.
+The deploy job in `.github/workflows/ci.yml` skips cleanly until these secrets exist.
+PGlite is single-process, so the app is pinned to at most one replica; data resets on restart
+(it is a demo dataset, and the audit log is ephemeral there; use `DATABASE_URL` for durable audit).
+
+## Evaluation
+
+The text-to-SQL accuracy and security evidence behind the guardrails follows.
+
+### Latest eval
 
 Model: `opencode-go/deepseek-v4.1-flash` (effort low, temperature 0) · commit `f0c399d` · 3 repeats for LLM engines · EVAL_NOW 2025-09-01 · seed 42
 

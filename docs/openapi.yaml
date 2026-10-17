@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: Guardrailed SQL Analyst API
+  version: 0.1.0
+  description: >
+    Ask a plain-English question about the sales data and get back guarded SQL,
+    rows, a chart spec and caveats. Every query runs as a read-only role under
+    row-level security; unsafe or ambiguous questions are BLOCKed or CLARIFYd
+    and never executed.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/auth/token:
+    post:
+      summary: Issue a demo context token (demo deployments only)
+      description: Only available when ALLOW_MOCK_AUTH=true. Replace with a real identity provider in production.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tenant: { type: string, enum: [tenant_a, tenant_b], default: tenant_a }
+      responses:
+        '200':
+          description: Signed token to send as `x-ctx-token`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { token: { type: string } }
+        '403': { description: Mock issuance disabled }
+  /api/query:
+    post:
+      summary: Ask a question
+      security: [{ ctxToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question: { type: string, maxLength: 2000, example: Top 5 products by revenue }
+      responses:
+        '200':
+          description: Decision plus results (decision may be ALLOW, CLARIFY or BLOCK)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Answer' }
+        '400': { description: Empty question or missing mock identity, content: { application/json: { schema: { $ref: '#/components/schemas/Answer' } } } }
+        '401': { description: Missing, invalid or expired context token, content: { application/json: { schema: { $ref: '#/components/schemas/Answer' } } } }
+        '429':
+          description: Rate limited (per user, per tenant, per client IP)
+          headers:
+            Retry-After: { schema: { type: integer }, description: Seconds until the window resets }
+          content: { application/json: { schema: { $ref: '#/components/schemas/Answer' } } }
+  /api/health:
+    get:
+      summary: Liveness and database readiness
+      responses:
+        '200':
+          description: Healthy and database ready
+          content: { application/json: { schema: { $ref: '#/components/schemas/Health' } } }
+        '503':
+          description: Database not ready
+          content: { application/json: { schema: { $ref: '#/components/schemas/Health' } } }
+components:
+  securitySchemes:
+    ctxToken:
+      type: apiKey
+      in: header
+      name: x-ctx-token
+      description: HMAC-signed tenant/user context from /api/auth/token.
+  schemas:
+    Answer:
+      type: object
+      required: [decision, caveats, confidence]
+      properties:
+        decision: { type: string, enum: [ALLOW, CLARIFY, BLOCK] }
+        sql: { type: string, nullable: true }
+        executedSql: { type: string }
+        columns: { type: array, items: { type: string } }
+        rows: { type: array, items: { type: object, additionalProperties: true } }
+        chartSpec:
+          type: object
+          properties:
+            type: { type: string }
+            x: { type: string }
+            y: { type: string }
+            title: { type: string }
+        caveats: { type: array, items: { type: string } }
+        clarifyingQuestions: { type: array, items: { type: string } }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        blockReason: { type: string }
+        latencyMs: { type: number }
+        engine: { type: string }
+    Health:
+      type: object
+      properties:
+        status: { type: string, enum: [ok, degraded, error] }
+        db:
+          type: object
+          properties:
+            ready: { type: boolean }
+            engine: { type: string, enum: [pglite, postgres] }
+        llmProvider: { type: string }
+        version: { type: string }
+        latencyMs: { type: number }

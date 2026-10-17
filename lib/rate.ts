@@ -35,4 +35,12 @@ export function checkRate(tenantId: string, userId: string, cfg: RateConfig = DE
 export function resetRate() {
   userBuckets.clear();
   tenantBuckets.clear();
+  ipBuckets.clear();
+}
+
+const ipBuckets = new Map<string, Bucket>();
+
+/** Per-client-IP limit for the public route; PER_IP_PER_MIN overrides the default of 30. */
+export function checkIpRate(ip: string, limit = Number(process.env.PER_IP_PER_MIN ?? 30)) {
+  return hit(ipBuckets, ip, limit);
 }

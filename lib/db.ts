@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..');
+// Bundled builds (Next standalone) move this module, so prefer the app root (cwd) when db/ is there.
+const ROOT = existsSync(join(process.cwd(), 'db', '001_schema.sql')) ? process.cwd() : join(__dirname, '..');
 export const DATA_DIR = process.env.PGDATA_DIR ?? join(homedir(), '.cache', 'guardrailed-sql-analyst-pglite');
 export const DATABASE_URL = process.env.DATABASE_URL ?? '';
 
