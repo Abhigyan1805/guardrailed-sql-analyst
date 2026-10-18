@@ -95,3 +95,30 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: ./infra/deploy.sh "${{ steps.img.outputs.ref }}"
+
+  # Optional: mirror to a Hugging Face Docker Space. Skips cleanly without HF_TOKEN / HF_SPACE.
+  check-hf:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.c.outputs.configured }}
+    steps:
+      - id: c
+        env:
+          T: ${{ secrets.HF_TOKEN }}
+          S: ${{ vars.HF_SPACE }}
+        run: echo "configured=$([ -n "$T" ] && [ -n "$S" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+  deploy-hf:
+    needs: [test, docker, check-hf]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.check-hf.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    concurrency: deploy-hf
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install huggingface_hub
+      - env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+          HF: hf
+        run: ./infra/hf-space.sh

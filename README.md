@@ -1,17 +1,16 @@
 # Guardrailed Text-to-SQL Analyst
 
 [![ci](https://github.com/Abhigyan1805/guardrailed-sql-analyst/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhigyan1805/guardrailed-sql-analyst/actions/workflows/ci.yml)
-[![live demo](https://img.shields.io/badge/live%20demo-LIVE_DEMO_URL-blue)](https://LIVE_DEMO_URL)
 
 Ask questions about your sales data in plain English and get SQL, a chart and
 caveats back. Every query runs as a read-only database role under row-level
 security, unsafe requests are blocked and logged, and ambiguous questions get a
 clarifying question instead of a guess.
 
-**Live demo:** LIVE_DEMO_URL (demo tenants, scale-to-zero, so the first request after idle takes a few seconds).
+**Try it:** `docker run` quick start below (not hosted anywhere).
 API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /api/health`.
 
-`text-to-sql` · `llm-guardrails` · `postgres` · `rls` · `langgraph` · `docker` · `azure-container-apps`
+`text-to-sql` · `llm-guardrails` · `postgres` · `rls` · `langgraph` · `docker`
 
 ## Architecture
 
@@ -50,7 +49,9 @@ Config: `AUTH_SECRET` (required in production), `LLM_PROVIDER` (`offline` defaul
 `ALLOW_MOCK_AUTH=true` lets the UI mint tokens for the two demo tenants; it is demo-only,
 so replace it with a real identity provider before using real data.
 
-## Deploy to Azure
+## Deploy to Azure (optional, not deployed)
+
+No live instance exists; this is the ready-to-use path if you want to host it.
 
 Azure Container Apps on the consumption plan, scaling to zero, with the image
 pulled from public GHCR (no Azure Container Registry cost). Defined in
@@ -91,6 +92,13 @@ Manual deploy without CI: `AUTH_SECRET=... ./infra/deploy.sh ghcr.io/<owner>/gua
 The deploy job in `.github/workflows/ci.yml` skips cleanly until these secrets exist.
 PGlite is single-process, so the app is pinned to at most one replica; data resets on restart
 (it is a demo dataset, and the audit log is ephemeral there; use `DATABASE_URL` for durable audit).
+
+## Deploy to Hugging Face Spaces (optional, not deployed)
+
+`HF_SPACE=<user>/<name> ./infra/hf-space.sh` creates a Docker Space (public, mock demo tenants,
+non-secret variables set for you) and uploads the repo; add `GOOGLE_API_KEY` as a Space secret in
+the Space settings. Note that Docker Spaces on free CPU currently require a Hugging Face PRO subscription.
+Not deployed.
 
 ## Evaluation
 
