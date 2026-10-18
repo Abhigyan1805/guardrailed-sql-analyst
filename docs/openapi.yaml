@@ -106,5 +106,6 @@ components:
             ready: { type: boolean }
             engine: { type: string, enum: [pglite, postgres] }
         llmProvider: { type: string }
+        llmConfigured: { type: boolean, description: False means template-only answers (no LLM key set) }
         version: { type: string }
         latencyMs: { type: number }

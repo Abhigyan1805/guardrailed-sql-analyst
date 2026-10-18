@@ -15,6 +15,11 @@ export async function GET() {
         status: ready ? 'ok' : 'degraded',
         db: { ready, engine: process.env.DATABASE_URL ? 'postgres' : 'pglite' },
         llmProvider: process.env.LLM_PROVIDER ?? 'offline',
+        // false => LLM_PROVIDER has no key, so only the template (non-LLM) path answers.
+        llmConfigured: Boolean(
+          (process.env.LLM_PROVIDER === 'gemini' && process.env.GOOGLE_API_KEY) ||
+          (process.env.LLM_PROVIDER === 'openai' && (process.env.OPENAI_API_KEY || process.env.LLM_API_KEY))
+        ),
         version: process.env.APP_VERSION ?? 'dev',
         latencyMs: Date.now() - started,
       },

@@ -18,14 +18,15 @@ ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0 \
     PGDATA_DIR=/data/pgdata
 ARG APP_VERSION=dev
 ENV APP_VERSION=$APP_VERSION
-RUN groupadd -r app && useradd -r -g app -d /app app && mkdir -p /data && chown app:app /data
-COPY --from=build --chown=app:app /app/.next/standalone ./
-COPY --from=build --chown=app:app /app/.next/static ./.next/static
-COPY --from=build --chown=app:app /app/db ./db
-COPY --from=build --chown=app:app /app/docs/openapi.yaml ./docs/openapi.yaml
-COPY --from=build --chown=app:app /app/node_modules/@electric-sql/pglite ./node_modules/@electric-sql/pglite
-COPY --from=build --chown=app:app /seed-pgdata /data/pgdata
-USER app
+# uid 1000 (the built-in node user) is what Hugging Face Spaces runs containers as.
+RUN mkdir -p /data && chown node:node /data
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/db ./db
+COPY --from=build --chown=node:node /app/docs/openapi.yaml ./docs/openapi.yaml
+COPY --from=build --chown=node:node /app/node_modules/@electric-sql/pglite ./node_modules/@electric-sql/pglite
+COPY --from=build --chown=node:node /seed-pgdata /data/pgdata
+USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
