@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "SQL Analyst",
+    "slug": "guardrailed-sql-analyst",
+    "scheme": "sqlanalyst",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0b0f1a",
+    "android": {
+      "package": "dev.guardrailed.sqlanalyst",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png"
+      }
+    },
+    "ios": { "bundleIdentifier": "dev.guardrailed.sqlanalyst" },
+    "web": { "bundler": "metro", "output": "single", "favicon": "./assets/favicon.png" },
+    "plugins": ["expo-router"],
+    "extra": { "apiUrl": null }
+  }
+}

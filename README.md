@@ -212,6 +212,41 @@ provider, effort, temperature, seed, set hash and timestamp.
 5. Open `eval/REPORT.md` for the full scorecard and `eval/SECURITY.md` for the
    attack and ablation evidence.
 
+## Mobile app
+
+`mobile/` is an Expo (React Native + TypeScript, Expo Router) companion app that talks to the same
+`/api/query` as the web UI. Ask a question in plain English, see the answer, the guarded SQL, the
+result table and a bar chart, red blocked-query banners, clarification chips (the `show sales`
+flow), and an on-device query history. Settings switch the API base URL and the demo tenant
+(`tenant_a` / `tenant_b`).
+
+```bash
+cd mobile && npm install
+npm test            # jest-expo unit tests: API client, response -> view model, history, settings
+npm run typecheck
+npx expo-doctor && npx expo export --platform web   # build checks, no Apple/Google account needed
+npm start           # scan the QR code with Expo Go
+```
+
+Backend for local dev (the app uses the same mock auth as the web UI, so both env vars below are needed):
+
+```bash
+ALLOW_MOCK_AUTH=true AUTH_SECRET=dev-only-secret-change-in-prod npm run dev -- -H 0.0.0.0
+```
+
+- **Emulator / simulator:** the default URL is `http://localhost:3000` (`http://10.0.2.2:3000` on Android).
+- **Physical device in Expo Go:** open Settings, set the URL to `http://<your-LAN-IP>:3000`, pick a tenant, and tap *Save & test connection*.
+- **Deployed backend:** `EXPO_PUBLIC_API_URL=https://<your-backend> npm start` makes it the default (or set `extra.apiUrl` in `mobile/app.json`). The server must have mock auth enabled for the demo token endpoint, `POST /api/auth/token`.
+- No server change was needed: native `fetch` is not subject to CORS. The client requests a signed token
+  and sends it as `x-ctx-token`, plus the `x-mock-*` identity headers so a mock-auth-only dev server also works.
+
+Screenshots are the Expo **web export** (`expo export --platform web`) rendered in a 390x844 headless
+Chromium viewport against the local backend, not a physical device.
+
+| Result | Blocked | Clarify |
+| --- | --- | --- |
+| ![Result](mobile/docs/screenshots/2-result.png) | ![Blocked](mobile/docs/screenshots/3-blocked.png) | ![Clarify](mobile/docs/screenshots/4-clarify.png) |
+
 ## Files
 
 ```
@@ -220,6 +255,7 @@ docs/        THREAT_MODEL.md
 lib/         db · sql-guard · exec · rate · auth · agent (LangGraph) · schema-link
 app/         page.tsx · api/query/route.ts
 components/  Chart.tsx (Recharts)
+mobile/      Expo app (own package.json): app/ · lib/ (api client, view model) · __tests__/
 eval/        sets/ · golds/ · runner.ts · engines/ · metrics/ · reports/ · REPORT.md · CALIBRATION.md · SECURITY.md
 scripts/     seed.ts · validate-golds.ts · attacks.ts · ablate-layer.ts · security-report.ts
 ```
