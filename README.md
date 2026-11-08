@@ -233,6 +233,8 @@ The final configuration keeps schema + repair + self-consistency and drops retri
 
 Paraphrase (12): baseline 4/12, agent 10/12 (83.3% [55.2, 95.3]). Attack set through the agent engine: 51/51 blocked or clarified, nothing executed, 0 violations.
 
+Same pipeline on Gemini (`gemini-3.1-flash-lite`, free tier; the demo model `gemini-2.5-flash` is limited to 20 free requests/day): dev baseline 18/35 (51.4%), every agent step 21/35 (60.0%). Held-out: baseline 20/42 (47.6% [33.4, 62.3], self-reported ECE 0.40); agent with gate off 27/42 (64.3% [49.2, 77.0], ECE 0.14); agent with its dev-derived gate (CLARIFY < 0.60) 20/42, because that gate deferred 20 of 42 clear questions. Gemini's calibrator is weak (dev leave-one-out ECE 0.39), so its gate is too aggressive to be useful. Free-tier latency p95 21-30 s, mostly provider queueing; $0 per question on the free tier.
+
 ### Previous eval (history, 2026-09)
 
 Model: `opencode-go/deepseek-v4.1-flash` (effort low, temperature 0) · commit `f0c399d` · 3 repeats for LLM engines · EVAL_NOW 2025-09-01 · seed 42
