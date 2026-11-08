@@ -8,3 +8,4 @@ eval/ablation-results.json
 .env
 tsconfig.tsbuildinfo
 .scratch/
+eval/.llm-cache/

@@ -2,9 +2,10 @@
 // generation only; guardrail, gate and execution are identical for every
 // engine and live in the runner.
 import type { UsageSource } from '../metrics/cost';
+import type { Signals } from '../metrics/calibrator';
 
 export type Decision = 'ALLOW' | 'CLARIFY' | 'BLOCK';
-export type EngineName = 'templates' | 'llm' | 'hybrid';
+export type EngineName = 'templates' | 'llm' | 'hybrid' | 'agent';
 
 export interface Question {
   id: string;
@@ -59,9 +60,32 @@ export interface Generation {
   usageSource?: UsageSource;
   costUsd?: number | null;
   error?: string;
+  /** Wall time spent inside generate(); with latencyMs it lets the pipeline
+   *  swap replayed (cached) or throttled time for the critical-path figure. */
+  wallMs?: number;
+  /** Observable signals behind the confidence (agent engine). */
+  signals?: Signals;
+  llmCalls?: number;
+  cacheHits?: number;
+  cachedTokens?: number;
+}
+
+export interface ProbeResult {
+  ok: boolean;
+  rows?: Record<string, unknown>[];
+  error?: string;
+}
+
+/** Capabilities the pipeline lends an engine. `execute` is the pipeline's own
+ *  guarded executor (validateSql -> EXPLAIN cost gate -> RLS read-only
+ *  transaction -> audit), bound to the question's tenant. */
+export interface EngineTools {
+  execute(sql: string, tag: string): Promise<ProbeResult>;
 }
 
 export interface Engine {
   name: EngineName;
-  generate(q: Question, ctx: SchemaContext): Promise<Generation>;
+  generate(q: Question, ctx: SchemaContext, tools?: EngineTools): Promise<Generation>;
+  /** Engine-specific gate thresholds (re-derived on dev); defaults to GATE. */
+  readonly gate?: { allow: number; clarify: number };
 }

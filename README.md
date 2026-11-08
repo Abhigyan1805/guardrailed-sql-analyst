@@ -22,7 +22,7 @@ API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /ap
 - **Cold start:** the free tier sleeps after 15 minutes idle; the first request after that takes about 30-60 s while the container wakes.
 - **Mock tenants, synthetic data:** the UI signs you in as one of two fake tenants (`ALLOW_MOCK_AUTH`); there is no real login and every row is generated. The database is embedded and resets on restart.
 - **Free-tier safety:** per-IP rate limit (`PER_IP_PER_MIN`, 20/min on the demo), plus a global cap of `LLM_DAILY_CAP` (200) Gemini calls per UTC day. Over the cap the offline template engine answers instead, and the answer says so in its caveats. The offline engine is far weaker on unseen questions (see Results).
-- The demo's LLM is Gemini (`gemini-2.5-flash`, free API). The published numbers below are for DeepSeek; the nightly Gemini result is reported separately in `eval/GEMINI.md` and never merged into them.
+- The demo's LLM is Gemini (`gemini-2.5-flash`, free API). The headline numbers below are for the agent engine on DeepSeek, which won on dev; the same engine on Gemini is reported next to it in `eval/AGENT.md`. The demo app's own prompt path (`lib/agent.ts`) has not been switched to the agent engine yet, so the demo is not what these numbers measure. The free key allows only 20 `gemini-2.5-flash` requests per day.
 
 ## Results at a glance
 
@@ -30,10 +30,12 @@ API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /ap
 |---|---|---|
 | Adversarial suite (51 attacks, real Postgres) | 51/51 blocked or clarified, 0 executed violations, business-table checksum unchanged | `eval/SECURITY.md` |
 | Defense-in-depth ablation | 11 of 13 family x layer cells still block with one layer disabled; the 2 gaps are named | `eval/SECURITY.md` |
-| Held-out accuracy, LLM engine (42 scored questions) | 23/42, 53.2% (Wilson 95% [39.9, 68.8]) | `eval/REPORT.md`, README "Latest eval" |
+| Held-out accuracy, agent engine (DeepSeek V4.1 Flash `deepseek-flash`, 42 scored questions, 2026-11-08) | 32/42, **76.2%** (Wilson 95% [61.5, 86.5]) answering every question; 27/42, 64.3% [49.2, 77.0] with the calibrated CLARIFY gate on (it defers some correct answers) | `eval/AGENT.md` |
+| Latency, agent engine (held-out, end to end) | p50 1.6 s, p95 7.5 s; about $0.0006 per question | `eval/AGENT.md` |
+| Confidence calibration, agent engine | held-out ECE 0.13 (observable signals + dev-fitted calibrator), down from 0.33 with model self-reported confidence on the same model | `eval/AGENT.md` |
+| Held-out accuracy, previous LLM engine (DeepSeek via opencode, 2026-09, history) | 23/42, 53.2% [39.9, 68.8], p95 22.6-29.5 s, ECE 0.39 | `eval/REPORT.md` |
 | Held-out accuracy, templates engine | 3/42, 7.1% [2.5, 19.0] (it was built against the dev set) | same |
 | Dev accuracy, templates engine | 35/35, 100.0%, but dev is the set the templates were built against | same |
-| Confidence gate calibration | ECE 0.39, MCE 0.74 at ALLOW >= 0.75 / CLARIFY < 0.55 | `eval/CALIBRATION.md` |
 
 Accuracy is an exact row-multiset match against two independently written gold
 queries. Treat the held-out and paraphrase rows as the numbers that generalize;
@@ -66,7 +68,7 @@ Needs Node 22 (as in CI). No GPU, Docker or API key is required: the default
 ```bash
 npm install
 npm run db:seed          # deterministic seed (seed=42) into embedded Postgres
-npm test                 # 111 unit tests: guardrails, RLS, auth, rate limits
+npm test                 # 134 unit tests: guardrails, RLS, auth, rate limits, agent engine
 ALLOW_MOCK_AUTH=true AUTH_SECRET=dev-only-secret npm run dev   # http://localhost:3000
 # then ask: "Top 5 products by revenue"
 ```
@@ -103,8 +105,10 @@ Notes:
 
 - The live demo runs on Render's free tier (512 MB RAM, 0.1 CPU, sleeps when idle, state resets on restart). The Azure and Hugging Face paths below are ready-to-use scripts, not live instances.
 - The held-out set is small (42 scored questions), so intervals are wide (about +/-14 points); on 12 paraphrases they span more than 40 points.
-- The offline templates score 100% on dev because they were built against it, and 7.1% on held-out. The LLM engine is better on unseen questions (53.2%) but slow (p95 22.6-29.5 s) and still wrong about half the time.
-- Confidence calibration is weak (ECE 0.39); the 0.75 / 0.55 gate was retained, not improved.
+- The offline templates score 100% on dev because they were built against it, and 7.1% on held-out. The agent engine gets 76.2% of held-out questions right when it answers all of them, but that is 32 of 42: the interval runs from 61.5% to 86.5%, and about one answer in four is still wrong.
+- Most of the accuracy gain on dev came from one change, the richer schema context (views, value hints, business definitions, output conventions). Few-shot retrieval and execution-guided repair made no measurable difference on dev; self-consistency added one dev question. Those are honest nulls on a 35-question dev set, not proof the techniques never help.
+- The calibrated gate trades coverage for precision: at the dev-chosen CLARIFY < 0.55 it asked for clarification on 7 of 42 clear held-out questions, most of which it would have answered correctly (hence 64.3% gated vs 76.2% ungated). The calibrator was fitted on only 35 dev answers.
+- The agent engine is measured in the eval harness; the live demo's `lib/agent.ts` prompt is the older one.
 - The ablation found 2 gaps (catalog metadata when the relation allowlist is disabled), named in `eval/SECURITY.md`.
 - Security claims are measured on real Postgres; accuracy, LLM and calibration runs use PGlite, which ignores `statement_timeout`.
 - Auth is a mock for local demos (`ALLOW_MOCK_AUTH`); it must be replaced by a real identity provider before real data. Known accepted gaps are listed in `docs/THREAT_MODEL.md`.
@@ -203,7 +207,35 @@ Not deployed.
 
 The text-to-SQL accuracy and security evidence behind the guardrails follows.
 
-### Latest eval
+### Latest eval: agent engine (2026-11-08)
+
+Same frozen sets, golds and exact-row scoring; full tables in `eval/AGENT.md`. Every design choice was tuned on dev only; held-out was scored once per configuration and every held-out score is listed.
+
+What the agent engine adds to the LLM path (`eval/engines/agent.ts`): a static schema prefix with every view, value hints, business definitions and output conventions; few-shot retrieval from solved dev questions (dev-only pool, leave-one-out); execution-guided repair through the same guarded executor the pipeline uses; 3-draft self-consistency voting on the executed result set; and a confidence computed from observable signals (draft agreement, clean execution, result sanity, retrieval similarity, SQL complexity) by a logistic calibrator fitted on dev, with the CLARIFY threshold re-derived on dev.
+
+Dev ablation, DeepSeek `deepseek-flash` (effort low), gate off:
+
+| step | dev exact rows (Wilson 95%) | p95 latency | cost / q |
+|---|---|---|---|
+| baseline `llm` engine, direct API | 17/35 · 48.6% [33.0, 64.4] | 5.0 s | $0.00025 |
+| + rich schema context | 24/35 · 68.6% [52.0, 81.4] | 5.6 s | $0.00018 |
+| + retrieval | 24/35 · 68.6% | 5.6 s | $0.00017 |
+| + execution-guided repair | 24/35 · 68.6% | 5.6 s | $0.00017 |
+| + 3-draft self-consistency | 25/35 · 71.4% [54.9, 83.7] | 6.5 s | $0.00048 |
+
+The final configuration keeps schema + repair + self-consistency and drops retrieval (no dev gain). DeepSeek beat Gemini on dev (best Gemini step 60.0%, see `eval/AGENT.md`), so it is the headline engine.
+
+| held-out (42 scored) | exact rows (Wilson 95%) | false-clarify | ECE | p50 / p95 | cost / q |
+|---|---|---|---|---|---|
+| baseline `llm` engine, DeepSeek API | 17/42 · 40.5% [27.0, 55.5] | 28.6% | 0.327 | 1.8 s / 9.1 s | $0.00027 |
+| agent, calibrated gate on | 27/42 · 64.3% [49.2, 77.0] | 16.7% | 0.146 | 1.6 s / 7.5 s | $0.00063 |
+| agent, gate off (same cached responses) | 32/42 · 76.2% [61.5, 86.5] | 0.0% | 0.130 | 1.6 s / 8.4 s | $0.00065 |
+
+Paraphrase (12): baseline 4/12, agent 10/12 (83.3% [55.2, 95.3]). Attack set through the agent engine: 51/51 blocked or clarified, nothing executed, 0 violations.
+
+Same pipeline on Gemini (`gemini-3.1-flash-lite`, free tier; the demo model `gemini-2.5-flash` is limited to 20 free requests/day): dev baseline 18/35 (51.4%), every agent step 21/35 (60.0%). Held-out: baseline 20/42 (47.6% [33.4, 62.3], self-reported ECE 0.40); agent with gate off 27/42 (64.3% [49.2, 77.0], ECE 0.14); agent with its dev-derived gate (CLARIFY < 0.60) 20/42, because that gate deferred 20 of 42 clear questions. Gemini's calibrator is weak (dev leave-one-out ECE 0.39), so its gate is too aggressive to be useful. Free-tier latency p95 21-30 s, mostly provider queueing; $0 per question on the free tier.
+
+### Previous eval (history, 2026-09)
 
 Model: `opencode-go/deepseek-v4.1-flash` (effort low, temperature 0) · commit `f0c399d` · 3 repeats for LLM engines · EVAL_NOW 2025-09-01 · seed 42
 
@@ -229,7 +261,7 @@ checksum unchanged (real Postgres; see `eval/SECURITY.md`). Defense-in-depth abl
 catalog metadata when the relation allowlist is disabled, and are named in
 `eval/SECURITY.md`.
 
-Calibration: ECE 0.39, MCE 0.74 at the retained ALLOW >= 0.75 / CLARIFY < 0.55
+Calibration (previous engine, self-reported confidence): ECE 0.39, MCE 0.74 at the retained ALLOW >= 0.75 / CLARIFY < 0.55
 operating point. The dev-only threshold sweep does not justify moving the gate
 (no challenger beats it by more than 5 points inside the false-clarify and caveat
 budgets); what that point costs on held-out is reported in `eval/CALIBRATION.md`.
@@ -262,6 +294,10 @@ npm run db:seed   # deterministic seed (seed=42) into embedded Postgres
 npm run test      # guardrail + RLS tests
 npm run eval      # one set x engine, writes a report JSON
 npm run eval:matrix   # every set x every engine, writes eval/REPORT.md
+# agent engine (needs DEEPSEEK_API_KEY or GOOGLE_API_KEY; responses are cached in eval/.llm-cache):
+EVAL_LLM_BACKEND=deepseek npm run eval -- --set dev --engine agent --config sc3-noret
+npx tsx eval/calibrate.ts --backend deepseek --config sc3-noret   # fit calibrator + gate on dev
+npx tsx scripts/agent-report.ts                                   # writes eval/AGENT.md
 npm run dev       # UI on http://localhost:3000
 ```
 

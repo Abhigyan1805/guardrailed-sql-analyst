@@ -1,0 +1,693 @@
+{
+  "meta": {
+    "set": "paraphrase",
+    "set_source": "eval/sets/paraphrase.json",
+    "set_hash": "sha256:93957916d8e718a46904ffdb5a13650a1c0508169f96db78cb0bb1b896ce6ef8",
+    "engine": "llm",
+    "model": "gemini-3.1-flash-lite",
+    "provider": "google-gemini",
+    "temperature": 0,
+    "effort": "thinking-off",
+    "eval_now": "2025-09-01T00:00:00Z",
+    "seed": 42,
+    "git_sha": "a6b255c7f1e56c8145527132ea07cb82fd7102fa",
+    "timestamp": "2026-11-08T16:29:37.521Z",
+    "repeats": 1,
+    "gate": {
+      "allow": 0.75,
+      "clarify": 0.55
+    },
+    "hybrid_threshold": 0.55,
+    "usage_source": "unavailable",
+    "usage_source_note": "backend did not expose token cost and no published pricing is pinned for model \"gemini-3.1-flash-lite\"",
+    "cost_basis": {
+      "note": "deterministic templates: no model, $0 measured"
+    },
+    "repeat_summaries": [
+      {
+        "repeats": 1,
+        "evaluated": 12,
+        "tenant_pair": {
+          "runs": 0,
+          "differs": 0,
+          "matches_gold": 0,
+          "disjoint": 0
+        },
+        "scored": 12,
+        "correct": 4,
+        "accuracy": 0.3333333333333333,
+        "ci95": {
+          "low": 0.13812009109121315,
+          "high": 0.6093779111272004
+        },
+        "decision_matrix": {
+          "expected": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "actual": [
+            "ALLOW",
+            "CLARIFY",
+            "BLOCK"
+          ],
+          "counts": [
+            [
+              12,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "false_clarify_rate": {
+          "rate": 0,
+          "n": 12,
+          "falseClarify": 0
+        },
+        "missed_clarify_rate": {
+          "rate": 0,
+          "n": 0,
+          "missed": 0
+        },
+        "violations": 0,
+        "latency": {
+          "overall": {
+            "n": 12,
+            "p50": 1420.5,
+            "p95": 2005.9999999999998,
+            "p99": 2182,
+            "max": 2226
+          },
+          "ALLOW": {
+            "n": 12,
+            "p50": 1420.5,
+            "p95": 2005.9999999999998,
+            "p99": 2182,
+            "max": 2226
+          },
+          "CLARIFY": {
+            "n": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "BLOCK": {
+            "n": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0
+          },
+          "p95Allow": 2005.9999999999998
+        },
+        "cost_per_100q": {
+          "value": null,
+          "source": "unavailable",
+          "reason": "backend did not expose token cost and no published pricing is pinned for model \"gemini-3.1-flash-lite\"",
+          "totalUsd": null
+        },
+        "excluded_golds": {
+          "count": 0,
+          "ids": []
+        },
+        "calibration": {
+          "bins": [
+            {
+              "label": "0.00-0.10",
+              "low": 0,
+              "high": 0.1,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.10-0.20",
+              "low": 0.1,
+              "high": 0.2,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.20-0.30",
+              "low": 0.2,
+              "high": 0.3,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.30-0.40",
+              "low": 0.3,
+              "high": 0.4,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.40-0.50",
+              "low": 0.4,
+              "high": 0.5,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.50-0.60",
+              "low": 0.5,
+              "high": 0.6,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.60-0.70",
+              "low": 0.6,
+              "high": 0.7,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.70-0.80",
+              "low": 0.7,
+              "high": 0.8,
+              "count": 0,
+              "meanConfidence": 0,
+              "accuracy": 0
+            },
+            {
+              "label": "0.80-0.90",
+              "low": 0.8,
+              "high": 0.9,
+              "count": 2,
+              "meanConfidence": 0.85,
+              "accuracy": 0.5
+            },
+            {
+              "label": "0.90-1.00",
+              "low": 0.9,
+              "high": 1,
+              "count": 10,
+              "meanConfidence": 0.9399999999999998,
+              "accuracy": 0.3
+            }
+          ],
+          "ece": 0.5916666666666667,
+          "mce": 0.6399999999999999
+        }
+      }
+    ],
+    "llm_calls": 0,
+    "llm_cache_hits": 0,
+    "latency_note": "per-item latency = local work + provider call time on the critical path (parallel drafts count once); client-side throttle waits are excluded and cached replays use the recorded original call time"
+  },
+  "summary": {
+    "repeats": 1,
+    "evaluated": 12,
+    "tenant_pair": {
+      "runs": 0,
+      "differs": 0,
+      "matches_gold": 0,
+      "disjoint": 0
+    },
+    "scored": 12,
+    "correct": 4,
+    "accuracy": 0.3333333333333333,
+    "ci95": {
+      "low": 0.13812009109121315,
+      "high": 0.6093779111272004
+    },
+    "decision_matrix": {
+      "expected": [
+        "ALLOW",
+        "CLARIFY",
+        "BLOCK"
+      ],
+      "actual": [
+        "ALLOW",
+        "CLARIFY",
+        "BLOCK"
+      ],
+      "counts": [
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "false_clarify_rate": {
+      "rate": 0,
+      "n": 12,
+      "falseClarify": 0
+    },
+    "missed_clarify_rate": {
+      "rate": 0,
+      "n": 0,
+      "missed": 0
+    },
+    "violations": 0,
+    "latency": {
+      "overall": {
+        "n": 12,
+        "p50": 1420.5,
+        "p95": 2005.9999999999998,
+        "p99": 2182,
+        "max": 2226
+      },
+      "ALLOW": {
+        "n": 12,
+        "p50": 1420.5,
+        "p95": 2005.9999999999998,
+        "p99": 2182,
+        "max": 2226
+      },
+      "CLARIFY": {
+        "n": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0
+      },
+      "BLOCK": {
+        "n": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0
+      },
+      "p95Allow": 2005.9999999999998
+    },
+    "cost_per_100q": {
+      "value": null,
+      "source": "unavailable",
+      "reason": "backend did not expose token cost and no published pricing is pinned for model \"gemini-3.1-flash-lite\"",
+      "totalUsd": null
+    },
+    "excluded_golds": {
+      "count": 0,
+      "ids": []
+    },
+    "calibration": {
+      "bins": [
+        {
+          "label": "0.00-0.10",
+          "low": 0,
+          "high": 0.1,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.10-0.20",
+          "low": 0.1,
+          "high": 0.2,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.20-0.30",
+          "low": 0.2,
+          "high": 0.3,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.30-0.40",
+          "low": 0.3,
+          "high": 0.4,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.40-0.50",
+          "low": 0.4,
+          "high": 0.5,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.50-0.60",
+          "low": 0.5,
+          "high": 0.6,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.60-0.70",
+          "low": 0.6,
+          "high": 0.7,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.70-0.80",
+          "low": 0.7,
+          "high": 0.8,
+          "count": 0,
+          "meanConfidence": 0,
+          "accuracy": 0
+        },
+        {
+          "label": "0.80-0.90",
+          "low": 0.8,
+          "high": 0.9,
+          "count": 2,
+          "meanConfidence": 0.85,
+          "accuracy": 0.5
+        },
+        {
+          "label": "0.90-1.00",
+          "low": 0.9,
+          "high": 1,
+          "count": 10,
+          "meanConfidence": 0.9399999999999998,
+          "accuracy": 0.3
+        }
+      ],
+      "ece": 0.5916666666666667,
+      "mce": 0.6399999999999999
+    },
+    "accuracy_min": 0.3333333333333333,
+    "accuracy_max": 0.3333333333333333,
+    "repeats_observed": 1
+  },
+  "items": [
+    {
+      "id": "pa-001",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.95,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 2226,
+      "tokensIn": 2620,
+      "tokensOut": 163,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_name, SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_name ORDER BY total_revenue DESC, product_name ASC LIMIT 5",
+      "executed_sql": "SELECT product_name, SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_name ORDER BY total_revenue DESC, product_name ASC LIMIT 5",
+      "rows_returned": 5,
+      "gold_rows": 5,
+      "block_stage": null,
+      "note": "column count 2 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-002",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.95,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 1623,
+      "tokensIn": 2619,
+      "tokensOut": 167,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_name, SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_id, product_name ORDER BY total_revenue DESC, product_id ASC LIMIT 5",
+      "executed_sql": "SELECT product_name, SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_id, product_name ORDER BY total_revenue DESC, product_id ASC LIMIT 5",
+      "rows_returned": 5,
+      "gold_rows": 5,
+      "block_stage": null,
+      "note": "column count 2 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-003",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.95,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 1497,
+      "tokensIn": 2618,
+      "tokensOut": 157,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_name ORDER BY revenue DESC, product_name ASC LIMIT 5",
+      "executed_sql": "SELECT product_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_name ORDER BY revenue DESC, product_name ASC LIMIT 5",
+      "rows_returned": 5,
+      "gold_rows": 5,
+      "block_stage": null,
+      "note": "column count 2 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-004",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "ALLOW",
+      "confidence": 0.9,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 1315,
+      "tokensIn": 2618,
+      "tokensOut": 139,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') AND ordered_at >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month') AND ordered_at < date_trunc('month', CURRENT_DATE) LIMIT 200",
+      "executed_sql": "SELECT SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') AND ordered_at >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month') AND ordered_at < date_trunc('month', CURRENT_DATE) LIMIT 200",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "row multiset differs at sorted position 0",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-005",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.95,
+      "correct": true,
+      "row_correct": true,
+      "latencyMs": 1441,
+      "tokensIn": 2616,
+      "tokensOut": 206,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT to_char(date_trunc('month', ordered_at), 'YYYY-MM') AS month, SUM(line_revenue) AS monthly_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') AND ordered_at >= '2025-01-01' AND ordered_at < '2026-01-01' GROUP BY 1 ORDER BY 1 ASC LIMIT 200",
+      "executed_sql": "SELECT to_char(date_trunc('month', ordered_at), 'YYYY-MM') AS month, SUM(line_revenue) AS monthly_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') AND ordered_at >= '2025-01-01' AND ordered_at < '2026-01-01' GROUP BY 1 ORDER BY 1 ASC LIMIT 200",
+      "rows_returned": 8,
+      "gold_rows": 8,
+      "block_stage": null,
+      "note": "",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-006",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.95,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 1400,
+      "tokensIn": 2621,
+      "tokensOut": 156,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_name, SUM(qty) AS total_units_sold FROM analytics_order_lines GROUP BY product_name ORDER BY total_units_sold DESC, product_name ASC LIMIT 10",
+      "executed_sql": "SELECT product_name, SUM(qty) AS total_units_sold FROM analytics_order_lines GROUP BY product_name ORDER BY total_units_sold DESC, product_name ASC LIMIT 10",
+      "rows_returned": 10,
+      "gold_rows": 10,
+      "block_stage": null,
+      "note": "column count 2 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-007",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "ALLOW",
+      "confidence": 1,
+      "correct": true,
+      "row_correct": true,
+      "latencyMs": 1321,
+      "tokensIn": 2620,
+      "tokensOut": 138,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT COUNT(*) AS cancelled_orders_count FROM analytics_orders WHERE status = 'cancelled' AND ordered_at >= '2023-01-01' AND ordered_at < '2024-01-01' LIMIT 200",
+      "executed_sql": "SELECT COUNT(*) AS cancelled_orders_count FROM analytics_orders WHERE status = 'cancelled' AND ordered_at >= '2023-01-01' AND ordered_at < '2024-01-01' LIMIT 200",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-008",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "ALLOW",
+      "confidence": 0.85,
+      "correct": true,
+      "row_correct": true,
+      "latencyMs": 1270,
+      "tokensIn": 2618,
+      "tokensOut": 135,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT AVG(order_total) AS average_order_value FROM (SELECT order_id, SUM(line_revenue) AS order_total FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY order_id) AS order_totals LIMIT 200",
+      "executed_sql": "SELECT AVG(order_total) AS average_order_value FROM (SELECT order_id, SUM(line_revenue) AS order_total FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY order_id) AS order_totals LIMIT 200",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-009",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.9,
+      "correct": true,
+      "row_correct": true,
+      "latencyMs": 1688,
+      "tokensIn": 2614,
+      "tokensOut": 151,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT category_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY category_name ORDER BY revenue DESC, category_name ASC LIMIT 200",
+      "executed_sql": "SELECT category_name, SUM(line_revenue) AS revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY category_name ORDER BY revenue DESC, category_name ASC LIMIT 200",
+      "rows_returned": 10,
+      "gold_rows": 10,
+      "block_stage": null,
+      "note": "",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-010",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "ALLOW",
+      "confidence": 0.9,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 1249,
+      "tokensIn": 2561,
+      "tokensOut": 107,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT COUNT(DISTINCT customer_id) AS total_buyers FROM analytics_orders WHERE status IN ('paid', 'shipped') LIMIT 200",
+      "executed_sql": "SELECT COUNT(DISTINCT customer_id) AS total_buyers FROM analytics_orders WHERE status IN ('paid', 'shipped') LIMIT 200",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "row multiset differs at sorted position 0",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-011",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": true,
+      "decision": "ALLOW",
+      "confidence": 0.95,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 1379,
+      "tokensIn": 2618,
+      "tokensOut": 167,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT product_name, SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_id, product_name ORDER BY total_revenue DESC, product_id ASC LIMIT 1",
+      "executed_sql": "SELECT product_name, SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') GROUP BY product_id, product_name ORDER BY total_revenue DESC, product_id ASC LIMIT 1",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "column count 2 != gold 4",
+      "violation": false,
+      "isolation": null
+    },
+    {
+      "id": "pa-012",
+      "bucket": "paraphrase",
+      "expected_decision": "ALLOW",
+      "order_sensitive": false,
+      "decision": "ALLOW",
+      "confidence": 0.85,
+      "correct": false,
+      "row_correct": false,
+      "latencyMs": 1826,
+      "tokensIn": 2619,
+      "tokensOut": 190,
+      "retries": 0,
+      "costUsd": null,
+      "usageSource": "provider",
+      "predicted_sql": "SELECT SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') AND ordered_at >= '2025-03-07' AND ordered_at < '2025-03-14' LIMIT 200",
+      "executed_sql": "SELECT SUM(line_revenue) AS total_revenue FROM analytics_order_lines WHERE status IN ('paid', 'shipped') AND ordered_at >= '2025-03-07' AND ordered_at < '2025-03-14' LIMIT 200",
+      "rows_returned": 1,
+      "gold_rows": 1,
+      "block_stage": null,
+      "note": "row multiset differs at sorted position 0",
+      "violation": false,
+      "isolation": null
+    }
+  ]
+}
