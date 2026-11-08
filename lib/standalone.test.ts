@@ -3,7 +3,9 @@
 // silently fell back to the offline engine because the minifier broke
 // sqlComplexity (ReferenceError after every model call). This starts the real
 // standalone server against a fake OpenAI-compatible endpoint.
-// Skipped when .next/standalone is absent; CI sets STANDALONE_REQUIRED=1 after `npm run build`.
+// Opt-in: `npm run test:standalone` (build + STANDALONE_REQUIRED=1). It must not run in
+// the main suite, because the standalone server opens the same single-process PGlite
+// data dir as the other tests. CI runs it as its own step after `vitest run`.
 import { describe, it, expect } from 'vitest';
 import { existsSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
@@ -17,7 +19,7 @@ function listen(srv: Server): Promise<number> {
   return new Promise((resolve) => srv.listen(0, '127.0.0.1', () => resolve((srv.address() as any).port)));
 }
 
-describe.skipIf(!required && !existsSync(SERVER))('standalone production bundle', () => {
+describe.skipIf(!required)('standalone production bundle', () => {
   it('answers through the LLM backend, not the offline fallback', async () => {
     expect(existsSync(SERVER)).toBe(true);
     let requests = 0;
