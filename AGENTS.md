@@ -87,9 +87,10 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 - `--strict` enforces `LATENCY_GATES_MS` per engine and `ACCURACY_FLOORS` (dev/templates = 1.0)
   in `eval/loader.ts`, plus 0 violations. CI: PR/push runs unit + validate-golds + dev/templates
   + real-PG security; the nightly `schedule`/`workflow_dispatch` job runs the full matrix and
-  commits reports. The nightly LLM matrix needs the `OPENCODE_AUTH_JSON` repo secret (an
-  `~/.local/share/opencode/auth.json` dump); without it the job skips rather than overwrite
-  LLM reports with templates-only output.
+  commits reports. The nightly job needs the `GOOGLE_API_KEY` repo secret and fails without it; it runs
+  `EVAL_LLM_BACKEND=gemini eval/runner.ts --matrix` (LLM engine only, results in `eval/GEMINI.md` and
+  `eval/reports/gemini/`, never merged into REPORT.md). The `OPENCODE_AUTH_JSON` secret is an optional
+  extra that refreshes the published DeepSeek matrix.
 - Published numbers come from the committed `eval/reports/**` at a resolvable git SHA. The
   served model is `opencode-go/deepseek-v4.1-flash` at effort low, temperature 0, 3 repeats.
 

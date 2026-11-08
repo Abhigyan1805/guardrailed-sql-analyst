@@ -14,7 +14,15 @@ database role under row-level security, unsafe requests blocked and logged, and
 ambiguous questions answered with a clarifying question instead of a guess.
 
 API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /api/health`.
-Not hosted anywhere; see Quick start to run it locally.
+
+## Live demo
+
+**URL: _TODO: filled in after the Render deploy_** (free Render web service, defined in `render.yaml`).
+
+- **Cold start:** the free tier sleeps after 15 minutes idle; the first request after that takes about 30-60 s while the container wakes.
+- **Mock tenants, synthetic data:** the UI signs you in as one of two fake tenants (`ALLOW_MOCK_AUTH`); there is no real login and every row is generated. The database is embedded and resets on restart.
+- **Free-tier safety:** per-IP rate limit (`PER_IP_PER_MIN`, 20/min on the demo), plus a global cap of `LLM_DAILY_CAP` (200) Gemini calls per UTC day. Over the cap the offline template engine answers instead, and the answer says so in its caveats. The offline engine is far weaker on unseen questions (see Results).
+- The demo's LLM is Gemini (`gemini-2.5-flash`, free API). The published numbers below are for DeepSeek; the nightly Gemini result is reported separately in `eval/GEMINI.md` and never merged into them.
 
 ## Results at a glance
 
@@ -69,9 +77,31 @@ numbers were produced through `opencode` with a pinned DeepSeek model, which nee
 provider credentials. The real-Postgres security suite needs a `DATABASE_URL`.
 Nothing here uses a GPU.
 
+## Operations
+
+Measured locally on this repo's production build (Next standalone output with the baked PGlite
+database, run the way the Dockerfile runs it, `LLM_PROVIDER=offline`, 6-core WSL2 box, no CPU
+throttling). Docker is not installed on the measuring machine, so the container image itself was not built.
+
+| What | Measured |
+|---|---|
+| App payload (standalone server + PGlite + db files) / seeded data dir | 48 MB / 28 MB (compressed image size: TODO, measure with `docker image ls` after the first build) |
+| Memory at idle (after one `/api/health`) | about 300-330 MB RSS |
+| Peak memory (after ~20 demo questions; the per-user limiter stops further ones) | about 415-460 MB RSS of Render free's 512 MB, so it fits but with only ~10% headroom |
+| Offline-engine latency, warm (20 queries) | p50 ~40 ms, p95 ~115 ms, max ~320 ms end to end over HTTP |
+| Gemini latency and cost per query | TODO: needs `GOOGLE_API_KEY`; the nightly run records p95 and estimated $/100q in `eval/GEMINI.md` |
+| Cost | $0: Render free plan plus the free Gemini tier. At published `gemini-2.5-flash` prices the estimate is shown in `eval/GEMINI.md` (marked estimated) |
+
+Notes:
+
+- Most of the memory is PGlite's WebAssembly Postgres, outside the JS heap. `NODE_OPTIONS=--max-old-space-size=192` in `render.yaml` trimmed peak RSS by roughly 20-40 MB in three capped runs versus uncapped ones (a noisy, small effect), so it is cheap insurance, not a fix. If Render's OOM kills show up in the logs, this service does not fit the free tier.
+- 0.1 CPU is a fraction of the measuring machine, so expect cold start and per-query latency noticeably above these numbers on Render. That was not measured.
+- LLM calls are serialized with a minimum gap (`LLM_MIN_INTERVAL_MS`, default 8000 ms) to stay under free-tier RPM limits, so concurrent users queue behind each other.
+- The nightly workflow (`.github/workflows/eval.yml`) runs the LLM evaluation through the app's own Gemini client using the `GOOGLE_API_KEY` repository secret. **A scheduled run without the secret fails** instead of skipping. Pull-request jobs need no secret.
+
 ## Limitations and honest notes
 
-- Not deployed. The Azure and Hugging Face paths below are ready-to-use scripts, not live instances.
+- The live demo runs on Render's free tier (512 MB RAM, 0.1 CPU, sleeps when idle, state resets on restart). The Azure and Hugging Face paths below are ready-to-use scripts, not live instances.
 - The held-out set is small (42 scored questions), so intervals are wide (about +/-14 points); on 12 paraphrases they span more than 40 points.
 - The offline templates score 100% on dev because they were built against it, and 7.1% on held-out. The LLM engine is better on unseen questions (53.2%) but slow (p95 22.6-29.5 s) and still wrong about half the time.
 - Confidence calibration is weak (ECE 0.39); the 0.75 / 0.55 gate was retained, not improved.
@@ -107,7 +137,8 @@ curl -s -XPOST localhost:3000/api/query -H "x-ctx-token: $TOKEN" -d '{"question"
 ```
 
 Config: `AUTH_SECRET` (required in production), `LLM_PROVIDER` (`offline` default, `gemini`, `openai`),
-`GOOGLE_API_KEY` / `OPENAI_API_KEY` / `LLM_*`, `PER_IP_PER_MIN` (default 30).
+`GOOGLE_API_KEY` / `OPENAI_API_KEY` / `LLM_*`, `PER_IP_PER_MIN` (default 30),
+`LLM_DAILY_CAP` (global Gemini calls per UTC day, default 200; `0` disables the LLM; the cap is in-memory, so a restart resets it, and Google's own quota is the hard backstop).
 `ALLOW_MOCK_AUTH=true` lets the UI mint tokens for the two demo tenants; it is demo-only,
 so replace it with a real identity provider before using real data.
 
@@ -154,6 +185,12 @@ Manual deploy without CI: `AUTH_SECRET=... ./infra/deploy.sh ghcr.io/<owner>/gua
 The deploy job in `.github/workflows/ci.yml` skips cleanly until these secrets exist.
 PGlite is single-process, so the app is pinned to at most one replica; data resets on restart
 (it is a demo dataset, and the audit log is ephemeral there; use `DATABASE_URL` for durable audit).
+
+## Deploy to Render (free web service)
+
+`render.yaml` is a Blueprint: create a Blueprint in Render from this repo, then enter `GOOGLE_API_KEY`
+in the dashboard (it is `sync: false`, so it is never in git). `AUTH_SECRET` is generated by Render.
+For the nightly eval also add `GOOGLE_API_KEY` as a GitHub Actions repository secret.
 
 ## Deploy to Hugging Face Spaces (optional, not deployed)
 

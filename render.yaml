@@ -1,0 +1,26 @@
+# Render Blueprint: free web service running the Docker image with the embedded
+# PGlite demo database (baked in at build time, synthetic data, resets on restart).
+# Secrets are never committed: GOOGLE_API_KEY is entered in the Render dashboard.
+services:
+  - type: web
+    name: guardrailed-sql-analyst
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: ALLOW_MOCK_AUTH            # demo only: UI mints tokens for two synthetic tenants
+        value: "true"
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: GOOGLE_API_KEY
+        sync: false                     # set in the dashboard; never in git
+      - key: PER_IP_PER_MIN             # per-IP rate limit (requests/minute)
+        value: "20"
+      - key: LLM_DAILY_CAP              # global LLM calls/day; over it, offline engine answers
+        value: "200"
+      - key: NODE_OPTIONS               # measured: peak RSS ~420-460 MB of the 512 MB limit
+        value: --max-old-space-size=192
