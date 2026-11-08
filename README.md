@@ -1,18 +1,37 @@
 # Guardrailed Text-to-SQL Analyst
 
 [![ci](https://github.com/Abhigyan1805/guardrailed-sql-analyst/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhigyan1805/guardrailed-sql-analyst/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)
+![Postgres](https://img.shields.io/badge/Postgres-RLS-4169E1?logo=postgresql&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-agent-1C3C3C)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)
+![Expo](https://img.shields.io/badge/Expo-mobile-000020?logo=expo&logoColor=white)
 
-Ask questions about your sales data in plain English and get SQL, a chart and
-caveats back. Every query runs as a read-only database role under row-level
-security, unsafe requests are blocked and logged, and ambiguous questions get a
-clarifying question instead of a guess.
+A natural-language analytics tool for sales data: ask a question in plain English
+and get SQL, a chart and caveats back, with every query run as a read-only
+database role under row-level security, unsafe requests blocked and logged, and
+ambiguous questions answered with a clarifying question instead of a guess.
 
-**Try it:** `docker run` quick start below (not hosted anywhere).
 API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /api/health`.
+Not hosted anywhere; see Quick start to run it locally.
 
-`text-to-sql` · `llm-guardrails` · `postgres` · `rls` · `langgraph` · `docker`
+## Results at a glance
 
-## Architecture
+| What was measured | Result | Source |
+|---|---|---|
+| Adversarial suite (51 attacks, real Postgres) | 51/51 blocked or clarified, 0 executed violations, business-table checksum unchanged | `eval/SECURITY.md` |
+| Defense-in-depth ablation | 11 of 13 family x layer cells still block with one layer disabled; the 2 gaps are named | `eval/SECURITY.md` |
+| Held-out accuracy, LLM engine (42 scored questions) | 23/42, 53.2% (Wilson 95% [39.9, 68.8]) | `eval/REPORT.md`, README "Latest eval" |
+| Held-out accuracy, templates engine | 3/42, 7.1% [2.5, 19.0] (it was built against the dev set) | same |
+| Dev accuracy, templates engine | 35/35, 100.0%, but dev is the set the templates were built against | same |
+| Confidence gate calibration | ECE 0.39, MCE 0.74 at ALLOW >= 0.75 / CLARIFY < 0.55 | `eval/CALIBRATION.md` |
+
+Accuracy is an exact row-multiset match against two independently written gold
+queries. Treat the held-out and paraphrase rows as the numbers that generalize;
+the full table, intervals and costs are under "Latest eval" below.
+
+## How it works
 
 ```mermaid
 flowchart LR
@@ -25,6 +44,49 @@ flowchart LR
   guard --> pg[(Postgres or embedded PGlite<br/>app_reader, RLS, read-only txn,<br/>statement timeout)]
   guard --> audit[(audit_log)]
 ```
+
+The model only sees PII-free `analytics_*` views. Its SQL is parsed, checked
+against allowlists and an EXPLAIN cost cap, then run in a read-only transaction
+scoped to the caller's tenant. BLOCK and CLARIFY decisions never execute.
+More detail in "How it's put together" below and `docs/THREAT_MODEL.md`.
+
+## Quick start
+
+Needs Node 22 (as in CI). No GPU, Docker or API key is required: the default
+`offline` engine uses deterministic templates and an embedded Postgres (PGlite).
+
+```bash
+npm install
+npm run db:seed          # deterministic seed (seed=42) into embedded Postgres
+npm test                 # 111 unit tests: guardrails, RLS, auth, rate limits
+ALLOW_MOCK_AUTH=true AUTH_SECRET=dev-only-secret npm run dev   # http://localhost:3000
+# then ask: "Top 5 products by revenue"
+```
+
+What needs more than that: the LLM engine needs a model backend (`LLM_PROVIDER=gemini`
+with `GOOGLE_API_KEY`, or an OpenAI-compatible key), and the published LLM eval
+numbers were produced through `opencode` with a pinned DeepSeek model, which needs
+provider credentials. The real-Postgres security suite needs a `DATABASE_URL`.
+Nothing here uses a GPU.
+
+## Limitations and honest notes
+
+- Not deployed. The Azure and Hugging Face paths below are ready-to-use scripts, not live instances.
+- The held-out set is small (42 scored questions), so intervals are wide (about +/-14 points); on 12 paraphrases they span more than 40 points.
+- The offline templates score 100% on dev because they were built against it, and 7.1% on held-out. The LLM engine is better on unseen questions (53.2%) but slow (p95 22.6-29.5 s) and still wrong about half the time.
+- Confidence calibration is weak (ECE 0.39); the 0.75 / 0.55 gate was retained, not improved.
+- The ablation found 2 gaps (catalog metadata when the relation allowlist is disabled), named in `eval/SECURITY.md`.
+- Security claims are measured on real Postgres; accuracy, LLM and calibration runs use PGlite, which ignores `statement_timeout`.
+- Auth is a mock for local demos (`ALLOW_MOCK_AUTH`); it must be replaced by a real identity provider before real data. Known accepted gaps are listed in `docs/THREAT_MODEL.md`.
+- The demo dataset is synthetic. PGlite is single-process, so the container is limited to one replica and its audit log resets on restart.
+
+## What I learned / design decisions
+
+- **Defense in depth over trusting the model.** Intent screen, AST statement gate, default-deny function allowlist, view allowlist, EXPLAIN cost cap, read-only role and RLS each enforce on their own, and the ablation shows what still holds when one is removed.
+- **Prove security on the real engine.** PGlite silently ignores `statement_timeout` and cannot exercise filesystem/network functions, so the attack and ablation suites run against real Postgres.
+- **Measure honestly.** Frozen dev/held-out/paraphrase sets, two independent gold formulations per question (disagreements are excluded, never hand-picked), positional scoring by value, and Wilson intervals.
+- **Report the weak result.** Templates at 100% on dev collapse on held-out, so the README leads with held-out numbers and says so.
+- **Ask instead of guessing.** A confidence gate turns vague questions like `show sales` into a clarifying question that runs nothing.
 
 ## Run with Docker
 
