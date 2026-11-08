@@ -1,6 +1,8 @@
 # Render Blueprint: free web service running the Docker image with the embedded
 # PGlite demo database (baked in at build time, synthetic data, resets on restart).
-# Secrets are never committed: GOOGLE_API_KEY is entered in the Render dashboard.
+# Secrets are never committed: LLM_API_KEY (and GOOGLE_API_KEY if Gemini is used)
+# are entered in the Render dashboard. The demo runs DeepSeek V4.1 Flash through
+# its OpenAI-compatible API; set LLM_PROVIDER=gemini to switch to Gemini.
 services:
   - type: web
     name: guardrailed-sql-analyst
@@ -12,7 +14,13 @@ services:
     autoDeploy: true
     envVars:
       - key: LLM_PROVIDER
-        value: gemini
+        value: openai
+      - key: LLM_BASE_URL
+        value: https://api.deepseek.com
+      - key: LLM_MODEL
+        value: deepseek-flash
+      - key: LLM_API_KEY
+        sync: false                     # DeepSeek key; set in the dashboard, never in git
       - key: PORT
         value: "3000"
       - key: ALLOW_MOCK_AUTH            # demo only: UI mints tokens for two synthetic tenants
@@ -20,10 +28,10 @@ services:
       - key: AUTH_SECRET
         generateValue: true
       - key: GOOGLE_API_KEY
-        sync: false                     # set in the dashboard; never in git
+        sync: false                     # only needed when LLM_PROVIDER=gemini
       - key: PER_IP_PER_MIN             # per-IP rate limit (requests/minute)
         value: "20"
-      - key: LLM_DAILY_CAP              # global LLM calls/day; over it, offline engine answers
-        value: "200"
+      - key: LLM_DAILY_CAP              # global LLM QUESTIONS/day (any provider); over it, offline engine answers
+        value: "20"
       - key: NODE_OPTIONS               # measured: peak RSS ~420-460 MB of the 512 MB limit
         value: --max-old-space-size=192

@@ -20,7 +20,7 @@ import { validateSql } from '../../lib/sql-guard';
 import { EXEMPLARS } from '../../lib/prompts/exemplars';
 import { canonicalRow } from '../metrics/accuracy';
 import { predict, sqlComplexity, type Calibrator, type Signals } from '../metrics/calibrator';
-import { Retriever, loadPool, type Retrieved } from '../retrieval';
+import { Retriever, loadPool, type PoolEntry, type Retrieved } from '../retrieval';
 import { EVAL_NOW, ROOT } from '../loader';
 import type { Queryable } from '../schema-context';
 import { buildPrompt as buildBasePrompt, parseModelJson, type BackendResult, type LlmBackend } from './llm';
@@ -35,6 +35,8 @@ export interface AgentConfig {
   retrievalMin: number;
   repair: boolean;
   drafts: number;
+  /** Hard ceiling on model calls for one question (drafts + repairs). Default: every draft may repair once. */
+  maxCalls?: number;
 }
 
 /** Ablation ladder: each step adds one change on top of the previous one. */
@@ -125,8 +127,9 @@ export class AgentEngine implements Engine {
     readonly config: AgentConfig,
     private readonly schemaDb: Queryable | null = null,
     calibration?: CalibrationFile | null,
+    pool: PoolEntry[] = loadPool(),
   ) {
-    this.retriever = new Retriever(loadPool());
+    this.retriever = new Retriever(pool);
     this.calibration = calibration === undefined ? loadCalibration(config.name) : calibration;
   }
 
@@ -167,6 +170,16 @@ export class AgentEngine implements Engine {
     const prepMs = Date.now() - wall0;
     const usage = { tokensIn: 0, tokensOut: 0, cachedTokens: 0, calls: 0, cacheHits: 0, costUsd: 0 as number | null };
 
+    // Hard per-question ceiling: first calls are reserved up front, a repair
+    // only runs while it fits under maxCalls.
+    const maxCalls = Math.max(this.config.drafts, this.config.maxCalls ?? this.config.drafts * 2);
+    let reserved = 0;
+    const reserve = (): boolean => {
+      if (reserved >= maxCalls) return false;
+      reserved++;
+      return true;
+    };
+
     const call = async (prompt: string, sample: number, temperature: number): Promise<{ res: BackendResult; wallMs: number }> => {
       const t = Date.now();
       const res = await this.backend.generate(prompt, { sample, temperature });
@@ -191,6 +204,7 @@ export class AgentEngine implements Engine {
       let callWall = 0;
       let callReported = 0;
       const temp = index === 0 ? 0 : SAMPLE_TEMPERATURE;
+      reserve(); // draft calls always fit: maxCalls is clamped to >= drafts below
       const first = await call(base, index, temp);
       callWall += first.wallMs;
       callReported += first.res.latencyMs ?? first.wallMs;
@@ -215,7 +229,12 @@ export class AgentEngine implements Engine {
         return finish({ sql, reason: '', ok: result.ok, error: result.ok ? undefined : result.error, rows: result.rows, repaired: false });
       }
 
-      // One execution-guided repair. Its SQL goes through the same probe (guard + executor).
+      // One execution-guided repair, only if the per-question call ceiling allows it.
+      // Its SQL goes through the same probe (guard + executor).
+      if (!reserve()) {
+        if (result.ok) return finish({ sql, reason: '', ok: true, rows: result.rows, repaired: false });
+        return finish({ sql, reason: '', ok: false, error: result.error, repaired: false });
+      }
       const repairPrompt = buildRepairPrompt(base, result.ok ? { sql: sql!, observation: problem } : { sql: sql ?? '(none)', error: problem });
       const second = await call(repairPrompt, index, 0);
       callWall += second.wallMs;
