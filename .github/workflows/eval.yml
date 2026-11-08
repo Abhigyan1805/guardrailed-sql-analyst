@@ -37,6 +37,8 @@ jobs:
       # No DATABASE_URL here, so the seed targets the PGlite data dir.
       - run: npm run db:seed
       - run: npx vitest run
+      - name: Standalone production bundle reaches the LLM backend
+        run: npm run build && STANDALONE_REQUIRED=1 npx vitest run lib/standalone.test.ts
       - run: npx tsx scripts/validate-golds.ts
       # Regression gate: dev x templates (deterministic, no model credentials).
       # --strict applies the per-engine latency ceiling and the dev/templates

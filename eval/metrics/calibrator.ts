@@ -42,9 +42,15 @@ export function featureVector(s: Signals): number[] {
   ];
 }
 
+function countMatches(text: string, re: RegExp): number {
+  return (text.match(re) ?? []).length;
+}
+
 export function sqlComplexity(sql: string): number {
-  const n = (re: RegExp) => (sql.match(re) ?? []).length;
-  const score = n(/\bwith\b|\),\s*\w+\s+as\s*\(/gi) + n(/\bjoin\b/gi) + n(/\bover\s*\(/gi) + n(/\bhaving\b/gi);
+  // Plain function, not a closure over `sql`: the Next/SWC production minifier inlined
+  // the closure into its caller and dropped the binding (ReferenceError: sql is not defined).
+  const score = countMatches(sql, /\bwith\b|\),\s*\w+\s+as\s*\(/gi) + countMatches(sql, /\bjoin\b/gi)
+    + countMatches(sql, /\bover\s*\(/gi) + countMatches(sql, /\bhaving\b/gi);
   return Math.min(1, score / 4);
 }
 
