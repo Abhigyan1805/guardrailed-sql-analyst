@@ -14,6 +14,9 @@ import { TemplatesEngine } from './engines/templates';
 import { HybridEngine, DEFAULT_HYBRID_THRESHOLD } from './engines/hybrid';
 import { LlmEngine, SubagentBackend, DEFAULT_MODEL } from './engines/llm';
 import { GeminiBackend } from './engines/gemini';
+import { OpenAiCompatBackend } from './engines/openai-compat';
+import { AgentEngine, AGENT_CONFIGS } from './engines/agent';
+import type { Queryable } from './schema-context';
 import type { Engine } from './engines/engine';
 import type { ItemResult } from './pipeline';
 import type { AttackReport } from './attacks';
@@ -63,24 +66,47 @@ export interface RunReport {
   items: ItemResult[];
 }
 
-export function makeEngine(name: string): Engine {
+export function makeEngine(name: string, opts: { db?: Queryable; config?: string } = {}): Engine {
   const templates = new TemplatesEngine();
   if (name === 'templates') return templates;
-  const llm = new LlmEngine(useGemini() ? new GeminiBackend() : new SubagentBackend({ model: DEFAULT_MODEL }));
+  const backend = makeBackend();
+  if (name === 'agent') {
+    const config = AGENT_CONFIGS[opts.config ?? 'sc3'];
+    if (!config) throw new Error(`unknown agent config: ${opts.config} (one of ${Object.keys(AGENT_CONFIGS).join(', ')})`);
+    return new AgentEngine(backend, config, opts.db ?? null);
+  }
+  const llm = new LlmEngine(backend);
   if (name === 'llm') return llm;
   if (name === 'hybrid') return new HybridEngine(templates, llm);
   throw new Error(`unknown engine: ${name}`);
 }
 
+/** Backend for LLM engines: EVAL_LLM_BACKEND = gemini | deepseek | (default) opencode subagent. */
+export function makeBackend(): GeminiBackend | OpenAiCompatBackend | SubagentBackend {
+  if (useGemini()) return new GeminiBackend();
+  if (process.env.EVAL_LLM_BACKEND === 'deepseek') {
+    const key = process.env.DEEPSEEK_API_KEY;
+    if (!key) throw new Error('EVAL_LLM_BACKEND=deepseek needs DEEPSEEK_API_KEY');
+    return new OpenAiCompatBackend(process.env.EVAL_DEEPSEEK_MODEL ?? 'deepseek-flash', process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com', key, { provider: 'deepseek', effort: process.env.EVAL_LLM_VARIANT ?? 'low' });
+  }
+  return new SubagentBackend({ model: DEFAULT_MODEL });
+}
+
 export function engineMeta(name: string): { model: string; provider: string; temperature: number; effort: string } {
   if (name === 'templates') return { model: 'deterministic-templates', provider: 'none', temperature: 0, effort: 'none' };
-  const backend = useGemini() ? new GeminiBackend() : new SubagentBackend({ model: DEFAULT_MODEL });
+  const backend = makeBackend();
   return { model: backend.model, provider: backend.provider, temperature: backend.temperature, effort: backend.effort };
 }
 
 /** EVAL_LLM_BACKEND=gemini routes LLM/hybrid engines through the app's Gemini client. */
 export function useGemini(): boolean {
   return process.env.EVAL_LLM_BACKEND === 'gemini';
+}
+
+/** Separate (non-headline) result directory for an API backend run, or null. */
+export function apiBackendDir(): string | null {
+  const b = process.env.EVAL_LLM_BACKEND;
+  return b === 'gemini' || b === 'deepseek' ? b : null;
 }
 
 function engineRow(report: RunReport): string {

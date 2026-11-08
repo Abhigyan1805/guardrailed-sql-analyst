@@ -23,13 +23,25 @@ export interface BackendResult {
   tokensOut: number;
   costUsd: number | null;
   usageSource: 'provider' | 'estimated';
+  /** Prompt tokens served from the provider's prefix cache, when reported. */
+  cachedTokens?: number;
+  /** Provider call latency (the recorded original for a cache replay). */
+  latencyMs?: number;
+  /** Served from the local response cache (no provider call was made). */
+  cached?: boolean;
+}
+
+export interface GenerateOptions {
+  temperature?: number;
+  /** Sample index; distinguishes self-consistency drafts in the response cache. */
+  sample?: number;
 }
 
 export interface LlmBackend {
   readonly provider: string;
   readonly model: string;
   readonly temperature: number;
-  generate(prompt: string): Promise<BackendResult>;
+  generate(prompt: string, opts?: GenerateOptions): Promise<BackendResult>;
 }
 
 export interface ParsedModelOutput {
@@ -294,14 +306,23 @@ export class LlmEngine implements Engine {
     let hasCost = true;
     let lastError = '';
     let prompt = base;
+    // Critical-path latency: provider call time (the recorded original for a
+    // cache replay) plus local work, excluding client-side throttle waits.
+    let callWall = 0;
+    let callReported = 0;
+    const timing = () => ({ latencyMs: Date.now() - t0 - callWall + callReported, wallMs: Date.now() - t0 });
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       let res: BackendResult;
+      const tc = Date.now();
       try {
         res = await this.backend.generate(prompt);
       } catch (e: any) {
+        if (e?.name === 'QuotaExhausted') throw e; // the runner pauses; never scored as a miss
         return this.fail(t0, String(e?.message ?? e), attempt, tokensIn, tokensOut, costUsd, usageSource);
       }
+      callWall += Date.now() - tc;
+      callReported += res.latencyMs ?? Date.now() - tc;
       tokensIn += res.tokensIn;
       tokensOut += res.tokensOut;
       usageSource = res.usageSource === 'estimated' ? 'estimated' : usageSource;
@@ -319,7 +340,7 @@ export class LlmEngine implements Engine {
       if (parsed.sql === null) {
         return {
           sql: null, confidence: parsed.confidence, tokensIn, tokensOut,
-          retries: attempt, latencyMs: Date.now() - t0,
+          retries: attempt, ...timing(),
           usageSource, costUsd: hasCost ? costUsd : null, error: parsed.reason || 'model abstained',
         };
       }
@@ -327,7 +348,7 @@ export class LlmEngine implements Engine {
       if (v.ok) {
         return {
           sql: v.rewritten ?? parsed.sql, confidence: parsed.confidence, tokensIn, tokensOut,
-          retries: attempt, latencyMs: Date.now() - t0,
+          retries: attempt, ...timing(),
           usageSource, costUsd: hasCost ? costUsd : null,
         };
       }

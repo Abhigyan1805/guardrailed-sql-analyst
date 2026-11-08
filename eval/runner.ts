@@ -19,11 +19,12 @@ import {
   LATENCY_GATES_MS, ACCURACY_FLOORS,
 } from './loader';
 import { geminiConfigured } from './engines/gemini';
-import { makeEngine, engineMeta, useGemini, summarizePass, writeReportMd, writeCalibrationMd, DEFAULT_HYBRID_THRESHOLD, type RunReport } from './report';
+import { AgentEngine } from './engines/agent';
+import { makeEngine, engineMeta, useGemini, apiBackendDir, summarizePass, writeReportMd, writeCalibrationMd, DEFAULT_HYBRID_THRESHOLD, type RunReport } from './report';
 import { REFERENCE_PRICING, type CostOptions } from './metrics/cost';
 
 /** Gemini runs are a separate, labelled result: they never touch the headline reports. */
-const outDir = () => (useGemini() ? join(REPORTS_DIR, 'gemini') : REPORTS_DIR);
+const outDir = () => (apiBackendDir() ? join(REPORTS_DIR, apiBackendDir()!) : REPORTS_DIR);
 
 async function ensureViews(): Promise<void> {
   const db = await getDb();
@@ -34,12 +35,13 @@ async function ensureViews(): Promise<void> {
   }
 }
 
-export async function runSetEngine(set: string, engineName: string, repeats: number, deps: PipelineDeps, limit?: number): Promise<RunReport> {
+export async function runSetEngine(set: string, engineName: string, repeats: number, deps: PipelineDeps, limit?: number, config?: string): Promise<RunReport> {
   const { questions, hash, source } = loadSet(set);
   const active = questions.filter((q) => q.status === 'active');
   const selected = limit ? active.slice(0, limit) : active;
-  const engine = makeEngine(engineName);
+  const engine = makeEngine(engineName, { db: deps.db, config });
   const meta = engineMeta(engineName);
+  const agent = engine instanceof AgentEngine ? engine : null;
 
   const allPasses: ItemResult[][] = [];
   for (let rep = 0; rep < repeats; rep++) {
@@ -50,7 +52,7 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
 
   // Amended R5: the reference sheet is a fallback for when the backend cannot
   // expose exact usage; it never overrides provider-reported cost.
-  const llmInvolved = engineName !== 'templates' && !useGemini(); // Gemini prices from its own table
+  const llmInvolved = engineName !== 'templates' && !apiBackendDir(); // API backends price from their own tables
   const costOptions: CostOptions = llmInvolved
     ? { referencePricing: REFERENCE_PRICING.offPeak, referenceLabel: REFERENCE_PRICING.label }
     : {};
@@ -94,6 +96,17 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
           }
         : { note: 'deterministic templates: no model, $0 measured' },
       repeat_summaries: summaries,
+      ...(agent ? {
+        agent_config: agent.config,
+        prompt_version: agent.promptVersion,
+        calibrated: !!agent.calibration,
+        agent_gate: agent.gate,
+        gate_mode: process.env.EVAL_AGENT_GATE === 'off' ? 'off (replay for calibration measurement)' : 'on',
+        retrieval_pool: 'eval/pool/dev.json (dev only, leave-one-out)',
+      } : {}),
+      llm_calls: allPasses[0].reduce((n, i) => n + (i.llm_calls ?? 0), 0),
+      llm_cache_hits: allPasses[0].reduce((n, i) => n + (i.cache_hits ?? 0), 0),
+      latency_note: 'per-item latency = local work + provider call time on the critical path (parallel drafts count once); client-side throttle waits are excluded and cached replays use the recorded original call time',
     },
     summary: {
       ...primary,
@@ -106,7 +119,8 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
   };
 
   if (!existsSync(outDir())) mkdirSync(outDir(), { recursive: true });
-  writeFileSync(join(outDir(), `${set}-${engineName}-${gitSha()}.json`), JSON.stringify(report, null, 2));
+  const label = agent ? `${engineName}-${agent.config.name}${process.env.EVAL_AGENT_GATE === 'off' && agent.calibration ? '-ungated' : ''}` : engineName;
+  writeFileSync(join(outDir(), `${set}-${label}-${gitSha()}.json`), JSON.stringify(report, null, 2));
   return report;
 }
 
@@ -287,9 +301,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  const repeats = args.repeats ?? (args.engine === 'templates' ? 1 : 3);
-  const report = await runSetEngine(args.set!, args.engine!, repeats, deps, args.limit);
-  if (args.set === 'dev') writeCalibrationMd([report]);
+  const repeats = args.repeats ?? (args.engine === 'templates' || args.engine === 'agent' ? 1 : 3);
+  const report = await runSetEngine(args.set!, args.engine!, repeats, deps, args.limit, args.config);
+  if (args.set === 'dev' && !apiBackendDir()) writeCalibrationMd([report]);
   console.log(formatSummary(`${args.set}/${args.engine}`, report));
   if (args.strict) {
     const failures = strictFailures(report);
@@ -302,6 +316,16 @@ async function main(): Promise<void> {
   }
 }
 
+/** Exit code for a run stopped by the provider's daily quota (resume later; cached calls are kept). */
+export const EXIT_PAUSED = 75;
+
 if (process.argv[1] && process.argv[1].endsWith('runner.ts')) {
-  main().catch((e) => { console.error(e); process.exit(1); });
+  main().catch((e) => {
+    if (e?.name === 'QuotaExhausted') {
+      console.error(`PAUSED: ${e.message}. Every completed call is cached; re-run the same command after the quota resets.`);
+      process.exit(EXIT_PAUSED);
+    }
+    console.error(e);
+    process.exit(1);
+  });
 }

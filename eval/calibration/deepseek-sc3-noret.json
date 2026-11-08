@@ -1,0 +1,134 @@
+{
+  "config": "sc3-noret",
+  "backend": "deepseek",
+  "model": "deepseek-flash",
+  "calibrator": {
+    "kind": "logistic",
+    "features": [
+      "agreement",
+      "clean",
+      "empty_or_null",
+      "top_similarity",
+      "complexity"
+    ],
+    "weights": [
+      0.9755602278353278,
+      1.8557423597237796e-17,
+      0,
+      0.2682902098513764,
+      -1.22774030663959
+    ],
+    "bias": 0.3264000505756786,
+    "l2": 1,
+    "abstainConfidence": 0.1,
+    "fitted_on": "dev (dev-agent-sc3-noret-52a44a88d63f79aa8b43ae6b4c366e5ef3155bec.json)",
+    "n": 35
+  },
+  "gate": {
+    "allow": 0.55,
+    "clarify": 0.55
+  },
+  "dev": {
+    "report": "eval/reports/deepseek/dev-agent-sc3-noret-52a44a88d63f79aa8b43ae6b4c366e5ef3155bec.json",
+    "n": 35,
+    "base_rate": 0.7142857142857143,
+    "ece_loo": 0.18664989720684685,
+    "mce_loo": 0.5813141460923039,
+    "bins": [
+      {
+        "label": "0.00-0.10",
+        "low": 0,
+        "high": 0.1,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      },
+      {
+        "label": "0.10-0.20",
+        "low": 0.1,
+        "high": 0.2,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      },
+      {
+        "label": "0.20-0.30",
+        "low": 0.2,
+        "high": 0.3,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      },
+      {
+        "label": "0.30-0.40",
+        "low": 0.3,
+        "high": 0.4,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      },
+      {
+        "label": "0.40-0.50",
+        "low": 0.4,
+        "high": 0.5,
+        "count": 2,
+        "meanConfidence": 0.41868585390769614,
+        "accuracy": 1
+      },
+      {
+        "label": "0.50-0.60",
+        "low": 0.5,
+        "high": 0.6,
+        "count": 5,
+        "meanConfidence": 0.5612108855899355,
+        "accuracy": 0.2
+      },
+      {
+        "label": "0.60-0.70",
+        "low": 0.6,
+        "high": 0.7,
+        "count": 5,
+        "meanConfidence": 0.6424635551916417,
+        "accuracy": 0.4
+      },
+      {
+        "label": "0.70-0.80",
+        "low": 0.7,
+        "high": 0.8,
+        "count": 14,
+        "meanConfidence": 0.7818567439099444,
+        "accuracy": 0.9285714285714286
+      },
+      {
+        "label": "0.80-0.90",
+        "low": 0.8,
+        "high": 0.9,
+        "count": 9,
+        "meanConfidence": 0.8108600356540409,
+        "accuracy": 0.7777777777777778
+      },
+      {
+        "label": "0.90-1.00",
+        "low": 0.9,
+        "high": 1,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      }
+    ],
+    "chosen_cell": {
+      "allow": 0.55,
+      "clarify": 0.55,
+      "executed": 31,
+      "correct": 23,
+      "accuracy": 0.7419354838709677,
+      "falseClarify": 4,
+      "falseClarifyRate": 0.11428571428571428,
+      "caveat": 0,
+      "caveatRate": 0,
+      "missedClarify": 0,
+      "missedClarifyRate": 0
+    },
+    "selection": "max dev executed accuracy within 15% false-clarify and 25% caveat budgets, on leave-one-out confidences"
+  }
+}

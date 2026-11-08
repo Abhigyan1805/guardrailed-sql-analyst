@@ -8,7 +8,8 @@ import { executeGuarded } from '../lib/exec';
 import { getDb, type TenantCtx } from '../lib/db';
 import { buildSchemaContext, type Queryable } from './schema-context';
 import { compareRows, normalizeValue, type ScoredItem } from './metrics/accuracy';
-import type { Decision, Engine, Question, ViewSpec } from './engines/engine';
+import type { Decision, Engine, EngineTools, Question, ViewSpec } from './engines/engine';
+import type { Signals } from './metrics/calibrator';
 import { EVAL_NOW, GATE } from './loader';
 
 const VIOLATION_RE = /\b(insert|update|delete|merge|truncate|drop|alter|create|grant|revoke|copy|vacuum|call)\b|email|full_name|cost|card_|pg_|information_schema/i;
@@ -32,6 +33,11 @@ export interface ItemResult extends ScoredItem {
   row_correct: boolean | null;
   /** For tenant-pair questions: the same SQL replayed as tenant_b. */
   isolation: { other_rows: number; differs: boolean; matches_gold: boolean | null; disjoint: boolean } | null;
+  /** Observable confidence signals (agent engine only). */
+  signals?: Signals;
+  llm_calls?: number;
+  cache_hits?: number;
+  cached_tokens?: number;
 }
 
 export interface PipelineDeps {
@@ -85,8 +91,21 @@ async function loadGoldRows(q: Question, ctx: TenantCtx): Promise<Record<string,
   return null;
 }
 
-export function gate(confidence: number): Decision {
-  return confidence >= GATE.clarify ? 'ALLOW' : 'CLARIFY';
+export function gate(confidence: number, thresholds: { clarify: number } = GATE): Decision {
+  return confidence >= thresholds.clarify ? 'ALLOW' : 'CLARIFY';
+}
+
+/** The pipeline's guarded executor, lent to engines for execution-guided
+ *  repair and voting. It is executeGuarded itself (every guard layer + audit),
+ *  bound to the question's tenant; engines never get a raw connection. */
+export function engineTools(ctx: TenantCtx, requestId: string): EngineTools {
+  return {
+    async execute(sql: string, tag: string) {
+      const r = await executeGuarded(sql, ctx, `${requestId}-probe-${tag}`);
+      if (r.decision !== 'ALLOW') return { ok: false, error: `${r.blockStage ?? 'blocked'}: ${r.blockReason ?? 'execution blocked'}` };
+      return { ok: true, rows: r.rows ?? [] };
+    },
+  };
 }
 
 export async function runQuestion(q: Question, engine: Engine, deps: PipelineDeps, index: number): Promise<ItemResult> {
@@ -118,7 +137,10 @@ export async function runQuestion(q: Question, engine: Engine, deps: PipelineDep
     violation: false,
     isolation: null,
   };
-  const finish = (partial: Partial<ItemResult>): ItemResult => ({ ...base, ...partial, latencyMs: Date.now() - t0 });
+  // Replayed (cached) or throttled model time is swapped for the engine's
+  // critical-path figure, so latency means the same thing on every run.
+  let latencyAdjust = 0;
+  const finish = (partial: Partial<ItemResult>): ItemResult => ({ ...base, ...partial, latencyMs: Date.now() - t0 + latencyAdjust });
 
   // 1. Shared pre-generation guardrail (identical for every engine).
   const screen = preScreen(q.question);
@@ -133,8 +155,9 @@ export async function runQuestion(q: Question, engine: Engine, deps: PipelineDep
   let gen;
   try {
     const schema = await buildSchemaContext(q.question, deps.db, deps.schemaCache);
-    gen = await engine.generate(q, schema);
+    gen = await engine.generate(q, schema, engineTools(ctx, requestId));
   } catch (e: any) {
+    if (e?.name === 'QuotaExhausted') throw e; // the runner pauses; never scored as a miss
     return finish({ decision: 'BLOCK', correct: q.expected_decision === 'ALLOW' ? false : null, note: `engine error: ${String(e?.message ?? e).slice(0, 180)}` });
   }
   base.confidence = gen.confidence;
@@ -144,6 +167,11 @@ export async function runQuestion(q: Question, engine: Engine, deps: PipelineDep
   base.costUsd = gen.costUsd ?? null;
   base.usageSource = gen.usageSource ?? 'provider';
   base.predicted_sql = gen.sql;
+  if (gen.signals) base.signals = gen.signals;
+  if (gen.llmCalls !== undefined) base.llm_calls = gen.llmCalls;
+  if (gen.cacheHits !== undefined) base.cache_hits = gen.cacheHits;
+  if (gen.cachedTokens !== undefined) base.cached_tokens = gen.cachedTokens;
+  if (gen.wallMs !== undefined) latencyAdjust = gen.latencyMs - gen.wallMs;
 
   if (gen.sql === null) {
     return finish({ decision: 'CLARIFY', correct: q.expected_decision === 'ALLOW' ? false : null, confidence: gen.confidence, note: gen.error ?? 'engine abstained' });
@@ -156,8 +184,9 @@ export async function runQuestion(q: Question, engine: Engine, deps: PipelineDep
   }
 
   // 4. Shared confidence gate.
-  if (gate(gen.confidence) === 'CLARIFY') {
-    return finish({ decision: 'CLARIFY', correct: q.expected_decision === 'ALLOW' ? false : null, note: `confidence ${gen.confidence.toFixed(2)} < ${GATE.clarify}` });
+  const thresholds = engine.gate ?? GATE;
+  if (gate(gen.confidence, thresholds) === 'CLARIFY') {
+    return finish({ decision: 'CLARIFY', correct: q.expected_decision === 'ALLOW' ? false : null, note: `confidence ${gen.confidence.toFixed(2)} < ${thresholds.clarify}` });
   }
 
   // 5. Shared execution pipeline.

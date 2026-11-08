@@ -49,6 +49,8 @@ export interface CliArgs {
   report: boolean;
   repeats?: number;
   limit?: number;
+  /** Agent engine configuration (eval/engines/agent.ts AGENT_CONFIGS). */
+  config?: string;
 }
 
 export function parseArgs(argv: string[]): CliArgs {
@@ -63,6 +65,7 @@ export function parseArgs(argv: string[]): CliArgs {
     else if (a === '--report') args.report = true;
     else if (a === '--repeats') args.repeats = Number(argv[++i]);
     else if (a === '--limit') args.limit = Number(argv[++i]);
+    else if (a === '--config') args.config = argv[++i];
     else if (a.startsWith('--')) throw new Error(`unknown flag: ${a}`);
   }
   return args;

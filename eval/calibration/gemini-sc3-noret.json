@@ -1,0 +1,134 @@
+{
+  "config": "sc3-noret",
+  "backend": "gemini",
+  "model": "gemini-3.1-flash-lite",
+  "calibrator": {
+    "kind": "logistic",
+    "features": [
+      "agreement",
+      "clean",
+      "empty_or_null",
+      "top_similarity",
+      "complexity"
+    ],
+    "weights": [
+      0.6941102200302269,
+      6.398373492710038e-15,
+      0,
+      -0.0910376917981759,
+      -1.5733955227248981
+    ],
+    "bias": 0.221571479098149,
+    "l2": 1,
+    "abstainConfidence": 0.1,
+    "fitted_on": "dev (dev-agent-sc3-noret-52a44a88d63f79aa8b43ae6b4c366e5ef3155bec.json)",
+    "n": 35
+  },
+  "gate": {
+    "allow": 0.6,
+    "clarify": 0.6
+  },
+  "dev": {
+    "report": "eval/reports/gemini/dev-agent-sc3-noret-52a44a88d63f79aa8b43ae6b4c366e5ef3155bec.json",
+    "n": 35,
+    "base_rate": 0.6,
+    "ece_loo": 0.39046411319423047,
+    "mce_loo": 0.7335626558201191,
+    "bins": [
+      {
+        "label": "0.00-0.10",
+        "low": 0,
+        "high": 0.1,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      },
+      {
+        "label": "0.10-0.20",
+        "low": 0.1,
+        "high": 0.2,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      },
+      {
+        "label": "0.20-0.30",
+        "low": 0.2,
+        "high": 0.3,
+        "count": 1,
+        "meanConfidence": 0.26643734417988085,
+        "accuracy": 1
+      },
+      {
+        "label": "0.30-0.40",
+        "low": 0.3,
+        "high": 0.4,
+        "count": 6,
+        "meanConfidence": 0.3726144098249529,
+        "accuracy": 0
+      },
+      {
+        "label": "0.40-0.50",
+        "low": 0.4,
+        "high": 0.5,
+        "count": 2,
+        "meanConfidence": 0.48518567990123795,
+        "accuracy": 0.5
+      },
+      {
+        "label": "0.50-0.60",
+        "low": 0.5,
+        "high": 0.6,
+        "count": 3,
+        "meanConfidence": 0.562888758602981,
+        "accuracy": 0
+      },
+      {
+        "label": "0.60-0.70",
+        "low": 0.6,
+        "high": 0.7,
+        "count": 19,
+        "meanConfidence": 0.6817291727594142,
+        "accuracy": 1
+      },
+      {
+        "label": "0.70-0.80",
+        "low": 0.7,
+        "high": 0.8,
+        "count": 4,
+        "meanConfidence": 0.7328885533626581,
+        "accuracy": 0
+      },
+      {
+        "label": "0.80-0.90",
+        "low": 0.8,
+        "high": 0.9,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      },
+      {
+        "label": "0.90-1.00",
+        "low": 0.9,
+        "high": 1,
+        "count": 0,
+        "meanConfidence": 0,
+        "accuracy": 0
+      }
+    ],
+    "chosen_cell": {
+      "allow": 0.6,
+      "clarify": 0.6,
+      "executed": 23,
+      "correct": 19,
+      "accuracy": 0.8260869565217391,
+      "falseClarify": 12,
+      "falseClarifyRate": 0.34285714285714286,
+      "caveat": 0,
+      "caveatRate": 0,
+      "missedClarify": 0,
+      "missedClarifyRate": 0
+    },
+    "selection": "max dev executed accuracy within 15% false-clarify and 25% caveat budgets, on leave-one-out confidences"
+  }
+}
