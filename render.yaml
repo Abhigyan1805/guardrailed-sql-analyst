@@ -8,10 +8,13 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
+    region: singapore
     autoDeploy: true
     envVars:
       - key: LLM_PROVIDER
         value: gemini
+      - key: PORT
+        value: "3000"
       - key: ALLOW_MOCK_AUTH            # demo only: UI mints tokens for two synthetic tenants
         value: "true"
       - key: AUTH_SECRET

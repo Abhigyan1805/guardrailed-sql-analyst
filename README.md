@@ -17,7 +17,7 @@ API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /ap
 
 ## Live demo
 
-**URL: _TODO: filled in after the Render deploy_** (free Render web service, defined in `render.yaml`).
+**URL: https://guardrailed-sql-analyst.onrender.com** (free Render web service, Singapore region, defined in `render.yaml`).
 
 - **Cold start:** the free tier sleeps after 15 minutes idle; the first request after that takes about 30-60 s while the container wakes.
 - **Mock tenants, synthetic data:** the UI signs you in as one of two fake tenants (`ALLOW_MOCK_AUTH`); there is no real login and every row is generated. The database is embedded and resets on restart.
@@ -89,7 +89,7 @@ throttling). Docker is not installed on the measuring machine, so the container 
 | Memory at idle (after one `/api/health`) | about 300-330 MB RSS |
 | Peak memory (after ~20 demo questions; the per-user limiter stops further ones) | about 415-460 MB RSS of Render free's 512 MB, so it fits but with only ~10% headroom |
 | Offline-engine latency, warm (20 queries) | p50 ~40 ms, p95 ~115 ms, max ~320 ms end to end over HTTP |
-| Gemini latency and cost per query | TODO: needs `GOOGLE_API_KEY`; the nightly run records p95 and estimated $/100q in `eval/GEMINI.md` |
+| Gemini latency and cost per query (live demo, 4 questions, Gemini engine) | 3.4-9.1 s end to end (median ~7 s), includes the 8 s minimum-gap throttle between calls; ~720 input and 100-400 output tokens per query, about $0.0008/query (~$0.08/100q) at published `gemini-2.5-flash` prices, $0 on the free tier. Only 4 samples, not a distribution |
 | Cost | $0: Render free plan plus the free Gemini tier. At published `gemini-2.5-flash` prices the estimate is shown in `eval/GEMINI.md` (marked estimated) |
 
 Notes:
