@@ -4,7 +4,7 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@electric-sql/pglite'],
     outputFileTracingIncludes: {
-      '/api/**/*': ['./db/**/*', './docs/openapi.yaml', './node_modules/@electric-sql/pglite/dist/**/*'],
+      '/api/**/*': ['./db/**/*', './docs/openapi.yaml', './eval/pool/dev.json', './eval/calibration/*.json', './node_modules/@electric-sql/pglite/dist/**/*'],
     },
   },
 };

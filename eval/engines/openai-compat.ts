@@ -38,14 +38,16 @@ export class OpenAiCompatBackend implements LlmBackend {
     readonly model: string,
     private readonly baseUrl: string,
     private readonly apiKey: string,
-    opts: { provider?: string; effort?: string; cacheDir?: string | null; budgetUsd?: number; fetchFn?: FetchFn } = {},
+    opts: { provider?: string; effort?: string; cacheDir?: string | null; budgetUsd?: number; fetchFn?: FetchFn; timeoutMs?: number } = {},
   ) {
     this.provider = opts.provider ?? 'openai-compatible';
     this.effort = opts.effort ?? 'low';
     this.cacheDir = opts.cacheDir === undefined ? defaultCacheDir() : opts.cacheDir;
     this.budgetUsd = opts.budgetUsd ?? Number(process.env.EVAL_LLM_BUDGET_USD ?? 0.2);
     this.fetchFn = opts.fetchFn ?? fetch;
+    this.timeoutMs = opts.timeoutMs ?? 120_000;
   }
+  private readonly timeoutMs: number;
   private readonly cacheDir: string | null;
   private readonly budgetUsd: number;
   private readonly fetchFn: FetchFn;
@@ -77,7 +79,7 @@ export class OpenAiCompatBackend implements LlmBackend {
       this.last = Date.now();
       const t0 = Date.now();
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 120_000);
+      const timer = setTimeout(() => ctrl.abort(), this.timeoutMs);
       let res: Response;
       try {
         res = await this.fetchFn(`${this.baseUrl.replace(/\/$/, '')}/chat/completions`, {
@@ -85,7 +87,8 @@ export class OpenAiCompatBackend implements LlmBackend {
           signal: ctrl.signal,
           headers: { 'content-type': 'application/json', authorization: `Bearer ${this.apiKey}` },
           body: JSON.stringify({
-            model: this.model, temperature, max_tokens: 4096, reasoning_effort: this.effort,
+            model: this.model, temperature, max_tokens: 4096,
+            ...(this.effort === 'none' ? {} : { reasoning_effort: this.effort }),
             response_format: { type: 'json_object' },
             messages: [{ role: 'system', content: OPENAI_COMPAT_SYSTEM }, { role: 'user', content: prompt }],
           }),

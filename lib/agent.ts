@@ -1,10 +1,10 @@
 import { StateGraph, Annotation, END, START, MemorySaver } from '@langchain/langgraph';
-import { linkSchema, SCHEMA_SLICE } from './schema-link';
+import { linkSchema } from './schema-link';
 import { validateSql } from './sql-guard';
 import { executeGuarded, type Decision } from './exec';
 import type { TenantCtx } from './db';
-import { geminiGenerate, QuotaExhausted } from './gemini';
-import { takeLlmCall, llmCapReached } from './llm-budget';
+import { liveGenerate, liveProvider } from './agent-llm';
+import { llmCapReached } from './llm-budget';
 
 export interface ChartSpec {
   type: 'bar' | 'line' | 'table';
@@ -47,6 +47,9 @@ const State = Annotation.Root({
   llmModel: Annotation<string | null>({ reducer: (_, b) => b, default: () => null }),
   tokensIn: Annotation<number>({ reducer: (a, b) => a + b, default: () => 0 }),
   tokensOut: Annotation<number>({ reducer: (a, b) => a + b, default: () => 0 }),
+  /** Calibrated CLARIFY threshold when the agent engine produced the SQL (replaces the heuristic gate). */
+  agentClarifyBelow: Annotation<number | null>({ reducer: (_, b) => b, default: () => null }),
+  capped: Annotation<boolean>({ reducer: (_, b) => b, default: () => false }),
 });
 
 export interface CtxCarrier { ctx: TenantCtx; requestId: string; }
@@ -398,109 +401,6 @@ export function offlineTemplate(question: string): {
   return { clarify: ['Which metric: revenue, order count, or average order value?', 'Which time window should I use?', 'How should I group the results?'] };
 }
 
-export { QuotaExhausted };
-
-export interface LlmResult {
-  sql: string; chart: ChartSpec; caveats: string[]; confidence: number; assumptions: string[];
-  model: string; tokensIn: number; tokensOut: number;
-}
-
-// Free-tier guard: serialize LLM calls with a minimum gap so we stay far
-// under RPM (default 8000ms ≈ 7.5 RPM vs 10–15 RPM limits).
-let lastLlmAt = 0;
-let llmCallCount = 0;
-export function llmStats() { return { calls: llmCallCount, lastAt: lastLlmAt }; }
-
-async function throttleLlm() {
-  const gap = Number(process.env.LLM_MIN_INTERVAL_MS ?? 8000);
-  const wait = gap - (Date.now() - lastLlmAt);
-  if (wait > 0) await new Promise(r => setTimeout(r, wait));
-  lastLlmAt = Date.now();
-}
-
-function extractJson(text: string): any {
-  const clean = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-  return JSON.parse(clean);
-}
-
-async function callGemini(prompt: string, model: string, apiKey: string): Promise<LlmResult | null> {
-  await throttleLlm();
-  llmCallCount++;
-  const r = await geminiGenerate({ prompt, model, apiKey });
-  const parsed = extractJson(r.text);
-  if (parsed.sql == null) return null; // model abstained → defer to offline safety path
-  if (!parsed.sql) throw new Error(`gemini ${model} missing sql`);
-  return {
-    sql: parsed.sql,
-    chart: parsed.chart ?? { type: 'table', x: '', y: '', title: '' },
-    caveats: parsed.caveats ?? [],
-    confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
-    assumptions: parsed.assumptions ?? [],
-    model, tokensIn: r.tokensIn, tokensOut: r.tokensOut,
-  };
-}
-
-const GEMINI_PROMPT = (question: string) => `Generate a Postgres query for this question.
-
-ALLOWED VIEWS ONLY (never base tables):
-${SCHEMA_SLICE}
-
-Question: ${question}
-
-Return JSON: {"sql": string (single read-only SELECT, LIMIT<=1000, deterministic ORDER BY with tie-breaker) or null if you must abstain, "chart": {"type":"bar"|"line"|"table","x":column,"y":column,"title":string}, "caveats": string[], "confidence": 0..1, "assumptions": string[]}.
-Rules: revenue = SUM(line_revenue) with status IN ('paid','shipped'); time-series must include zero months via generate_series + LEFT JOIN; never DDL/DML; never columns email/full_name/cost; never pg_* or information_schema. Always include id/key columns (e.g. product_id, sku, customer_id, order_id) plus requested columns. If the question is vague (missing metric, window, or grouping) or asks for forbidden data/operations, return "sql": null with confidence below 0.55 and explain in assumptions.`;
-
-async function callLlm(question: string): Promise<LlmResult | null> {
-  const provider = process.env.LLM_PROVIDER ?? 'offline';
-  const gkey = process.env.GOOGLE_API_KEY;
-  if (provider === 'gemini' && gkey) {
-    // Global daily cap: over budget => null => the caller uses the offline engine.
-    if (!takeLlmCall()) return null;
-    const models = [process.env.LLM_MODEL ?? 'gemini-2.5-flash', process.env.LLM_FALLBACK_MODEL ?? 'gemini-2.5-flash-lite'];
-    let lastErr: any = null;
-    for (const m of models) {
-      try {
-        return await callGemini(GEMINI_PROMPT(question), m, gkey);
-      } catch (e: any) {
-        lastErr = e;
-        if (e instanceof QuotaExhausted) continue; // try fallback model, then give up
-        // Non-quota error (parse/empty): try fallback once, else give up for this Q
-        continue;
-      }
-    }
-    if (lastErr instanceof QuotaExhausted) throw lastErr; // runner stops hammering
-    return null; // fall back to offline templates for this question
-  }
-  const apiKey = process.env.OPENAI_API_KEY || process.env.LLM_API_KEY;
-  if (provider !== 'openai' || !apiKey) return null;
-  const base = process.env.LLM_BASE_URL ?? 'https://api.openai.com/v1';
-  const model = process.env.LLM_MODEL ?? 'gpt-4o-mini';
-  const prompt = `You are a Postgres analyst. Use ONLY these views/columns.\n${SCHEMA_SLICE}\n\nQuestion: ${question}\n\nReturn JSON: {"sql": string (single SELECT, LIMIT<=1000), "chart": {"type":"bar"|"line"|"table","x":col,"y":col,"title":string}, "caveats": string[], "confidence": 0..1, "assumptions": string[]}. Rules: revenue=SUM(line_revenue) with status IN ('paid','shipped'); deterministic ORDER BY with tie-breaker; no DDL/DML; no base tables; no PII columns. If ambiguous, set confidence < 0.55.`;
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 15000);
-  try {
-    const res = await fetch(`${base}/chat/completions`, {
-      method: 'POST',
-      signal: ctrl.signal,
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model, temperature: 0, max_tokens: 900,
-        response_format: { type: 'json_object' },
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const parsed = JSON.parse(data.choices?.[0]?.message?.content ?? 'null');
-    if (!parsed?.sql) return null;
-    return { sql: parsed.sql, chart: parsed.chart ?? { type: 'table', x: '', y: '', title: '' }, caveats: parsed.caveats ?? [], confidence: parsed.confidence ?? 0.5, assumptions: parsed.assumptions ?? [], model, tokensIn: data.usage?.prompt_tokens ?? 0, tokensOut: data.usage?.completion_tokens ?? 0 };
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(t);
-  }
-}
-
 function buildGraph(carrier: CtxCarrier) {
   const g = new StateGraph(State)
     .addNode('link', async (s) => {
@@ -511,14 +411,28 @@ function buildGraph(carrier: CtxCarrier) {
       const screen = preScreen(s.question);
       if (screen && 'block' in screen) return { sql: null, blockReason: screen.block, selfConfidence: 0, decision: 'BLOCK' as Decision };
       if (screen && 'clarify' in screen) return { sql: null, selfConfidence: 0.3, assumptions: screen.clarify, decision: 'CLARIFY' as Decision };
-      const llm = await callLlm(s.question);
-      if (llm) {
-        return { sql: llm.sql, chartSpec: llm.chart, caveats: llm.caveats, assumptions: llm.assumptions, selfConfidence: llm.confidence, llmModel: llm.model, tokensIn: llm.tokensIn, tokensOut: llm.tokensOut };
+      const live = await liveGenerate(s.question, carrier.ctx, carrier.requestId);
+      let capped = false;
+      if (live.kind === 'generated') {
+        const { gen } = live;
+        const backendFailed = gen.sql === null && /^backend error/.test(gen.error ?? '');
+        if (!backendFailed) {
+          if (gen.sql === null) {
+            return { sql: null, selfConfidence: gen.confidence, assumptions: [gen.error || 'Could you clarify the metric, time window, and grouping?'], decision: 'CLARIFY' as Decision, llmModel: live.model, tokensIn: gen.tokensIn, tokensOut: gen.tokensOut };
+          }
+          return {
+            sql: gen.sql, chartSpec: null, assumptions: [], selfConfidence: gen.confidence,
+            caveats: live.calibrated ? [] : ['Confidence is uncalibrated for this model, so the confidence gate is off.'],
+            llmModel: live.model, tokensIn: gen.tokensIn, tokensOut: gen.tokensOut, agentClarifyBelow: live.gate.clarify,
+          };
+        }
+      } else if (live.kind === 'capped') {
+        capped = true;
       }
       const t = offlineTemplate(s.question);
       if ('block' in t) return { sql: null, blockReason: t.block, selfConfidence: 0, decision: 'BLOCK' as Decision };
       if ('clarify' in t) return { sql: null, selfConfidence: 0.3, assumptions: t.clarify, decision: 'CLARIFY' as Decision };
-      const capNote = process.env.LLM_PROVIDER === 'gemini' && process.env.GOOGLE_API_KEY && llmCapReached()
+      const capNote = capped || (liveProvider() && llmCapReached())
         ? ["The demo's daily LLM budget is used up, so this answer came from the offline template engine."] : [];
       return { sql: t.sql, chartSpec: t.chart, caveats: [...capNote, ...t.caveats], assumptions: t.assumptions, selfConfidence: t.confidence };
     })
@@ -531,6 +445,11 @@ function buildGraph(carrier: CtxCarrier) {
     .addNode('gate', async (s) => {
       if (s.decision === 'BLOCK') return {};
       if (s.decision === 'CLARIFY' && !s.sql) return {};
+      if (s.agentClarifyBelow !== null) {
+        // Agent engine: the dev-calibrated gate, exactly as the eval pipeline applies it.
+        if (!s.validationOk || s.selfConfidence >= s.agentClarifyBelow) return s.validationOk ? { decision: 'ALLOW' as Decision } : {};
+        return { decision: 'CLARIFY' as Decision, assumptions: ['I am not confident enough in my reading of this question. Could you clarify the metric, time window, and grouping?'] };
+      }
       const q = s.question.toLowerCase();
       const vagueHits = VAGUE_WORDS.filter(w => q.includes(w)).length;
       const ambiguity = Math.min(1, vagueHits * 0.25 + (s.assumptions.length >= 2 ? 0.3 : 0));
@@ -553,6 +472,16 @@ function buildGraph(carrier: CtxCarrier) {
   return g;
 }
 
+/** The agent engine returns SQL only; derive a simple chart from the executed result. */
+function inferChart(columns: string[], rows: Record<string, any>[]): ChartSpec {
+  const table: ChartSpec = { type: 'table', x: '', y: '', title: '' };
+  if (columns.length !== 2 || rows.length < 2 || rows.length > 60) return table;
+  const [x, y] = columns;
+  if (typeof rows[0][y] !== 'number' && !(typeof rows[0][y] === 'string' && /^-?\d+(\.\d+)?$/.test(rows[0][y]))) return table;
+  const temporal = rows[0][x] instanceof Date || /^\d{4}-\d{2}/.test(String(rows[0][x]));
+  return { type: temporal ? 'line' : 'bar', x, y, title: `${y} by ${x}` };
+}
+
 export async function askQuestion(question: string, ctx: TenantCtx, requestId = `q-${Date.now()}`, threadId = 'default'): Promise<AgentAnswer> {
   const t0 = Date.now();
   const carrier: CtxCarrier = { ctx, requestId };
@@ -563,7 +492,7 @@ export async function askQuestion(question: string, ctx: TenantCtx, requestId = 
   ) as any;
 
   const engine = out.llmModel
-    ? (process.env.LLM_PROVIDER === 'gemini' ? 'gemini' : process.env.LLM_PROVIDER as any ?? 'llm')
+    ? (process.env.LLM_PROVIDER === 'gemini' ? 'gemini' : 'llm')
     : 'offline-template';
   const llmMeta = { model: out.llmModel ?? null, tokensIn: out.tokensIn ?? 0, tokensOut: out.tokensOut ?? 0 };
 
@@ -572,7 +501,7 @@ export async function askQuestion(question: string, ctx: TenantCtx, requestId = 
     await writeAudit(ctx, requestId, question, '', null, 'BLOCK', 'intent', out.blockReason ?? 'refused', 0, Date.now() - t0, 0, null);
     return { decision: 'BLOCK', sql: null, caveats: [], confidence: 0, blockStage: 'intent', blockReason: out.blockReason, latencyMs: Date.now() - t0, engine, ...llmMeta };
   }
-  if ((out.decision === 'CLARIFY' && !out.sql) || !out.sql) {
+  if (out.decision === 'CLARIFY' || !out.sql) {
     const { writeAudit } = await import('./exec');
     await writeAudit(ctx, requestId, question, '', null, 'CLARIFY', null, null, out.selfConfidence ?? 0.3, Date.now() - t0, 0, null);
     return { decision: 'CLARIFY', sql: null, caveats: [], clarifyingQuestions: out.assumptions ?? [], confidence: out.selfConfidence ?? 0.3, latencyMs: Date.now() - t0, engine, ...llmMeta };
@@ -585,7 +514,7 @@ export async function askQuestion(question: string, ctx: TenantCtx, requestId = 
   return {
     decision: 'ALLOW', sql: out.sql, executedSql: exec.executedSql,
     rows: exec.rows, columns: exec.columns,
-    chartSpec: out.chartSpec ?? { type: 'table', x: '', y: '', title: '' },
+    chartSpec: out.chartSpec ?? inferChart(exec.columns ?? [], exec.rows ?? []),
     caveats: [...(out.caveats ?? []), `Limited to ${(exec.rows ?? []).length} rows shown`],
     confidence: out.selfConfidence ?? 0.5,
     latencyMs: Date.now() - t0, engine, ...llmMeta,

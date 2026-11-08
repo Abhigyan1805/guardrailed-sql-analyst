@@ -21,8 +21,8 @@ API docs: `GET /api/openapi` (source in `docs/openapi.yaml`) · health: `GET /ap
 
 - **Cold start:** the free tier sleeps after 15 minutes idle; the first request after that takes about 30-60 s while the container wakes.
 - **Mock tenants, synthetic data:** the UI signs you in as one of two fake tenants (`ALLOW_MOCK_AUTH`); there is no real login and every row is generated. The database is embedded and resets on restart.
-- **Free-tier safety:** per-IP rate limit (`PER_IP_PER_MIN`, 20/min on the demo), plus a global cap of `LLM_DAILY_CAP` (200) Gemini calls per UTC day. Over the cap the offline template engine answers instead, and the answer says so in its caveats. The offline engine is far weaker on unseen questions (see Results).
-- The demo's LLM is Gemini (`gemini-2.5-flash`, free API). The headline numbers below are for the agent engine on DeepSeek, which won on dev; the same engine on Gemini is reported next to it in `eval/AGENT.md`. The demo app's own prompt path (`lib/agent.ts`) has not been switched to the agent engine yet, so the demo is not what these numbers measure. The free key allows only 20 `gemini-2.5-flash` requests per day.
+- **Cost safety:** per-IP rate limit (`PER_IP_PER_MIN`, 20/min on the demo), plus a global cap of `LLM_DAILY_CAP` (20 on the demo) *questions* per UTC day, applied to every LLM provider. A question counts once however many model calls it makes, and a single question is hard-limited to 4 model calls (3 drafts plus one repair). Over the cap, or if the model call fails, the offline template engine answers instead, and the answer says so in its caveats. The offline engine is far weaker on unseen questions (see Results).
+- The live demo runs the same agent engine the eval measures (`eval/engines/agent.ts`, config `sc3-noret`), on DeepSeek V4.1 Flash (`deepseek-flash`, OpenAI-compatible API) with the dev-fitted calibrator and its CLARIFY gate at 0.55. The headline numbers below are for that engine and model. The app adds the offline fallback and the 4-call ceiling (the eval allows up to 6 calls); the eval does not exercise either. Gemini remains a supported alternative (`LLM_PROVIDER=gemini`), but its calibrator is weak (see below).
 
 ## Results at a glance
 
@@ -91,14 +91,14 @@ throttling). Docker is not installed on the measuring machine, so the container 
 | Memory at idle (after one `/api/health`) | about 300-330 MB RSS |
 | Peak memory (after ~20 demo questions; the per-user limiter stops further ones) | about 415-460 MB RSS of Render free's 512 MB, so it fits but with only ~10% headroom |
 | Offline-engine latency, warm (20 queries) | p50 ~40 ms, p95 ~115 ms, max ~320 ms end to end over HTTP |
-| Gemini latency and cost per query (live demo, 4 questions, Gemini engine) | 3.4-9.1 s end to end (median ~7 s), includes the 8 s minimum-gap throttle between calls; ~720 input and 100-400 output tokens per query, about $0.0008/query (~$0.08/100q) at published `gemini-2.5-flash` prices, $0 on the free tier. Only 4 samples, not a distribution |
-| Cost | $0: Render free plan plus the free Gemini tier. At published `gemini-2.5-flash` prices the estimate is shown in `eval/GEMINI.md` (marked estimated) |
+| Gemini latency and cost per query (earlier demo, old single-prompt path, 4 questions) | 3.4-9.1 s end to end (median ~7 s) including a since-removed 8 s throttle; ~$0.0008/query at published `gemini-2.5-flash` prices. Only 4 samples, historical: the demo no longer uses this path |
+| Cost | Render free plan, plus DeepSeek usage: about $0.0006 per question measured in the eval (3 drafts), so the 20/day cap bounds spend to roughly $0.013/day. A process-lifetime guard (`LLM_SPEND_CAP_USD`, default $0.25) also stops model calls if spend somehow climbs. Live-app latency was only spot-checked (5 local questions, about 3-5 s each); the eval's p95 is 7.5 s |
 
 Notes:
 
 - Most of the memory is PGlite's WebAssembly Postgres, outside the JS heap. `NODE_OPTIONS=--max-old-space-size=192` in `render.yaml` trimmed peak RSS by roughly 20-40 MB in three capped runs versus uncapped ones (a noisy, small effect), so it is cheap insurance, not a fix. If Render's OOM kills show up in the logs, this service does not fit the free tier.
 - 0.1 CPU is a fraction of the measuring machine, so expect cold start and per-query latency noticeably above these numbers on Render. That was not measured.
-- LLM calls are serialized with a minimum gap (`LLM_MIN_INTERVAL_MS`, default 8000 ms) to stay under free-tier RPM limits, so concurrent users queue behind each other.
+- The three self-consistency drafts of a question run in parallel on DeepSeek; on Gemini the backend serializes calls with a minimum gap for free-tier RPM limits, so a Gemini question takes tens of seconds.
 - The nightly workflow (`.github/workflows/eval.yml`) runs the LLM evaluation through the app's own Gemini client using the `GOOGLE_API_KEY` repository secret. **A scheduled run without the secret fails** instead of skipping. Pull-request jobs need no secret.
 
 ## Limitations and honest notes
@@ -108,7 +108,7 @@ Notes:
 - The offline templates score 100% on dev because they were built against it, and 7.1% on held-out. The agent engine gets 76.2% of held-out questions right when it answers all of them, but that is 32 of 42: the interval runs from 61.5% to 86.5%, and about one answer in four is still wrong.
 - Most of the accuracy gain on dev came from one change, the richer schema context (views, value hints, business definitions, output conventions). Few-shot retrieval and execution-guided repair made no measurable difference on dev; self-consistency added one dev question. Those are honest nulls on a 35-question dev set, not proof the techniques never help.
 - The calibrated gate trades coverage for precision: at the dev-chosen CLARIFY < 0.55 it asked for clarification on 7 of 42 clear held-out questions, most of which it would have answered correctly (hence 64.3% gated vs 76.2% ungated). The calibrator was fitted on only 35 dev answers.
-- The agent engine is measured in the eval harness; the live demo's `lib/agent.ts` prompt is the older one.
+- The offline fallback answers at the weaker offline accuracy once the daily cap is reached, so the demo's quality varies with the time of day. The calibrated gate defers about 1 in 6 clear questions to a clarifying question (see Results).
 - The ablation found 2 gaps (catalog metadata when the relation allowlist is disabled), named in `eval/SECURITY.md`.
 - Security claims are measured on real Postgres; accuracy, LLM and calibration runs use PGlite, which ignores `statement_timeout`.
 - Auth is a mock for local demos (`ALLOW_MOCK_AUTH`); it must be replaced by a real identity provider before real data. Known accepted gaps are listed in `docs/THREAT_MODEL.md`.
@@ -142,7 +142,8 @@ curl -s -XPOST localhost:3000/api/query -H "x-ctx-token: $TOKEN" -d '{"question"
 
 Config: `AUTH_SECRET` (required in production), `LLM_PROVIDER` (`offline` default, `gemini`, `openai`),
 `GOOGLE_API_KEY` / `OPENAI_API_KEY` / `LLM_*`, `PER_IP_PER_MIN` (default 30),
-`LLM_DAILY_CAP` (global Gemini calls per UTC day, default 200; `0` disables the LLM; the cap is in-memory, so a restart resets it, and Google's own quota is the hard backstop).
+`LLM_DAILY_CAP` (global LLM *questions* per UTC day for any provider, default 200, 20 on the demo; `0` disables the LLM; in-memory, so a restart resets it, and the provider's own limits are the hard backstop), `LLM_MAX_CALLS` (per-question model-call ceiling, default drafts + 1 = 4), `LLM_DRAFTS` (default 3), `LLM_SPEND_CAP_USD` (OpenAI-compatible provider spend guard per process, default 0.25).
+Demo setup: `LLM_PROVIDER=openai`, `LLM_BASE_URL=https://api.deepseek.com`, `LLM_MODEL=deepseek-flash`, `LLM_API_KEY`, `LLM_DAILY_CAP=20`. The fitted calibrator only applies when the model matches the one it was fitted on; otherwise the confidence gate is off and the answer says so.
 `ALLOW_MOCK_AUTH=true` lets the UI mint tokens for the two demo tenants; it is demo-only,
 so replace it with a real identity provider before using real data.
 
