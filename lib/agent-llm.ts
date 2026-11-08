@@ -92,7 +92,11 @@ export async function liveGenerate(question: string, ctx: TenantCtx, requestId: 
   if (!provider) return { kind: 'unavailable' };
   // One cap unit per question, for every provider. Over budget => offline engine.
   if (!takeLlmCall()) return { kind: 'capped' };
-  const eng = getLiveEngine(provider);
+  let eng: AgentEngine;
+  try { eng = getLiveEngine(provider); } catch (e: any) {
+    console.error(`[llm] live engine init failed: ${e?.name ?? 'Error'}: ${String(e?.message ?? e).slice(0, 300)}`);
+    return { kind: 'unavailable' };
+  }
   const q: Question = {
     id: requestId, set: 'live', bucket: 'live', question, tenant: ctx.tenant_id, expected_decision: 'ALLOW',
     order_sensitive: false, gold_sql: null, gold_sql_path: null, gold_rows_path: null, gold_rows_hash: null,
@@ -108,7 +112,9 @@ export async function liveGenerate(question: string, ctx: TenantCtx, requestId: 
   try {
     const gen = await eng.generate(q, { tables: [], views: [], hint: '' }, tools);
     return { kind: 'generated', gen, model: eng.model, gate: eng.gate, calibrated: !!eng.calibration };
-  } catch {
+  } catch (e: any) {
+    // Class and message only: never the key or prompt contents.
+    console.error(`[llm] live generation failed: ${e?.name ?? 'Error'}: ${String(e?.message ?? e).slice(0, 300)}`);
     return { kind: 'unavailable' }; // quota/balance/network: offline engine answers
   }
 }
