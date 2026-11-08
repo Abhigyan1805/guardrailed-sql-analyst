@@ -3,6 +3,8 @@ import { linkSchema, SCHEMA_SLICE } from './schema-link';
 import { validateSql } from './sql-guard';
 import { executeGuarded, type Decision } from './exec';
 import type { TenantCtx } from './db';
+import { geminiGenerate, QuotaExhausted } from './gemini';
+import { takeLlmCall, llmCapReached } from './llm-budget';
 
 export interface ChartSpec {
   type: 'bar' | 'line' | 'table';
@@ -396,9 +398,7 @@ export function offlineTemplate(question: string): {
   return { clarify: ['Which metric: revenue, order count, or average order value?', 'Which time window should I use?', 'How should I group the results?'] };
 }
 
-export class QuotaExhausted extends Error {
-  constructor(model: string) { super(`Gemini free-tier quota exhausted on ${model}`); this.name = 'QuotaExhausted'; }
-}
+export { QuotaExhausted };
 
 export interface LlmResult {
   sql: string; chart: ChartSpec; caveats: string[]; confidence: number; assumptions: string[];
@@ -425,52 +425,19 @@ function extractJson(text: string): any {
 
 async function callGemini(prompt: string, model: string, apiKey: string): Promise<LlmResult | null> {
   await throttleLlm();
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 45000);
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        signal: ctrl.signal,
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: 'You are a Postgres analyst. Return JSON only.' }] },
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            response_mime_type: 'application/json', maxOutputTokens: 2048, temperature: 0,
-            // No reasoning needed for single-SQL generation; thinking tokens
-            // otherwise eat the output budget and truncate hard queries.
-            thinkingConfig: { thinkingBudget: 0 },
-          },
-        }),
-      }
-    );
-    llmCallCount++;
-    if (res.status === 429) throw new QuotaExhausted(model);
-    if (!res.ok) throw new Error(`gemini ${model} HTTP ${res.status}`);
-    const data = await res.json();
-    const parts = data.candidates?.[0]?.content?.parts ?? [];
-    const text = parts.find((p: any) => typeof p?.text === 'string')?.text;
-    if (!text) {
-      if (data.candidates?.[0]?.finishReason === 'MAX_TOKENS') throw new Error('gemini truncated (MAX_TOKENS)');
-      throw new Error(`gemini ${model} empty response`);
-    }
-    const parsed = extractJson(text);
-    if (parsed.sql == null) return null; // model abstained → defer to offline safety path
-    if (!parsed.sql) throw new Error(`gemini ${model} missing sql`);
-    const usage = data.usageMetadata ?? {};
-    return {
-      sql: parsed.sql,
-      chart: parsed.chart ?? { type: 'table', x: '', y: '', title: '' },
-      caveats: parsed.caveats ?? [],
-      confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
-      assumptions: parsed.assumptions ?? [],
-      model, tokensIn: usage.promptTokenCount ?? 0, tokensOut: usage.candidatesTokenCount ?? 0,
-    };
-  } finally {
-    clearTimeout(t);
-  }
+  llmCallCount++;
+  const r = await geminiGenerate({ prompt, model, apiKey });
+  const parsed = extractJson(r.text);
+  if (parsed.sql == null) return null; // model abstained → defer to offline safety path
+  if (!parsed.sql) throw new Error(`gemini ${model} missing sql`);
+  return {
+    sql: parsed.sql,
+    chart: parsed.chart ?? { type: 'table', x: '', y: '', title: '' },
+    caveats: parsed.caveats ?? [],
+    confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
+    assumptions: parsed.assumptions ?? [],
+    model, tokensIn: r.tokensIn, tokensOut: r.tokensOut,
+  };
 }
 
 const GEMINI_PROMPT = (question: string) => `Generate a Postgres query for this question.
@@ -487,6 +454,8 @@ async function callLlm(question: string): Promise<LlmResult | null> {
   const provider = process.env.LLM_PROVIDER ?? 'offline';
   const gkey = process.env.GOOGLE_API_KEY;
   if (provider === 'gemini' && gkey) {
+    // Global daily cap: over budget => null => the caller uses the offline engine.
+    if (!takeLlmCall()) return null;
     const models = [process.env.LLM_MODEL ?? 'gemini-2.5-flash', process.env.LLM_FALLBACK_MODEL ?? 'gemini-2.5-flash-lite'];
     let lastErr: any = null;
     for (const m of models) {
@@ -549,7 +518,9 @@ function buildGraph(carrier: CtxCarrier) {
       const t = offlineTemplate(s.question);
       if ('block' in t) return { sql: null, blockReason: t.block, selfConfidence: 0, decision: 'BLOCK' as Decision };
       if ('clarify' in t) return { sql: null, selfConfidence: 0.3, assumptions: t.clarify, decision: 'CLARIFY' as Decision };
-      return { sql: t.sql, chartSpec: t.chart, caveats: t.caveats, assumptions: t.assumptions, selfConfidence: t.confidence };
+      const capNote = process.env.LLM_PROVIDER === 'gemini' && process.env.GOOGLE_API_KEY && llmCapReached()
+        ? ["The demo's daily LLM budget is used up, so this answer came from the offline template engine."] : [];
+      return { sql: t.sql, chartSpec: t.chart, caveats: [...capNote, ...t.caveats], assumptions: t.assumptions, selfConfidence: t.confidence };
     })
     .addNode('validate', async (s) => {
       if (!s.sql) return { validationOk: false };

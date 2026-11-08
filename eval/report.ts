@@ -13,6 +13,7 @@ import {
 import { TemplatesEngine } from './engines/templates';
 import { HybridEngine, DEFAULT_HYBRID_THRESHOLD } from './engines/hybrid';
 import { LlmEngine, SubagentBackend, DEFAULT_MODEL } from './engines/llm';
+import { GeminiBackend } from './engines/gemini';
 import type { Engine } from './engines/engine';
 import type { ItemResult } from './pipeline';
 import type { AttackReport } from './attacks';
@@ -65,7 +66,7 @@ export interface RunReport {
 export function makeEngine(name: string): Engine {
   const templates = new TemplatesEngine();
   if (name === 'templates') return templates;
-  const llm = new LlmEngine(new SubagentBackend({ model: DEFAULT_MODEL }));
+  const llm = new LlmEngine(useGemini() ? new GeminiBackend() : new SubagentBackend({ model: DEFAULT_MODEL }));
   if (name === 'llm') return llm;
   if (name === 'hybrid') return new HybridEngine(templates, llm);
   throw new Error(`unknown engine: ${name}`);
@@ -73,8 +74,13 @@ export function makeEngine(name: string): Engine {
 
 export function engineMeta(name: string): { model: string; provider: string; temperature: number; effort: string } {
   if (name === 'templates') return { model: 'deterministic-templates', provider: 'none', temperature: 0, effort: 'none' };
-  const backend = new SubagentBackend({ model: DEFAULT_MODEL });
+  const backend = useGemini() ? new GeminiBackend() : new SubagentBackend({ model: DEFAULT_MODEL });
   return { model: backend.model, provider: backend.provider, temperature: backend.temperature, effort: backend.effort };
+}
+
+/** EVAL_LLM_BACKEND=gemini routes LLM/hybrid engines through the app's Gemini client. */
+export function useGemini(): boolean {
+  return process.env.EVAL_LLM_BACKEND === 'gemini';
 }
 
 function engineRow(report: RunReport): string {

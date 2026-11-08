@@ -69,56 +69,63 @@ jobs:
             eval/security-results.json
             eval/ablation-results.json
 
-  # Nightly full matrix: every set x every engine, --repeats 3 for LLM engines.
-  # Needs a model credential for the LLM/hybrid engines; without it the job
-  # skips cleanly instead of clobbering the committed reports with templates only.
+  # Nightly LLM evaluation through the app's own Gemini provider (GOOGLE_API_KEY
+  # repository secret). A scheduled run without the key FAILS loudly: a green
+  # nightly must mean the model was actually measured. The Gemini result is
+  # a separate, labelled artifact (eval/GEMINI.md, eval/reports/gemini/); it never
+  # overwrites the published DeepSeek headline numbers in eval/REPORT.md.
   nightly:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      OPENCODE_AUTH_JSON: ${{ secrets.OPENCODE_AUTH_JSON }}
     steps:
+      - name: Require model key
+        run: |
+          if [ -z "$GOOGLE_API_KEY" ]; then
+            echo "::error::GOOGLE_API_KEY repository secret is not set. The nightly LLM evaluation cannot run, so this job fails instead of reporting success. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - name: Materialize model credentials
-        id: auth
-        env:
-          OPENCODE_AUTH_JSON: ${{ secrets.OPENCODE_AUTH_JSON }}
-        run: |
-          if [ -n "$OPENCODE_AUTH_JSON" ]; then
-            mkdir -p "$HOME/.local/share/opencode"
-            printf '%s' "$OPENCODE_AUTH_JSON" > "$HOME/.local/share/opencode/auth.json"
-            echo "has_auth=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_auth=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::OPENCODE_AUTH_JSON is not set; skipping the nightly LLM matrix"
-          fi
       - name: Seed embedded Postgres
-        if: steps.auth.outputs.has_auth == 'true'
         run: npm run db:seed
-      - name: Full matrix (all sets x all engines, --strict per-engine gates)
-        if: steps.auth.outputs.has_auth == 'true'
+      - name: Gemini evaluation (dev + heldout + paraphrase, LLM engine, strict)
+        env:
+          EVAL_LLM_BACKEND: gemini
         run: npx tsx eval/runner.ts --matrix --strict
+      # Optional alternative: refresh the published DeepSeek matrix via opencode.
+      # Runs only when OPENCODE_AUTH_JSON is set; its absence is not a failure
+      # because the Gemini step above is the required nightly check.
+      - name: Optional opencode matrix (published DeepSeek numbers)
+        if: env.OPENCODE_AUTH_JSON != ''
+        run: |
+          mkdir -p "$HOME/.local/share/opencode"
+          printf '%s' "$OPENCODE_AUTH_JSON" > "$HOME/.local/share/opencode/auth.json"
+          npx tsx eval/runner.ts --matrix --strict
       - name: Upload reports
-        if: steps.auth.outputs.has_auth == 'true'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: nightly-eval
           path: |
             eval/reports/**
+            eval/GEMINI.md
             eval/REPORT.md
             eval/CALIBRATION.md
       - name: Commit refreshed reports
-        if: steps.auth.outputs.has_auth == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add eval/reports eval/REPORT.md eval/CALIBRATION.md
+          git add eval/reports eval/GEMINI.md eval/REPORT.md eval/CALIBRATION.md
           if git diff --cached --quiet; then
             echo "no report changes"
           else
-            git commit -m "Nightly eval matrix"
+            git commit -m "Nightly eval (Gemini + optional opencode matrix)"
             git push
           fi

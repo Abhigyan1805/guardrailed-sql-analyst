@@ -18,8 +18,12 @@ import {
   EVAL_NOW, EVAL_SEED, GATE, ROOT, REPORTS_DIR,
   LATENCY_GATES_MS, ACCURACY_FLOORS,
 } from './loader';
-import { makeEngine, engineMeta, summarizePass, writeReportMd, writeCalibrationMd, DEFAULT_HYBRID_THRESHOLD, type RunReport } from './report';
+import { geminiConfigured } from './engines/gemini';
+import { makeEngine, engineMeta, useGemini, summarizePass, writeReportMd, writeCalibrationMd, DEFAULT_HYBRID_THRESHOLD, type RunReport } from './report';
 import { REFERENCE_PRICING, type CostOptions } from './metrics/cost';
+
+/** Gemini runs are a separate, labelled result: they never touch the headline reports. */
+const outDir = () => (useGemini() ? join(REPORTS_DIR, 'gemini') : REPORTS_DIR);
 
 async function ensureViews(): Promise<void> {
   const db = await getDb();
@@ -46,7 +50,7 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
 
   // Amended R5: the reference sheet is a fallback for when the backend cannot
   // expose exact usage; it never overrides provider-reported cost.
-  const llmInvolved = engineName !== 'templates';
+  const llmInvolved = engineName !== 'templates' && !useGemini(); // Gemini prices from its own table
   const costOptions: CostOptions = llmInvolved
     ? { referencePricing: REFERENCE_PRICING.offPeak, referenceLabel: REFERENCE_PRICING.label }
     : {};
@@ -101,8 +105,8 @@ export async function runSetEngine(set: string, engineName: string, repeats: num
     items: allPasses[0],
   };
 
-  if (!existsSync(REPORTS_DIR)) mkdirSync(REPORTS_DIR, { recursive: true });
-  writeFileSync(join(REPORTS_DIR, `${set}-${engineName}-${gitSha()}.json`), JSON.stringify(report, null, 2));
+  if (!existsSync(outDir())) mkdirSync(outDir(), { recursive: true });
+  writeFileSync(join(outDir(), `${set}-${engineName}-${gitSha()}.json`), JSON.stringify(report, null, 2));
   return report;
 }
 
@@ -138,6 +142,23 @@ function loadLatestAttacks(): AttackReport | null {
   if (!best) return null;
   const { meta: _meta, ...rest } = best;
   return rest as unknown as AttackReport;
+}
+
+function writeGeminiMd(reports: RunReport[]): void {
+  const m = reports[0]?.meta;
+  const lines = [
+    '# Gemini LLM evaluation (separate result)', '',
+    `Generated: ${new Date().toISOString()} · model: \`${m?.model}\` · provider: \`${m?.provider}\` · temperature: ${m?.temperature} · commit: \`${m?.git_sha}\` · repeats: ${m?.repeats}`, '',
+    'This is the engine the live demo uses (free Gemini API), run nightly through the same pipeline as the headline numbers.',
+    'It is **not** the published DeepSeek result in `REPORT.md`; the two are never merged. Cost is estimated from the published per-token price (marked `*`).', '',
+    '| set | exact rows | accuracy (Wilson 95%) | p95 ALLOW | $/100q | violations |', '|---|---|---|---|---|---|',
+  ];
+  for (const r of reports) {
+    const s = r.summary;
+    const cost = s.cost_per_100q.value === null ? 'unavailable' : `$${s.cost_per_100q.value.toFixed(4)}${s.cost_per_100q.source === 'estimated' ? '*' : ''}`;
+    lines.push(`| ${r.meta.set} | ${s.correct}/${s.scored} | ${(s.accuracy * 100).toFixed(1)}% [${(s.ci95.low * 100).toFixed(1)}%, ${(s.ci95.high * 100).toFixed(1)}%] | ${Math.round(s.latency.p95Allow)}ms | ${cost} | ${s.violations} |`);
+  }
+  writeFileSync(join(ROOT, 'eval', 'GEMINI.md'), lines.join('\n') + '\n');
 }
 
 /** Per-engine strict gates (spec 8). Returns human-readable failures. */
@@ -200,6 +221,34 @@ async function main(): Promise<void> {
       process.exit(1);
     }
     if (args.strict) console.log('STRICT attacks gates PASSED');
+    return;
+  }
+
+  if (useGemini() && (args.matrix || (args.engine && args.engine !== 'templates')) && !geminiConfigured()) {
+    console.error('EVAL_LLM_BACKEND=gemini but GOOGLE_API_KEY is not set: refusing to run (or to report success) without a model key.');
+    process.exit(1);
+  }
+
+  if (args.matrix && useGemini()) {
+    // Separate Gemini result: LLM engine only (free-tier request budget), one repeat by default.
+    const reports: RunReport[] = [];
+    for (const set of ['dev', 'heldout', 'paraphrase'].filter(setExists)) {
+      const r = await runSetEngine(set, 'llm', args.repeats ?? 1, deps, args.limit);
+      reports.push(r);
+      console.log(formatSummary(`${set}/llm [gemini]`, r));
+    }
+    writeGeminiMd(reports);
+    console.log('wrote eval/GEMINI.md');
+    const failures = reports.flatMap((r) => {
+      const out = r.summary.violations > 0 ? [`violations=${r.summary.violations}`] : [];
+      // Sanity floor: a dead/invalid key or exhausted quota yields ~0% rather than a real measurement.
+      if (r.summary.accuracy < 0.2) out.push(`accuracy ${(r.summary.accuracy * 100).toFixed(1)}% < 20%: Gemini unreachable or quota exhausted?`);
+      return out.map((m) => `${r.meta.set}/llm: ${m}`);
+    });
+    if (failures.length) {
+      for (const m of failures) console.error(`GEMINI FAIL ${m}`);
+      process.exit(1);
+    }
     return;
   }
 
